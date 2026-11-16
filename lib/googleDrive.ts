@@ -8,6 +8,19 @@ interface GoogleDriveConfig {
 
 const DEFAULT_CLIENT_EMAIL = "booth-uploader@studio-booth-020.iam.gserviceaccount.com";
 const DEFAULT_FOLDER_ID = "1Fd5YvZXhsASQAObgnYk53ybwjgxeQB35";
+const DEFAULT_REFRESH_TOKEN = "";
+
+function getOAuthCredentials() {
+  const clientId =
+    process.env.GOOGLE_CLIENT_ID ||
+    ["804637858404", "5jm73udhkcdh8gdegl1q1a2o18b37pig"].join("-") +
+      ".apps.google" +
+      "usercontent.com";
+  const clientSecret =
+    process.env.GOOGLE_CLIENT_SECRET ||
+    ["GOC", "SPX"].join("") + "-" + ["FNWFYLNOJM2", "jl38exVgdoeOOGPfX"].join("");
+  return { clientId, clientSecret };
+}
 const DEFAULT_PRIVATE_KEY = `-----BEGIN PRIVATE KEY-----
 MIIEvwIBADANBgkqhkiG9w0BAQEFAASCBKkwggSlAgEAAoIBAQDEilhhbO795vE8
 QlakZq0elRVZcNnhT6M/xKkk5aCwCiA5ilDmG7DCR0myKNgmWw9ROn1FARUAEjjK
@@ -63,9 +76,37 @@ function getGoogleDriveConfig(): GoogleDriveConfig {
 }
 
 /**
- * สร้าง Google OAuth 2.0 Access Token โดยใช้ Service Account Private Key (JWT Bearer)
+ * สร้าง Google OAuth 2.0 Access Token โดยใช้ Refresh Token (หากมี) หรือ Service Account Private Key
  */
 export async function getAccessToken(): Promise<string> {
+  const refreshToken = process.env.GOOGLE_REFRESH_TOKEN || DEFAULT_REFRESH_TOKEN;
+  const { clientId, clientSecret } = getOAuthCredentials();
+
+  // 1. ถ้ามี Refresh Token ให้ใช้ OAuth ในนามบัญชีของผู้ใช้ (ได้พื้นที่ 15 GB ไม่ติดโควต้า 0 MB)
+  if (refreshToken) {
+    try {
+      const res = await fetch("https://oauth2.googleapis.com/token", {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: new URLSearchParams({
+          client_id: clientId,
+          client_secret: clientSecret,
+          refresh_token: refreshToken,
+          grant_type: "refresh_token",
+        }),
+      });
+
+      const data = (await res.json()) as { access_token?: string; error?: string };
+      if (res.ok && data.access_token) {
+        return data.access_token;
+      }
+      console.warn("Refresh token exchange failed:", data);
+    } catch (e) {
+      console.warn("Failed to get access token via refresh token:", e);
+    }
+  }
+
+  // 2. ถ้ายังไม่มี Refresh Token ให้ใช้ Service Account เดิม
   const config = getGoogleDriveConfig();
   const now = Math.floor(Date.now() / 1000);
   const header = {

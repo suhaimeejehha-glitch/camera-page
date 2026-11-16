@@ -40,43 +40,56 @@ function drawCover(
 
 /**
  * สร้างไฟล์ภาพเคลื่อนไหว GIF Animation (.gif) จากเฟรมวิดีโอที่อัดระหว่างถ่าย หรือรูปที่ถ่าย
+ * มีการเกลี่ยเฟรม (Subsampling) สูงสุด 14 เฟรม เพื่อให้เบา ลื่น และเข้ารหัสเสร็จเร็วภายใน 1 วินาที
  */
 export async function createAnimatedGifBlob(
   motionFrames: string[],
   photos: PhotoShot[]
 ): Promise<Blob | null> {
-  const sources =
-    motionFrames.length >= 2
+  try {
+    const isMotion = motionFrames && motionFrames.length >= 2;
+    const rawSources = isMotion
       ? motionFrames
       : photos.map((photo) => photo.dataUrl);
 
-  if (sources.length === 0 || typeof document === "undefined") {
+    if (rawSources.length === 0 || typeof document === "undefined") {
+      return null;
+    }
+
+    // กระจายเฟรมให้ไม่เกิน 14 เฟรม เพื่อความเร็วและความเบาของไฟล์
+    let sources = rawSources;
+    if (rawSources.length > 14) {
+      const step = rawSources.length / 14;
+      sources = Array.from({ length: 14 }, (_, i) => rawSources[Math.floor(i * step)]);
+    }
+
+    const width = 360;
+    const height = 270;
+    const canvas = document.createElement("canvas");
+    canvas.width = width;
+    canvas.height = height;
+    const ctx = canvas.getContext("2d", { willReadFrequently: true });
+    if (!ctx) return null;
+
+    const images = await Promise.all(sources.map(loadImage));
+    const gifFrames: GifFrameInput[] = images.map((img) => {
+      drawCover(ctx, img, width, height);
+      const imageData = ctx.getImageData(0, 0, width, height);
+      return {
+        width,
+        height,
+        rgba: imageData.data,
+      };
+    });
+
+    // ถ้าเป็นภาพเคลื่อนไหวระหว่างถ่ายให้ความเร็ว 160ms ถ้าเป็นชุดรูปถ่ายให้หน่วง 550ms
+    const delayCs = isMotion ? 16 : 55;
+    const gifBytes = encodeAnimatedGif(gifFrames, delayCs);
+    const buffer = new ArrayBuffer(gifBytes.byteLength);
+    new Uint8Array(buffer).set(gifBytes);
+    return new Blob([buffer], { type: "image/gif" });
+  } catch (error) {
+    console.error("Failed to build animated GIF:", error);
     return null;
   }
-
-  const width = 400;
-  const height = 300;
-  const canvas = document.createElement("canvas");
-  canvas.width = width;
-  canvas.height = height;
-  const ctx = canvas.getContext("2d", { willReadFrequently: true });
-  if (!ctx) return null;
-
-  const images = await Promise.all(sources.map(loadImage));
-  const gifFrames: GifFrameInput[] = images.map((img) => {
-    drawCover(ctx, img, width, height);
-    const imageData = ctx.getImageData(0, 0, width, height);
-    return {
-      width,
-      height,
-      rgba: imageData.data,
-    };
-  });
-
-  // ถ้ารูปเป็นชุดภาพนิ่ง (1-4 ภาพ) ให้หน่วงต่อเฟรมนานขึ้น (550ms) ถ้าเป็นคลิปอัดสดให้เร็วลื่น (180ms)
-  const delayCs = motionFrames.length >= 2 ? 18 : 55;
-  const gifBytes = encodeAnimatedGif(gifFrames, delayCs);
-  const buffer = new ArrayBuffer(gifBytes.byteLength);
-  new Uint8Array(buffer).set(gifBytes);
-  return new Blob([buffer], { type: "image/gif" });
 }

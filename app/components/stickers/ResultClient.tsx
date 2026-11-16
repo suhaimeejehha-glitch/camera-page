@@ -56,8 +56,14 @@ async function uploadMediaForQr(
   }
 
   const data = (await response.json()) as { urlPath: string };
-  const mediaUrl = `${window.location.origin}${data.urlPath}`;
-  const qrDataUrl = await QRCode.toDataURL(mediaUrl, {
+  const rawMediaUrl = data.urlPath.startsWith("http")
+    ? data.urlPath
+    : `${window.location.origin}${data.urlPath}`;
+
+  // ชี้ไปที่หน้าดาวน์โหลดสวยงามบนมือถือ
+  const downloadViewerUrl = `${window.location.origin}/download?src=${encodeURIComponent(rawMediaUrl)}&type=${kind}`;
+
+  const qrDataUrl = await QRCode.toDataURL(downloadViewerUrl, {
     width: 240,
     margin: 1,
     color: {
@@ -66,7 +72,14 @@ async function uploadMediaForQr(
     },
   });
 
-  return { qrDataUrl, mediaUrl };
+  const state: QrMediaState = { qrDataUrl, mediaUrl: downloadViewerUrl };
+  try {
+    sessionStorage.setItem(`photobooth_qr_${kind}`, JSON.stringify(state));
+  } catch {
+    // ข้ามถ้า storage เต็ม
+  }
+
+  return state;
 }
 
 function QrMediaCard({

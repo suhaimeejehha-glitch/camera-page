@@ -220,14 +220,14 @@ export function BoothClient() {
         </div>
       </header>
 
-      {/* พื้นที่หลัก: จัดแบ่งเป็น 2 ฝั่งเหมือนภาพตัวอย่าง Kiosk (กล้องสดอยู่ทางซ้ายขยายกว้างขึ้น + โทนสี + แถบรูปด้านล่าง | พรีวิวกรอบรูปอยู่ทางขวากะทัดรัดลง) */}
-      <div className="flex min-h-0 w-full max-w-7xl flex-1 flex-col gap-2.5 overflow-y-auto px-1 py-1 sm:px-4 sm:py-2 landscape:flex-row landscape:items-center landscape:justify-center landscape:gap-5 touch-pan-y">
+      {/* พื้นที่หลัก: จัดแบ่งเป็น 2 ฝั่งเหมือนภาพตัวอย่าง Kiosk (กล้องสดอยู่ทางซ้ายขยายกว้างขึ้น + โทนสี + แถบรูปด้านล่าง | พรีวิวกรอบรูปอยู่ทางขวาขึ้นบนสุดตามขอบ) */}
+      <div className="flex min-h-0 w-full max-w-7xl flex-1 flex-col gap-2.5 overflow-y-auto px-1 py-1 sm:px-4 sm:py-2 landscape:flex-row landscape:items-start landscape:justify-center landscape:gap-5 touch-pan-y">
         
         {/* ฝั่งซ้าย: กล้องสด Live Camera ปรับให้กว้างขึ้นและเด่นชัด + โทนสี + แถบรูปที่ถ่ายด้านล่าง */}
         <div className="flex flex-1 flex-col gap-2 rounded-2xl border border-zinc-800/90 bg-zinc-950/70 p-3 shadow-2xl backdrop-blur-md sm:gap-2.5 sm:rounded-3xl sm:p-4 landscape:flex-[1.9] lg:landscape:flex-[2.2]">
           
           {/* 1. กล้องสด LIVE CAMERA ขนาดกว้างขึ้น (Widescreen) */}
-          <div className="relative flex aspect-video w-full items-center justify-center overflow-hidden rounded-xl border border-zinc-800 bg-black shadow-inner max-h-[44dvh] sm:max-h-[50dvh] md:max-h-[55dvh] sm:rounded-2xl">
+          <div className="relative flex aspect-video w-full items-center justify-center overflow-hidden rounded-xl border border-zinc-800 bg-black shadow-inner max-h-[40dvh] sm:max-h-[46dvh] md:max-h-[50dvh] sm:rounded-2xl">
             <CameraView
               videoRef={videoRef}
               isMirrored={isMirrored}
@@ -372,8 +372,8 @@ export function BoothClient() {
 
         </div>
 
-        {/* ฝั่งขวา: พรีวิวแถบรูปที่กำลังเติมเต็ม (ขนาดกระทัดรัด Compact) */}
-        <div className="flex w-full flex-col items-center justify-center gap-2 sm:gap-3 landscape:w-auto landscape:shrink-0">
+        {/* ฝั่งขวา: พรีวิวแถบรูปที่กำลังเติมเต็ม (ปรับขึ้นบนสุดตามขอบ landscape:self-start) */}
+        <div className="flex w-full flex-col items-center justify-start gap-2 sm:gap-3 landscape:w-auto landscape:shrink-0 landscape:self-start">
           
           {/* พรีวิวแถบรูปตามกรอบที่เลือก (แสดง 2 แถบคู่สำหรับแนวตั้ง) */}
           <div className="flex flex-col items-center gap-2">

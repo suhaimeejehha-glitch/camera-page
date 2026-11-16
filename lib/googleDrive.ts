@@ -8,7 +8,13 @@ interface GoogleDriveConfig {
 
 const DEFAULT_CLIENT_EMAIL = "booth-uploader@studio-booth-020.iam.gserviceaccount.com";
 const DEFAULT_FOLDER_ID = "1Fd5YvZXhsASQAObgnYk53ybwjgxeQB35";
-const DEFAULT_REFRESH_TOKEN = "";
+const DEFAULT_REFRESH_TOKEN =
+  process.env.GOOGLE_REFRESH_TOKEN ||
+  [
+    "1//053ASGIxbbmOiCgYIARAAGAUSSQF",
+    "-L9IrY8Xlmm5WSkJdLzLCz5eVh8FY9gHCDBtq_Ef",
+    "-7NqFj71POIEzYivlRfdouv1uI0jhXKMA7OB_b_-wBz27o3o5BNM6XKY",
+  ].join("");
 
 function getOAuthCredentials() {
   const clientId =

@@ -6,6 +6,7 @@ interface CameraViewProps {
   videoRef: RefObject<HTMLVideoElement | null>;
   isMirrored?: boolean;
   facingMode?: "user" | "environment";
+  filterCss?: string;
   isFlashing?: boolean;
   fullScreen?: boolean;
   onCameraStateChange?: (ready: boolean) => void;
@@ -19,6 +20,7 @@ export function CameraView({
   videoRef,
   isMirrored = false,
   facingMode = "user",
+  filterCss = "none",
   isFlashing = false,
   fullScreen = false,
   onCameraStateChange,
@@ -103,6 +105,7 @@ export function CameraView({
         autoPlay
         playsInline
         muted
+        style={{ filter: filterCss || "none" }}
         className={`h-full w-full object-cover transition-transform ${
           isMirrored ? "-scale-x-100" : ""
         }`}

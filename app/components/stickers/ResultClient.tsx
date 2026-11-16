@@ -422,13 +422,13 @@ export function ResultClient() {
         />
 
         {/* พื้นที่หลัก: แบ่ง 2 ฝั่ง (ฝั่งซ้าย: ดูรูปใหญ่ + เลือกโทนสี + แถบเลือกรูปด้านล่าง | ฝั่งขวา: พรีวิวแถบคู่ + QR + สติกเกอร์ + สั่งปริ้นต์) */}
-        <div className="flex min-h-0 w-full max-w-7xl flex-1 flex-col gap-4 overflow-y-auto px-3 py-2 sm:px-6 landscape:flex-row landscape:items-start landscape:justify-center landscape:gap-6">
+        <div className="flex min-h-0 w-full max-w-7xl flex-1 flex-col gap-3 overflow-y-auto px-1 py-1 sm:px-4 sm:py-2 landscape:flex-row landscape:items-start landscape:justify-center landscape:gap-5 touch-pan-y">
           
           {/* ฝั่งซ้าย: การเลือกรูปภาพและปรับโทนสี (ตามรูปตัวอย่างตู้ Photobooth) */}
-          <div className="flex flex-1 flex-col gap-3 rounded-3xl border border-zinc-800/90 bg-zinc-950/70 p-4 shadow-2xl backdrop-blur-md sm:p-5">
+          <div className="flex flex-1 flex-col gap-2.5 rounded-2xl border border-zinc-800/90 bg-zinc-950/70 p-3 shadow-2xl backdrop-blur-md sm:gap-3 sm:rounded-3xl sm:p-4 md:p-5">
             
             {/* 1. รูปภาพพรีวิวขนาดใหญ่ของช่องที่กำลังเลือก */}
-            <div className="relative flex aspect-video w-full items-center justify-center overflow-hidden rounded-2xl border border-zinc-800 bg-black shadow-inner sm:max-h-[38dvh]">
+            <div className="relative flex aspect-video w-full items-center justify-center overflow-hidden rounded-xl border border-zinc-800 bg-black shadow-inner max-h-[25dvh] sm:max-h-[32dvh] md:max-h-[38dvh] sm:rounded-2xl">
               {activePhoto ? (
                 // eslint-disable-next-line @next/next/no-img-element
                 <img
@@ -444,15 +444,15 @@ export function ResultClient() {
               )}
 
               {/* ป้ายบอกช่องปัจจุบัน */}
-              <div className="pointer-events-none absolute top-3 left-3 flex items-center gap-2 rounded-full border border-pink-500/40 bg-black/75 px-3.5 py-1 text-xs font-bold text-pink-300 backdrop-blur-md">
-                <span className="h-2 w-2 rounded-full bg-pink-500 animate-pulse" />
+              <div className="pointer-events-none absolute top-2.5 left-2.5 flex items-center gap-1.5 rounded-full border border-pink-500/40 bg-black/75 px-3 py-1 text-[11px] font-bold text-pink-300 backdrop-blur-md sm:top-3 sm:left-3 sm:gap-2 sm:px-3.5 sm:text-xs">
+                <span className="h-1.5 w-1.5 sm:h-2 sm:w-2 rounded-full bg-pink-500 animate-pulse" />
                 <span>ช่องที่ {activeSlotIndex + 1} จาก {frame.shotCount}</span>
               </div>
 
               {/* ป้ายบอกโทนสีที่กำลังใช้ */}
-              <div className="pointer-events-none absolute top-3 right-3 flex items-center gap-2 rounded-full border border-white/20 bg-black/75 px-3 py-1 font-mono text-xs font-bold text-zinc-200 backdrop-blur-md">
+              <div className="pointer-events-none absolute top-2.5 right-2.5 flex items-center gap-1.5 rounded-full border border-white/20 bg-black/75 px-2.5 py-1 font-mono text-[11px] font-bold text-zinc-200 backdrop-blur-md sm:top-3 sm:right-3 sm:gap-2 sm:px-3 sm:text-xs">
                 <span
-                  className="h-2.5 w-2.5 rounded-full"
+                  className="h-2 w-2 sm:h-2.5 sm:w-2.5 rounded-full"
                   style={{ backgroundColor: activeTone.previewColor }}
                 />
                 <span>{activeTone.labelEn}</span>
@@ -462,16 +462,16 @@ export function ResultClient() {
             {/* 2. โซนเลือกโทนสีหลายๆโทน (Color Tones) */}
             <div className="flex flex-col gap-1.5">
               <div className="flex items-center justify-between">
-                <span className="font-mono text-xs font-bold tracking-wider text-zinc-400 uppercase">
+                <span className="font-mono text-[11px] sm:text-xs font-bold tracking-wider text-zinc-400 uppercase">
                   🎨 โทนสีรูปภาพ / COLOR TONES
                 </span>
-                <span className="text-xs text-pink-400 font-medium">
+                <span className="text-[11px] sm:text-xs text-pink-400 font-medium">
                   {activeTone.name} ({activeTone.labelEn})
                 </span>
               </div>
 
-              {/* แถบชิปโทนสีเลื่อนแนวนอน */}
-              <div className="flex items-center gap-2 overflow-x-auto pb-1 pt-0.5 no-scrollbar">
+              {/* แถบชิปโทนสีเลื่อนแนวนอน (Touch-friendly สำหรับมือถือ/ไอแพด) */}
+              <div className="flex items-center gap-1.5 sm:gap-2 overflow-x-auto pb-1 pt-0.5 no-scrollbar touch-pan-x">
                 {PHOTO_TONES.map((tone) => {
                   const isSelected = tone.id === selectedToneId;
                   return (
@@ -479,14 +479,14 @@ export function ResultClient() {
                       key={tone.id}
                       type="button"
                       onClick={() => setSelectedToneId(tone.id)}
-                      className={`flex shrink-0 items-center gap-2 rounded-full border px-3.5 py-2 text-xs font-bold transition active:scale-95 ${
+                      className={`flex shrink-0 items-center gap-1.5 sm:gap-2 rounded-full border px-3 py-1.5 sm:px-3.5 sm:py-2 text-[11px] sm:text-xs font-bold transition active:scale-95 ${
                         isSelected
                           ? "border-pink-500 bg-pink-500/20 text-white shadow-md shadow-pink-500/30"
                           : "border-zinc-800 bg-zinc-900/90 text-zinc-300 hover:border-zinc-700 hover:text-white"
                       }`}
                     >
                       <span
-                        className="h-3 w-3 rounded-full border border-white/30"
+                        className="h-2.5 w-2.5 sm:h-3 sm:w-3 rounded-full border border-white/30"
                         style={{ backgroundColor: tone.previewColor }}
                       />
                       <span>{tone.name}</span>
@@ -497,18 +497,18 @@ export function ResultClient() {
             </div>
 
             {/* 3. แถบกดเลือกภาพด้านล่าง (Filmstrip Selector ตรงตามรูปภาพที่ลูกค้าส่งมา) */}
-            <div className="flex flex-col gap-1.5 pt-1">
+            <div className="flex flex-col gap-1.5 pt-0.5 sm:pt-1">
               <div className="flex items-center justify-between">
-                <span className="font-mono text-xs font-bold tracking-wider text-zinc-400 uppercase">
+                <span className="font-mono text-[11px] sm:text-xs font-bold tracking-wider text-zinc-400 uppercase">
                   📸 แตะเลือกรูปสำหรับช่องที่ {activeSlotIndex + 1}
                 </span>
-                <span className="text-[11px] text-zinc-500">
+                <span className="text-[10px] sm:text-[11px] text-zinc-500">
                   แตะรูปเพื่อเปลี่ยนรูปในช่องนี้
                 </span>
               </div>
 
               {/* แถบรูปภาพแนวนอนเลื่อนได้ */}
-              <div className="flex items-center gap-2.5 overflow-x-auto rounded-2xl border border-zinc-800/80 bg-zinc-900/60 p-2.5 no-scrollbar">
+              <div className="flex items-center gap-2 sm:gap-2.5 overflow-x-auto rounded-xl sm:rounded-2xl border border-zinc-800/80 bg-zinc-900/60 p-2 sm:p-2.5 no-scrollbar touch-pan-x">
                 {allPhotos.map((shot, idx) => {
                   // ตรวจสอบว่ารูปนี้ถูกเลือกใส่ในช่องไหนบ้าง
                   const placedSlotIndices = photos
@@ -523,7 +523,7 @@ export function ResultClient() {
                       key={shot.id}
                       type="button"
                       onClick={() => handleSelectPhotoForSlot(shot)}
-                      className={`group relative h-20 w-28 shrink-0 overflow-hidden rounded-xl border-2 transition active:scale-95 sm:h-24 sm:w-32 ${
+                      className={`group relative h-16 w-24 sm:h-20 sm:w-28 md:h-24 md:w-32 shrink-0 overflow-hidden rounded-lg sm:rounded-xl border-2 transition active:scale-95 ${
                         isCurrentActive
                           ? "border-pink-500 ring-2 ring-pink-500/50 shadow-lg shadow-pink-500/30"
                           : placedSlotIndices.length > 0
@@ -540,13 +540,13 @@ export function ResultClient() {
                       />
 
                       {/* หมายเลขช็อตที่ถ่าย */}
-                      <span className="absolute top-1 left-1 rounded bg-black/70 px-1.5 py-0.5 font-mono text-[10px] font-bold text-white backdrop-blur-sm">
+                      <span className="absolute top-1 left-1 rounded bg-black/70 px-1.5 py-0.5 font-mono text-[9px] sm:text-[10px] font-bold text-white backdrop-blur-sm">
                         #{idx + 1}
                       </span>
 
                       {/* ป้ายบอกว่าวางอยู่ในช่องไหนของกรอบรูป */}
                       {placedSlotIndices.length > 0 ? (
-                        <span className="absolute right-1 bottom-1 rounded bg-pink-500/90 px-1.5 py-0.5 text-[10px] font-bold text-white shadow-sm">
+                        <span className="absolute right-1 bottom-1 rounded bg-pink-500/90 px-1.5 py-0.5 text-[9px] sm:text-[10px] font-bold text-white shadow-sm">
                           ช่อง {placedSlotIndices.join(", ")}
                         </span>
                       ) : null}
@@ -559,7 +559,7 @@ export function ResultClient() {
           </div>
 
           {/* ฝั่งขวา: พรีวิวกรอบรูปคู่ 2 ชุด + Google Drive QR + สติกเกอร์ + สั่งปริ้นต์ */}
-          <div className="flex w-full flex-col items-center gap-4 landscape:w-[420px] landscape:shrink-0">
+          <div className="flex w-full flex-col items-center gap-3 sm:gap-4 landscape:w-[360px] lg:landscape:w-[420px] landscape:shrink-0">
             
             {/* พรีวิวแถบรูปคู่ (Dual Strip) หรือแผ่นเดี่ยว */}
             <div className="flex flex-col items-center gap-2">
@@ -758,21 +758,21 @@ export function ResultClient() {
           </div>
         </div>
 
-        {/* แถบปุ่ม Back (ซ้ายล่าง) และ Print / Next (ขวาล่าง) สไตล์ White Pill Kiosk */}
-        <div className="flex w-full max-w-7xl shrink-0 items-center justify-between gap-4 px-4 py-3 sm:px-6">
+        {/* แถบปุ่ม Back (ซ้ายล่าง) และ Print / Next (ขวาล่าง) สไตล์ White Pill Kiosk ปรับขนาดให้เหมาะกับมือถือ/ไอแพด */}
+        <div className="flex w-full max-w-7xl shrink-0 items-center justify-between gap-2.5 px-3 py-2 sm:px-6 sm:py-3">
           <Link
             href={`/booth?frame=${frame.id}&shots=${shots}&orientation=${orientation}`}
-            className="inline-flex min-h-12 items-center justify-center rounded-full border border-zinc-700 bg-zinc-800/80 px-7 text-sm font-bold tracking-wider text-zinc-200 uppercase shadow-lg transition active:scale-95 hover:bg-zinc-700 hover:text-white"
+            className="inline-flex min-h-11 sm:min-h-12 items-center justify-center rounded-full border border-zinc-700 bg-zinc-800/80 px-5 sm:px-7 text-xs sm:text-sm font-bold tracking-wider text-zinc-200 uppercase shadow-lg transition active:scale-95 hover:bg-zinc-700 hover:text-white"
           >
             ← Back
           </Link>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 sm:gap-3">
             <button
               type="button"
               onClick={handlePrint}
               disabled={isPrinting || photos.length === 0}
-              className="inline-flex min-h-12 items-center justify-center rounded-full bg-white px-9 text-base font-black tracking-wider text-zinc-950 uppercase shadow-xl transition active:scale-95 hover:bg-zinc-100 disabled:cursor-not-allowed disabled:opacity-50"
+              className="inline-flex min-h-11 sm:min-h-12 items-center justify-center rounded-full bg-white px-5 sm:px-9 text-xs sm:text-base font-black tracking-wider text-zinc-950 uppercase shadow-xl transition active:scale-95 hover:bg-zinc-100 disabled:cursor-not-allowed disabled:opacity-50"
             >
               {isPrinting ? "กำลังสั่งปริ้นต์..." : "🖨️ ปริ้นต์รูป (Print)"}
             </button>
@@ -781,7 +781,7 @@ export function ResultClient() {
               <button
                 type="button"
                 onClick={handleFinishSession}
-                className="inline-flex min-h-12 items-center justify-center rounded-full bg-pink-500 px-8 text-base font-black tracking-wider text-white uppercase shadow-lg shadow-pink-500/30 transition active:scale-95 hover:bg-pink-400"
+                className="inline-flex min-h-11 sm:min-h-12 items-center justify-center rounded-full bg-pink-500 px-5 sm:px-8 text-xs sm:text-base font-black tracking-wider text-white uppercase shadow-lg shadow-pink-500/30 transition active:scale-95 hover:bg-pink-400"
               >
                 Next ({postPrintSeconds}s) →
               </button>

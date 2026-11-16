@@ -5,6 +5,7 @@ import { useEffect, useState, type ReactNode, type RefObject } from "react";
 interface CameraViewProps {
   videoRef: RefObject<HTMLVideoElement | null>;
   isMirrored?: boolean;
+  facingMode?: "user" | "environment";
   isFlashing?: boolean;
   fullScreen?: boolean;
   onCameraStateChange?: (ready: boolean) => void;
@@ -12,11 +13,12 @@ interface CameraViewProps {
 }
 
 /**
- * Component เปิดกล้องโน้ตบุ๊ก / Webcam ผ่าน navigator.mediaDevices.getUserMedia
+ * Component เปิดกล้องโน้ตบุ๊ก / Webcam / มือถือ / ไอแพด ผ่าน navigator.mediaDevices.getUserMedia
  */
 export function CameraView({
   videoRef,
   isMirrored = false,
+  facingMode = "user",
   isFlashing = false,
   fullScreen = false,
   onCameraStateChange,
@@ -44,9 +46,9 @@ export function CameraView({
       try {
         const stream = await navigator.mediaDevices.getUserMedia({
           video: {
-            facingMode: "user",
-            width: { ideal: 1280 },
-            height: { ideal: 960 },
+            facingMode: { ideal: facingMode },
+            width: { ideal: 1920 },
+            height: { ideal: 1080 },
           },
           audio: false,
         });
@@ -86,7 +88,7 @@ export function CameraView({
         activeStream.getTracks().forEach((track) => track.stop());
       }
     };
-  }, [retryCount, videoRef, onCameraStateChange]);
+  }, [retryCount, videoRef, facingMode, onCameraStateChange]);
 
   return (
     <div

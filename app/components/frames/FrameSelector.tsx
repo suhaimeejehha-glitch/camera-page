@@ -176,7 +176,7 @@ export function FrameSelector({
           onClick={() => scrollByAmount(-1)}
           disabled={!canScrollLeft}
           aria-label="Scroll left"
-          className="flex min-h-24 min-w-14 shrink-0 items-center justify-center rounded-2xl border border-zinc-200 bg-white text-2xl font-bold text-zinc-700 shadow-md transition active:scale-95 hover:border-pink-400 hover:text-pink-500 disabled:cursor-not-allowed disabled:opacity-30 sm:min-w-16"
+          className="hidden sm:flex min-h-24 min-w-14 shrink-0 items-center justify-center rounded-2xl border border-zinc-200 bg-white text-2xl font-bold text-zinc-700 shadow-md transition active:scale-95 hover:border-pink-400 hover:text-pink-500 disabled:cursor-not-allowed disabled:opacity-30 sm:min-w-16"
         >
           ◀
         </button>
@@ -241,7 +241,7 @@ export function FrameSelector({
           onClick={() => scrollByAmount(1)}
           disabled={!canScrollRight}
           aria-label="Scroll right"
-          className="flex min-h-24 min-w-14 shrink-0 items-center justify-center rounded-2xl border border-zinc-200 bg-white text-2xl font-bold text-zinc-700 shadow-md transition active:scale-95 hover:border-pink-400 hover:text-pink-500 disabled:cursor-not-allowed disabled:opacity-30 sm:min-w-16"
+          className="hidden sm:flex min-h-24 min-w-14 shrink-0 items-center justify-center rounded-2xl border border-zinc-200 bg-white text-2xl font-bold text-zinc-700 shadow-md transition active:scale-95 hover:border-pink-400 hover:text-pink-500 disabled:cursor-not-allowed disabled:opacity-30 sm:min-w-16"
         >
           ▶
         </button>

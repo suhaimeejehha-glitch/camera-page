@@ -5,14 +5,15 @@ import type { PlacedSticker } from "@/types/photobooth";
 
 interface StickerCanvasProps {
   stickers: PlacedSticker[];
-  selectedStickerId: string | null;
+  selectedStickerId?: string | null;
   isHorizontal?: boolean;
-  onSelectSticker: (instanceId: string | null) => void;
-  onUpdateSticker: (
+  readOnly?: boolean;
+  onSelectSticker?: (instanceId: string | null) => void;
+  onUpdateSticker?: (
     instanceId: string,
     patch: Partial<Pick<PlacedSticker, "x" | "y" | "scale" | "rotation">>
   ) => void;
-  onRemoveSticker: (instanceId: string) => void;
+  onRemoveSticker?: (instanceId: string) => void;
 }
 
 interface DragState {
@@ -33,14 +34,43 @@ function clamp(value: number, min: number, max: number) {
  */
 export function StickerCanvas({
   stickers,
-  selectedStickerId,
+  selectedStickerId = null,
   isHorizontal = false,
-  onSelectSticker,
-  onUpdateSticker,
-  onRemoveSticker,
+  readOnly = false,
+  onSelectSticker = () => {},
+  onUpdateSticker = () => {},
+  onRemoveSticker = () => {},
 }: StickerCanvasProps) {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const dragRef = useRef<DragState | null>(null);
+
+  if (readOnly) {
+    return (
+      <div className="pointer-events-none absolute inset-0 overflow-hidden">
+        {stickers.map((sticker) => (
+          <div
+            key={sticker.instanceId}
+            className="absolute aspect-square"
+            style={{
+              width: isHorizontal ? undefined : "22%",
+              height: isHorizontal ? "22%" : undefined,
+              left: `${sticker.x}%`,
+              top: `${sticker.y}%`,
+              transform: `translate(-50%, -50%) rotate(${sticker.rotation}deg) scale(${sticker.scale})`,
+            }}
+          >
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={sticker.src}
+              alt={sticker.stickerId}
+              draggable={false}
+              className="h-full w-full object-contain drop-shadow-sm"
+            />
+          </div>
+        ))}
+      </div>
+    );
+  }
 
   const handleStickerPointerDown = (
     e: ReactPointerEvent<HTMLDivElement>,

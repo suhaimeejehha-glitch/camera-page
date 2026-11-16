@@ -354,34 +354,65 @@ export function ResultClient() {
       {/* หน้าจอใช้งานปกติบนตู้ (ซ่อนตอนสั่ง Print) */}
       <div className="flex min-h-0 w-full flex-1 flex-col items-center print:hidden">
         <BoothHeader
-          title="CUSTOMIZE & EXPORT"
-          theme="light"
+          title="CUSTOMIZE & PRINT"
+          theme="dark"
           currentStep={5}
         />
 
         <div className="flex min-h-0 w-full max-w-6xl flex-1 flex-col items-center justify-evenly gap-5 py-2 landscape:flex-row landscape:items-center landscape:justify-center landscape:gap-10">
-          {/* ฝั่งซ้าย/บน: ตัวอย่างแถบรูปพร้อมสติกเกอร์ลากย้ายได้ */}
+          {/* ฝั่งซ้าย/บน: ตัวอย่างแถบรูป (แสดง 2 แถบคู่กันสำหรับแนวตั้งเหมือนหน้าตู้จริง) */}
           <div className="flex shrink-0 flex-col items-center gap-2.5">
-            <StripPreview frame={frame} photos={photos}>
-              <StickerCanvas
-                stickers={placedStickers}
-                selectedStickerId={selectedStickerId}
-                isHorizontal={orientation === "horizontal"}
-                onSelectSticker={setSelectedStickerId}
-                onUpdateSticker={handleUpdateSticker}
-                onRemoveSticker={handleRemoveSticker}
-              />
-            </StripPreview>
+            {orientation === "vertical" ? (
+              <div className="flex items-center justify-center gap-2.5 rounded-3xl border border-zinc-800 bg-zinc-950/80 p-3 shadow-2xl backdrop-blur-md">
+                {/* แถบที่ 1 (แถบหลักสำหรับแปะสติกเกอร์) */}
+                <div className="relative">
+                  <StripPreview frame={frame} photos={photos}>
+                    <StickerCanvas
+                      stickers={placedStickers}
+                      selectedStickerId={selectedStickerId}
+                      isHorizontal={false}
+                      onSelectSticker={setSelectedStickerId}
+                      onUpdateSticker={handleUpdateSticker}
+                      onRemoveSticker={handleRemoveSticker}
+                    />
+                  </StripPreview>
+                </div>
+
+                {/* แถบที่ 2 (แถบคู่แฝด สะท้อนเหมือนชุดที่ 1 สำหรับพิมพ์ 2 ชุด) */}
+                <div className="relative">
+                  <StripPreview frame={frame} photos={photos}>
+                    <StickerCanvas
+                      stickers={placedStickers}
+                      isHorizontal={false}
+                      readOnly
+                    />
+                  </StripPreview>
+                </div>
+              </div>
+            ) : (
+              <div className="flex items-center justify-center rounded-3xl border border-zinc-800 bg-zinc-950/80 p-3.5 shadow-2xl backdrop-blur-md">
+                <StripPreview frame={frame} photos={photos}>
+                  <StickerCanvas
+                    stickers={placedStickers}
+                    selectedStickerId={selectedStickerId}
+                    isHorizontal={true}
+                    onSelectSticker={setSelectedStickerId}
+                    onUpdateSticker={handleUpdateSticker}
+                    onRemoveSticker={handleRemoveSticker}
+                  />
+                </StripPreview>
+              </div>
+            )}
             <p className="text-center text-xs text-zinc-400">
-              แตะและลากสติกเกอร์เพื่อตกแต่งภาพ
+              แตะและลากสติกเกอร์เพื่อตกแต่งภาพ (แสดง 2 แถบคู่กัน)
             </p>
           </div>
 
-          {/* ฝั่งขวา/ล่าง: QR Code + สติกเกอร์ + ปุ่มปริ้นต์ */}
-          <div className="flex max-h-full w-full flex-1 flex-col gap-4 overflow-y-auto rounded-3xl border border-zinc-200 bg-white p-5 shadow-2xl shadow-pink-500/10 sm:p-6 landscape:max-w-xl landscape:max-h-[82dvh] portrait:max-h-[48dvh]">
+          {/* ฝั่งขวา/ล่าง: QR Code + สติกเกอร์ + ปุ่มปริ้นต์ ในดีไซน์ Dark Studio Kiosk */}
+          <div className="flex max-h-full w-full flex-1 flex-col gap-4 overflow-y-auto rounded-3xl border border-zinc-800 bg-zinc-900/90 p-5 shadow-2xl backdrop-blur-md sm:p-6 landscape:max-w-xl landscape:max-h-[82dvh] portrait:max-h-[48dvh]">
             {/* โซนบน: QR Code ตรงกลาง ขนาดใหญ่ขึ้น และคำอธิบายอยู่ใต้คิวอาร์ */}
-            <div className="flex flex-col items-center justify-center gap-3 rounded-2xl border border-zinc-200 bg-zinc-50/70 p-4 text-center">
-              <div className="flex h-36 w-36 items-center justify-center overflow-hidden rounded-2xl border border-zinc-200 bg-white p-2 shadow-sm sm:h-40 sm:w-40">
+            <div className="flex flex-col items-center justify-center gap-3 rounded-2xl border border-zinc-800 bg-zinc-950/80 p-4 text-center">
+              <div className="flex h-36 w-36 items-center justify-center overflow-hidden rounded-2xl border border-zinc-800 bg-white p-2 shadow-sm sm:h-40 sm:w-40">
                 {driveQr ? (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img
@@ -399,7 +430,7 @@ export function ResultClient() {
                 )}
               </div>
 
-              <p className="text-xs font-medium text-zinc-600 sm:text-sm">
+              <p className="text-xs font-medium text-zinc-400 sm:text-sm">
                 สแกนด้วยมือถือเพื่อเปิดโฟลเดอร์ Google Drive รวมทั้งรูปภาพและ GIF ทันที
               </p>
             </div>
@@ -407,7 +438,7 @@ export function ResultClient() {
             {/* โซนสติกเกอร์ */}
             <div className="flex flex-col gap-2">
               <div className="flex items-center justify-between">
-                <span className="font-mono text-xs font-bold tracking-wider text-zinc-500 uppercase">
+                <span className="font-mono text-xs font-bold tracking-wider text-zinc-400 uppercase">
                   STICKERS
                 </span>
                 {placedStickers.length > 0 ? (
@@ -417,7 +448,7 @@ export function ResultClient() {
                       setPlacedStickers([]);
                       setSelectedStickerId(null);
                     }}
-                    className="font-mono text-xs font-medium text-rose-500 transition hover:underline"
+                    className="font-mono text-xs font-medium text-rose-400 transition hover:underline"
                   >
                     ลบทั้งหมด
                   </button>
@@ -425,14 +456,15 @@ export function ResultClient() {
               </div>
               <StickerPicker
                 stickers={STICKERS}
+                theme="dark"
                 onAddSticker={handleAddSticker}
               />
             </div>
 
             {selectedSticker ? (
-              <div className="flex flex-col gap-3 rounded-2xl border border-pink-200 bg-pink-50/60 p-4">
+              <div className="flex flex-col gap-3 rounded-2xl border border-zinc-700 bg-zinc-950/70 p-4">
                 <div className="flex items-center justify-between">
-                  <span className="font-mono text-xs font-bold tracking-wider text-pink-600 uppercase">
+                  <span className="font-mono text-xs font-bold tracking-wider text-pink-400 uppercase">
                     Selected: {selectedSticker.stickerId}
                   </span>
                   <button
@@ -440,7 +472,7 @@ export function ResultClient() {
                     onClick={() =>
                       handleRemoveSticker(selectedSticker.instanceId)
                     }
-                    className="min-h-10 rounded-full bg-rose-100 px-4 text-xs font-bold text-rose-600 transition active:scale-95 hover:bg-rose-200"
+                    className="min-h-9 rounded-full border border-rose-500/30 bg-rose-500/20 px-3.5 text-xs font-bold text-rose-300 transition active:scale-95 hover:bg-rose-500/30"
                   >
                     ลบชิ้นนี้
                   </button>
@@ -448,7 +480,7 @@ export function ResultClient() {
 
                 <div className="flex flex-wrap items-center gap-3">
                   <div className="flex items-center gap-2">
-                    <span className="font-mono text-xs text-zinc-500">Size</span>
+                    <span className="font-mono text-xs text-zinc-400">Size</span>
                     <button
                       type="button"
                       onClick={() =>
@@ -460,11 +492,11 @@ export function ResultClient() {
                           ),
                         })
                       }
-                      className="flex h-11 w-11 items-center justify-center rounded-xl border border-zinc-200 bg-white text-lg font-bold text-zinc-800 shadow-sm transition active:scale-95"
+                      className="flex h-10 w-10 items-center justify-center rounded-xl border border-zinc-700 bg-zinc-800 text-lg font-bold text-white shadow-sm transition active:scale-95 hover:bg-zinc-700"
                     >
                       −
                     </button>
-                    <span className="w-12 text-center font-mono text-xs font-bold text-zinc-800">
+                    <span className="w-12 text-center font-mono text-xs font-bold text-zinc-200">
                       {Math.round(selectedSticker.scale * 100)}%
                     </span>
                     <button
@@ -478,14 +510,14 @@ export function ResultClient() {
                           ),
                         })
                       }
-                      className="flex h-11 w-11 items-center justify-center rounded-xl border border-zinc-200 bg-white text-lg font-bold text-zinc-800 shadow-sm transition active:scale-95"
+                      className="flex h-10 w-10 items-center justify-center rounded-xl border border-zinc-700 bg-zinc-800 text-lg font-bold text-white shadow-sm transition active:scale-95 hover:bg-zinc-700"
                     >
                       +
                     </button>
                   </div>
 
                   <div className="flex items-center gap-2">
-                    <span className="font-mono text-xs text-zinc-500">
+                    <span className="font-mono text-xs text-zinc-400">
                       Rotate
                     </span>
                     <button
@@ -495,7 +527,7 @@ export function ResultClient() {
                           rotation: selectedSticker.rotation - 15,
                         })
                       }
-                      className="h-11 rounded-xl border border-zinc-200 bg-white px-3 font-mono text-xs font-bold text-zinc-800 shadow-sm transition active:scale-95"
+                      className="h-10 rounded-xl border border-zinc-700 bg-zinc-800 px-3 font-mono text-xs font-bold text-zinc-200 shadow-sm transition active:scale-95 hover:bg-zinc-700"
                     >
                       ↺ -15°
                     </button>
@@ -506,7 +538,7 @@ export function ResultClient() {
                           rotation: 0,
                         })
                       }
-                      className="h-11 rounded-xl border border-zinc-200 bg-white px-3 font-mono text-xs font-bold text-zinc-600 shadow-sm transition active:scale-95"
+                      className="h-10 rounded-xl border border-zinc-700 bg-zinc-800 px-3 font-mono text-xs font-bold text-zinc-400 shadow-sm transition active:scale-95 hover:bg-zinc-700"
                     >
                       0°
                     </button>
@@ -517,7 +549,7 @@ export function ResultClient() {
                           rotation: selectedSticker.rotation + 15,
                         })
                       }
-                      className="h-11 rounded-xl border border-zinc-200 bg-white px-3 font-mono text-xs font-bold text-zinc-800 shadow-sm transition active:scale-95"
+                      className="h-10 rounded-xl border border-zinc-700 bg-zinc-800 px-3 font-mono text-xs font-bold text-zinc-200 shadow-sm transition active:scale-95 hover:bg-zinc-700"
                     >
                       ↻ +15°
                     </button>
@@ -527,16 +559,16 @@ export function ResultClient() {
             ) : null}
 
             {exportError ? (
-              <p className="text-xs font-medium text-emerald-600">{exportError}</p>
+              <p className="text-xs font-medium text-rose-400">{exportError}</p>
             ) : null}
           </div>
         </div>
 
-        {/* แถบปุ่ม Back (ซ้ายล่าง) และ Print / Next (ขวาล่าง) */}
-        <div className="flex w-full max-w-6xl shrink-0 items-center justify-between gap-4 pt-2">
+        {/* แถบปุ่ม Back (ซ้ายล่าง) และ Print / Next (ขวาล่าง) สไตล์ White Pill Kiosk */}
+        <div className="flex w-full max-w-6xl shrink-0 items-center justify-between gap-4 pt-3">
           <Link
             href={`/booth?frame=${frame.id}&shots=${shots}&orientation=${orientation}`}
-            className="inline-flex min-h-14 items-center justify-center rounded-full border border-zinc-200 bg-white px-8 text-sm font-bold tracking-wider text-zinc-700 uppercase shadow-sm transition active:scale-95 hover:border-pink-400 hover:text-pink-600"
+            className="inline-flex min-h-12 items-center justify-center rounded-full border border-zinc-700 bg-zinc-800/80 px-8 text-sm font-bold tracking-wider text-zinc-200 uppercase shadow-lg transition active:scale-95 hover:bg-zinc-700 hover:text-white"
           >
             ← Back
           </Link>
@@ -546,16 +578,16 @@ export function ResultClient() {
               type="button"
               onClick={handlePrint}
               disabled={isPrinting || photos.length === 0}
-              className="inline-flex min-h-14 items-center justify-center rounded-full bg-pink-500 px-9 text-base font-black tracking-wider text-white uppercase shadow-lg shadow-pink-500/25 transition active:scale-95 hover:bg-pink-400 disabled:cursor-not-allowed disabled:opacity-50"
+              className="inline-flex min-h-12 items-center justify-center rounded-full bg-white px-9 text-base font-black tracking-wider text-zinc-950 uppercase shadow-xl transition active:scale-95 hover:bg-zinc-100 disabled:cursor-not-allowed disabled:opacity-50"
             >
-              {isPrinting ? "กำลังสั่งปริ้นต์..." : "🖨️ ปริ้นต์รูป"}
+              {isPrinting ? "กำลังสั่งปริ้นต์..." : "🖨️ ปริ้นต์รูป (Print)"}
             </button>
 
             {hasPrinted ? (
               <button
                 type="button"
                 onClick={handleFinishSession}
-                className="inline-flex min-h-14 items-center justify-center rounded-full bg-emerald-500 px-8 text-base font-black tracking-wider text-white uppercase shadow-lg shadow-emerald-500/25 transition active:scale-95 hover:bg-emerald-400"
+                className="inline-flex min-h-12 items-center justify-center rounded-full bg-pink-500 px-8 text-base font-black tracking-wider text-white uppercase shadow-lg shadow-pink-500/30 transition active:scale-95 hover:bg-pink-400"
               >
                 Next ({postPrintSeconds}s) →
               </button>

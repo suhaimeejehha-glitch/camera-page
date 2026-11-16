@@ -1,4 +1,4 @@
-import type { FrameConfig, PhotoShot, PlacedSticker } from "@/types/photobooth";
+import type { FrameConfig, LayoutOrientation, PhotoShot, PlacedSticker } from "@/types/photobooth";
 
 export interface RenderStripOptions {
   frame: FrameConfig;
@@ -114,4 +114,53 @@ export async function renderPhotoboothStrip(
   }
 
   return canvas.toDataURL("image/png");
+}
+
+/**
+ * สร้างภาพสำหรับพิมพ์ลงกระดาษ 4x6 นิ้ว
+ * - หากเป็นกรอบแนวตั้ง (Vertical / Photo Strip 2x6 นิ้ว): วางรูปคู่กัน 2 แถบ (Dual Strip / 2 ชุดเหมือนกัน) บนกระดาษ 4x6 นิ้ว เพื่อตัดแบ่ง 2 ชุด
+ * - หากเป็นกรอบแนวนอน (Horizontal): พิมพ์เป็น 1 แผ่นเต็มใบ (Postcard 4x6 นิ้ว)
+ */
+export async function renderPrintSheet(
+  stripDataUrl: string,
+  orientation: LayoutOrientation
+): Promise<string> {
+  if (orientation === "horizontal") {
+    return stripDataUrl;
+  }
+
+  const stripImg = await loadImage(stripDataUrl);
+  const singleW = stripImg.width;
+  const singleH = stripImg.height;
+
+  // สร้างแคนวาสขนาด 4x6 นิ้ว (ความกว้าง 2 เท่าของ 1 แถบ)
+  const printCanvas = document.createElement("canvas");
+  printCanvas.width = singleW * 2;
+  printCanvas.height = singleH;
+
+  const ctx = printCanvas.getContext("2d");
+  if (!ctx) return stripDataUrl;
+
+  // พื้นหลังสีขาว
+  ctx.fillStyle = "#ffffff";
+  ctx.fillRect(0, 0, printCanvas.width, printCanvas.height);
+
+  // วาดแถบที่ 1 (ฝั่งซ้าย)
+  ctx.drawImage(stripImg, 0, 0, singleW, singleH);
+
+  // วาดแถบที่ 2 (ฝั่งขวา)
+  ctx.drawImage(stripImg, singleW, 0, singleW, singleH);
+
+  // เส้นประบางๆ กึ่งกลางสำหรับช่วยตัดแบ่ง 2 แถบ (Cutting Guide)
+  ctx.save();
+  ctx.strokeStyle = "#e4e4e7";
+  ctx.lineWidth = 1;
+  ctx.setLineDash([8, 8]);
+  ctx.beginPath();
+  ctx.moveTo(singleW, 0);
+  ctx.lineTo(singleW, singleH);
+  ctx.stroke();
+  ctx.restore();
+
+  return printCanvas.toDataURL("image/png");
 }

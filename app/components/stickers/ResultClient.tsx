@@ -14,7 +14,7 @@ import {
   parseShotCount,
 } from "@/lib/frames";
 import { STICKERS } from "@/lib/stickers";
-import { renderPhotoboothStrip } from "@/lib/canvasRenderer";
+import { renderPhotoboothStrip, renderPrintSheet } from "@/lib/canvasRenderer";
 import { clearMotionFrames, loadMotionFrames } from "@/lib/mediaStore";
 import { createAnimatedGifBlob } from "@/lib/gifBuilder";
 import type { PhotoShot, PlacedSticker, StickerItem } from "@/types/photobooth";
@@ -304,7 +304,10 @@ export function ResultClient() {
         photos,
         stickers: placedStickers,
       });
-      setPrintStripUrl(stripDataUrl);
+
+      // สร้างแผ่นพิมพ์ขนาด 4x6 นิ้ว (ถ้าเป็นกรอบแนวตั้ง จะวาง 2 แถบคู่กันเป็น 2 ชุดสำหรับตัดแบ่ง)
+      const printSheetDataUrl = await renderPrintSheet(stripDataUrl, orientation);
+      setPrintStripUrl(printSheetDataUrl);
 
       if (printTimerRef.current) clearTimeout(printTimerRef.current);
       printTimerRef.current = setTimeout(() => {

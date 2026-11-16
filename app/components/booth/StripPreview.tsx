@@ -43,11 +43,11 @@ export function StripPreview({
 
   const sizeClass = isHorizontal
     ? compact
-      ? "h-auto w-[min(62vw,280px)] sm:w-[min(64vw,340px)]"
-      : "h-auto w-[min(88vw,480px)] sm:w-[min(60vw,540px)] lg:w-[min(38vw,560px)]"
+      ? "h-auto w-[min(62vw,300px)] portrait:w-[min(64vw,380px)]"
+      : "h-auto w-[min(40vw,480px)] portrait:w-[min(86vw,600px)]"
     : compact
-    ? "h-[min(36dvh,300px)] w-auto portrait:h-[min(26dvh,280px)] sm:portrait:h-[min(34dvh,380px)]"
-    : "h-[min(56dvh,480px)] w-auto portrait:h-[min(26dvh,300px)] sm:portrait:h-[min(34dvh,420px)] lg:h-[min(62dvh,540px)]";
+    ? "h-[min(44dvh,380px)] w-auto portrait:h-[min(34dvh,400px)]"
+    : "h-[min(64dvh,540px)] w-auto portrait:h-[min(30dvh,420px)]";
 
   return (
     <div

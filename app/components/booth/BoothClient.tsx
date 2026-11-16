@@ -387,8 +387,8 @@ export function BoothClient() {
 
         </div>
 
-        {/* ฝั่งขวา: พรีวิวแถบรูปที่กำลังเติมเต็ม + ปุ่มชัตเตอร์ & ปุ่มถัดไป */}
-        <div className="flex w-full flex-col items-center gap-3 sm:gap-4 landscape:w-[360px] lg:landscape:w-[420px] landscape:shrink-0">
+        {/* ฝั่งขวา: พรีวิวแถบรูปที่กำลังเติมเต็ม */}
+        <div className="flex w-full flex-col items-center justify-center gap-3 sm:gap-4 landscape:w-auto landscape:shrink-0">
           
           {/* พรีวิวแถบรูปตามกรอบที่เลือก (แสดง 2 แถบคู่สำหรับแนวตั้ง) */}
           <div className="flex flex-col items-center gap-2">

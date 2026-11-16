@@ -1,0 +1,88 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 1600" width="600" height="1600" fill="none">
+  <defs>
+    <mask id="cutouts-lovemix">
+      <rect width="600" height="1600" fill="white" />
+      <rect x="40" y="60" width="520" height="330" rx="10" fill="black" />
+      <!-- ช่องที่ 2 เป็นรูปหัวใจตรงตำแหน่ง x=40..560, y=410..740 -->
+      <path d="M300 726C300 726 70 598 70 488C70 434 114 410 168 410C222 410 272 440 300 478C328 440 378 410 432 410C486 410 530 434 530 488C530 598 300 726 300 726Z" fill="black" />
+      <rect x="40" y="760" width="520" height="330" rx="10" fill="black" />
+      <rect x="40" y="1110" width="520" height="330" rx="10" fill="black" />
+    </mask>
+  </defs>
+
+  <rect width="600" height="1600" rx="28" fill="#f9d5dd" mask="url(#cutouts-lovemix)" />
+
+  <!-- เส้นขอบช่อง -->
+  <rect x="40" y="60" width="520" height="330" rx="10" stroke="#fff" stroke-width="4" />
+  <path d="M300 726C300 726 70 598 70 488C70 434 114 410 168 410C222 410 272 440 300 478C328 440 378 410 432 410C486 410 530 434 530 488C530 598 300 726 300 726Z" stroke="#fff" stroke-width="5" />
+  <rect x="40" y="760" width="520" height="330" rx="10" stroke="#fff" stroke-width="4" />
+  <rect x="40" y="1110" width="520" height="330" rx="10" stroke="#fff" stroke-width="4" />
+
+  <!-- หัวใจคำว่า L O V E ด้านบน -->
+  <g transform="translate(172 16)">
+    <circle cx="24" cy="20" r="18" fill="#fb7185" stroke="#5c3a2e" stroke-width="2.5" />
+    <text x="24" y="26" text-anchor="middle" fill="#fff" font-size="18" font-weight="bold" font-family="sans-serif">L</text>
+    <circle cx="88" cy="20" r="18" fill="#f43f5e" stroke="#5c3a2e" stroke-width="2.5" />
+    <text x="88" y="26" text-anchor="middle" fill="#fff" font-size="18" font-weight="bold" font-family="sans-serif">O</text>
+    <circle cx="152" cy="20" r="18" fill="#fb7185" stroke="#5c3a2e" stroke-width="2.5" />
+    <text x="152" y="26" text-anchor="middle" fill="#fff" font-size="18" font-weight="bold" font-family="sans-serif">V</text>
+    <circle cx="216" cy="20" r="18" fill="#f43f5e" stroke="#5c3a2e" stroke-width="2.5" />
+    <text x="216" y="26" text-anchor="middle" fill="#fff" font-size="18" font-weight="bold" font-family="sans-serif">E</text>
+  </g>
+
+  <!-- แมวดำ + แมวส้มมุมล่างขวาช่อง 1 -->
+  <g transform="translate(405 330)">
+    <path d="M6 20L12 4L24 14H40L52 4L58 20V46C58 52 50 56 32 56C14 56 6 52 6 46V20Z" fill="#292524" stroke="#1c1917" stroke-width="3" />
+    <circle cx="22" cy="30" r="4" fill="#fef08a" />
+    <circle cx="42" cy="30" r="4" fill="#fef08a" />
+  </g>
+  <g transform="translate(468 330)">
+    <path d="M6 20L12 4L24 14H40L52 4L58 20V46C58 52 50 56 32 56C14 56 6 52 6 46V20Z" fill="#f59e0b" stroke="#5c3a2e" stroke-width="3" />
+    <circle cx="22" cy="30" r="4" fill="#5c3a2e" />
+    <circle cx="42" cy="30" r="4" fill="#5c3a2e" />
+  </g>
+
+  <!-- แมวส้มเกาะมุมบนขวาหัวใจ -->
+  <g transform="translate(485 405) rotate(22)">
+    <path d="M6 20L12 4L24 14H40L52 4L58 20V52C58 58 50 62 32 62C14 62 6 58 6 52V20Z" fill="#f59e0b" stroke="#5c3a2e" stroke-width="3" />
+    <circle cx="22" cy="32" r="4" fill="#5c3a2e" />
+    <circle cx="42" cy="32" r="4" fill="#5c3a2e" />
+  </g>
+
+  <!-- แมวดำเกาะขอบซ้ายหัวใจ -->
+  <g transform="translate(55 620) rotate(-14)">
+    <path d="M6 20L12 4L24 14H40L52 4L58 20V52C58 58 50 62 32 62C14 62 6 58 6 52V20Z" fill="#292524" stroke="#1c1917" stroke-width="3" />
+    <circle cx="22" cy="32" r="4" fill="#fef08a" />
+    <circle cx="42" cy="32" r="4" fill="#fef08a" />
+  </g>
+
+  <!-- จดหมายรักมุมล่างซ้ายช่อง 3 -->
+  <g transform="translate(26 1055) rotate(-10)">
+    <rect x="0" y="0" width="58" height="40" rx="6" fill="#fff" stroke="#5c3a2e" stroke-width="3" />
+    <path d="M4 4L29 22L54 4" stroke="#5c3a2e" stroke-width="3" stroke-linejoin="round" />
+    <circle cx="29" cy="22" r="6" fill="#f43f5e" />
+  </g>
+
+  <!-- ข้อความ i love you + คู่แมวดำ-แมวส้มด้านล่าง -->
+  <text x="300" y="1474" text-anchor="middle" fill="#9d174d" font-size="28" font-style="italic" font-weight="bold" font-family="serif">i love you</text>
+
+  <g transform="translate(185 1485)">
+    <!-- แมวดำ -->
+    <path d="M10 34L18 6L38 22H70L90 6L98 34V92C98 106 80 112 54 112C28 112 10 106 10 92V34Z" fill="#292524" stroke="#1c1917" stroke-width="3.5" />
+    <circle cx="38" cy="52" r="6" fill="#fef08a" />
+    <circle cx="38" cy="52" r="3" fill="#1c1917" />
+    <circle cx="70" cy="52" r="6" fill="#fef08a" />
+    <circle cx="70" cy="52" r="3" fill="#1c1917" />
+    <ellipse cx="26" cy="64" rx="6" ry="3.5" fill="#fb7185" opacity="0.8" />
+    <ellipse cx="82" cy="64" rx="6" ry="3.5" fill="#fb7185" opacity="0.8" />
+    <!-- แมวส้มข้างๆ -->
+    <g transform="translate(115 0)">
+      <path d="M10 34L18 6L38 22H70L90 6L98 34V92C98 106 80 112 54 112C28 112 10 106 10 92V34Z" fill="#f59e0b" stroke="#5c3a2e" stroke-width="3.5" />
+      <ellipse cx="54" cy="74" rx="24" ry="15" fill="#fef3c7" />
+      <circle cx="38" cy="52" r="6" fill="#5c3a2e" />
+      <circle cx="70" cy="52" r="6" fill="#5c3a2e" />
+      <ellipse cx="26" cy="64" rx="6" ry="3.5" fill="#fb7185" opacity="0.7" />
+      <ellipse cx="82" cy="64" rx="6" ry="3.5" fill="#fb7185" opacity="0.7" />
+    </g>
+  </g>
+</svg>

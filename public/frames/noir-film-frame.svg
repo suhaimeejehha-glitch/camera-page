@@ -1,0 +1,88 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 1600" width="600" height="1600" fill="none">
+  <defs>
+    <mask id="cutouts-noir">
+      <rect width="600" height="1600" fill="white" />
+      <rect x="52" y="60" width="496" height="330" rx="6" fill="black" />
+      <rect x="52" y="410" width="496" height="330" rx="6" fill="black" />
+      <rect x="52" y="760" width="496" height="330" rx="6" fill="black" />
+      <rect x="52" y="1110" width="496" height="330" rx="6" fill="black" />
+    </mask>
+  </defs>
+
+  <rect width="600" height="1600" rx="20" fill="#121316" mask="url(#cutouts-noir)" />
+
+  <!-- รูฟิล์ม 35mm ซ้าย-ขวา -->
+  <g fill="#2b2e36" stroke="#3f434e" stroke-width="1">
+    <rect x="14" y="70" width="22" height="34" rx="4" />
+    <rect x="14" y="140" width="22" height="34" rx="4" />
+    <rect x="14" y="210" width="22" height="34" rx="4" />
+    <rect x="14" y="280" width="22" height="34" rx="4" />
+    <rect x="14" y="350" width="22" height="34" rx="4" />
+    <rect x="14" y="420" width="22" height="34" rx="4" />
+    <rect x="14" y="490" width="22" height="34" rx="4" />
+    <rect x="14" y="560" width="22" height="34" rx="4" />
+    <rect x="14" y="630" width="22" height="34" rx="4" />
+    <rect x="14" y="700" width="22" height="34" rx="4" />
+    <rect x="14" y="770" width="22" height="34" rx="4" />
+    <rect x="14" y="840" width="22" height="34" rx="4" />
+    <rect x="14" y="910" width="22" height="34" rx="4" />
+    <rect x="14" y="980" width="22" height="34" rx="4" />
+    <rect x="14" y="1050" width="22" height="34" rx="4" />
+    <rect x="14" y="1120" width="22" height="34" rx="4" />
+    <rect x="14" y="1190" width="22" height="34" rx="4" />
+    <rect x="14" y="1260" width="22" height="34" rx="4" />
+    <rect x="14" y="1330" width="22" height="34" rx="4" />
+    <rect x="14" y="1400" width="22" height="34" rx="4" />
+
+    <rect x="564" y="70" width="22" height="34" rx="4" />
+    <rect x="564" y="140" width="22" height="34" rx="4" />
+    <rect x="564" y="210" width="22" height="34" rx="4" />
+    <rect x="564" y="280" width="22" height="34" rx="4" />
+    <rect x="564" y="350" width="22" height="34" rx="4" />
+    <rect x="564" y="420" width="22" height="34" rx="4" />
+    <rect x="564" y="490" width="22" height="34" rx="4" />
+    <rect x="564" y="560" width="22" height="34" rx="4" />
+    <rect x="564" y="630" width="22" height="34" rx="4" />
+    <rect x="564" y="700" width="22" height="34" rx="4" />
+    <rect x="564" y="770" width="22" height="34" rx="4" />
+    <rect x="564" y="840" width="22" height="34" rx="4" />
+    <rect x="564" y="910" width="22" height="34" rx="4" />
+    <rect x="564" y="980" width="22" height="34" rx="4" />
+    <rect x="564" y="1050" width="22" height="34" rx="4" />
+    <rect x="564" y="1120" width="22" height="34" rx="4" />
+    <rect x="564" y="1190" width="22" height="34" rx="4" />
+    <rect x="564" y="1260" width="22" height="34" rx="4" />
+    <rect x="564" y="1330" width="22" height="34" rx="4" />
+    <rect x="564" y="1400" width="22" height="34" rx="4" />
+  </g>
+
+  <!-- ขอบฟิล์มรอบช่องรูป -->
+  <rect x="52" y="60" width="496" height="330" rx="6" stroke="#3f3f46" stroke-width="2" />
+  <rect x="52" y="410" width="496" height="330" rx="6" stroke="#3f3f46" stroke-width="2" />
+  <rect x="52" y="760" width="496" height="330" rx="6" stroke="#3f3f46" stroke-width="2" />
+  <rect x="52" y="1110" width="496" height="330" rx="6" stroke="#3f3f46" stroke-width="2" />
+
+  <!-- ข้อความขอบฟิล์มด้านบนและเลขเฟรม -->
+  <text x="54" y="42" fill="#f59e0b" font-size="17" font-weight="bold" font-family="monospace">STUDIO TRI-X 400</text>
+  <text x="546" y="42" text-anchor="end" fill="#a1a1aa" font-size="14" font-family="monospace">35MM SAFETY FILM</text>
+
+  <text x="56" y="405" fill="#f59e0b" font-size="12" font-weight="bold" font-family="monospace">▲ 01A</text>
+  <text x="544" y="405" text-anchor="end" fill="#71717a" font-size="12" font-family="monospace">400TX</text>
+
+  <text x="56" y="755" fill="#f59e0b" font-size="12" font-weight="bold" font-family="monospace">▲ 02A</text>
+  <text x="544" y="755" text-anchor="end" fill="#71717a" font-size="12" font-family="monospace">400TX</text>
+
+  <text x="56" y="1105" fill="#f59e0b" font-size="12" font-weight="bold" font-family="monospace">▲ 03A</text>
+  <text x="544" y="1105" text-anchor="end" fill="#71717a" font-size="12" font-family="monospace">400TX</text>
+
+  <text x="56" y="1456" fill="#f59e0b" font-size="12" font-weight="bold" font-family="monospace">▲ 04A</text>
+  <text x="544" y="1456" text-anchor="end" fill="#71717a" font-size="12" font-family="monospace">400TX</text>
+
+  <!-- โซนล่างม้วนฟิล์ม -->
+  <line x1="52" y1="1474" x2="548" y2="1474" stroke="#27272a" stroke-width="2" />
+  <text x="52" y="1526" fill="#f8fafc" font-size="34" font-weight="900" letter-spacing="4" font-family="sans-serif">NOIR 400</text>
+  <text x="52" y="1556" fill="#a1a1aa" font-size="14" letter-spacing="2" font-family="monospace">MONOCHROME ANALOG EDITION</text>
+
+  <rect x="434" y="1498" width="114" height="52" rx="8" fill="#f59e0b" fill-opacity="0.12" stroke="#f59e0b" stroke-width="2.5" />
+  <text x="491" y="1531" text-anchor="middle" fill="#f59e0b" font-size="20" font-weight="900" font-family="monospace">ISO 400</text>
+</svg>

@@ -1,0 +1,61 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 1600" width="600" height="1600" fill="none">
+  <defs>
+    <mask id="cutouts-cyber">
+      <rect width="600" height="1600" fill="white" />
+      <rect x="40" y="60" width="520" height="330" rx="4" fill="black" />
+      <rect x="40" y="410" width="520" height="330" rx="4" fill="black" />
+      <rect x="40" y="760" width="520" height="330" rx="4" fill="black" />
+      <rect x="40" y="1110" width="520" height="330" rx="4" fill="black" />
+    </mask>
+  </defs>
+
+  <rect width="600" height="1600" rx="16" fill="#151821" mask="url(#cutouts-cyber)" />
+
+  <!-- เส้น Grid ไซเบอร์ -->
+  <line x1="0" y1="48" x2="600" y2="48" stroke="#22d3ee" stroke-width="1.5" stroke-opacity="0.4" />
+  <line x1="0" y1="1464" x2="600" y2="1464" stroke="#22d3ee" stroke-width="1.5" stroke-opacity="0.4" />
+
+  <!-- กรอบ HUD 4 มุมทุกช่อง -->
+  <g stroke="#22d3ee" stroke-width="3.5" stroke-linecap="square">
+    <path d="M40 94V60H74M526 60H560V94M40 356V390H74M526 390H560V356" />
+    <path d="M40 444V410H74M526 410H560V444M40 706V740H74M526 740H560V706" />
+    <path d="M40 794V760H74M526 760H560V794M40 1056V1090H74M526 1090H560V1056" />
+    <path d="M40 1144V1110H74M526 1110H560V1144M40 1406V1440H74M526 1440H560V1406" />
+  </g>
+
+  <!-- เส้นประบางๆ เชื่อมช่อง -->
+  <rect x="40" y="60" width="520" height="330" stroke="#22d3ee" stroke-opacity="0.2" stroke-width="1.5" />
+  <rect x="40" y="410" width="520" height="330" stroke="#22d3ee" stroke-opacity="0.2" stroke-width="1.5" />
+  <rect x="40" y="760" width="520" height="330" stroke="#22d3ee" stroke-opacity="0.2" stroke-width="1.5" />
+  <rect x="40" y="1110" width="520" height="330" stroke="#22d3ee" stroke-opacity="0.2" stroke-width="1.5" />
+
+  <!-- จุดแดง REC + แบตเตอรี่ด้านบน -->
+  <circle cx="52" cy="28" r="7" fill="#ef4444" />
+  <text x="68" y="34" fill="#f8fafc" font-size="16" font-weight="bold" font-family="monospace">REC // CAM-01</text>
+
+  <text x="470" y="34" text-anchor="end" fill="#22d3ee" font-size="14" font-family="monospace">AF-C 60FPS</text>
+  <rect x="488" y="18" width="56" height="20" rx="3" stroke="#22d3ee" stroke-width="2" />
+  <rect x="492" y="22" width="40" height="12" rx="1" fill="#22d3ee" />
+  <rect x="546" y="23" width="4" height="10" fill="#22d3ee" />
+
+  <!-- ป้ายเลขเซนเซอร์ระหว่างช่อง -->
+  <text x="44" y="404" fill="#22d3ee" font-size="11" font-family="monospace">FRAME_01 // LOCKED</text>
+  <text x="44" y="754" fill="#22d3ee" font-size="11" font-family="monospace">FRAME_02 // LOCKED</text>
+  <text x="44" y="1104" fill="#22d3ee" font-size="11" font-family="monospace">FRAME_03 // LOCKED</text>
+  <text x="44" y="1455" fill="#22d3ee" font-size="11" font-family="monospace">FRAME_04 // LOCKED</text>
+
+  <!-- โซนล่าง HUD -->
+  <text x="40" y="1504" fill="#22d3ee" font-size="15" font-weight="bold" font-family="monospace">SYS_STATUS: CAPTURED_OK</text>
+  <text x="40" y="1552" fill="#f8fafc" font-size="34" font-weight="900" letter-spacing="4" font-family="monospace">CYBER HUD</text>
+
+  <!-- กราฟแท่งเล็กๆ + เลข 004 -->
+  <g fill="#22d3ee" opacity="0.8">
+    <rect x="370" y="1528" width="6" height="24" />
+    <rect x="382" y="1516" width="6" height="36" />
+    <rect x="394" y="1522" width="6" height="30" />
+    <rect x="406" y="1508" width="6" height="44" />
+    <rect x="418" y="1520" width="6" height="32" />
+  </g>
+  <rect x="444" y="1494" width="116" height="60" rx="8" fill="#22d3ee" fill-opacity="0.1" stroke="#22d3ee" stroke-width="2" />
+  <text x="502" y="1532" text-anchor="middle" fill="#22d3ee" font-size="22" font-weight="bold" font-family="monospace">004</text>
+</svg>

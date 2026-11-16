@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 1600" width="600" height="1600" fill="none">
+  <defs>
+    <mask id="cutouts-xmas">
+      <rect width="600" height="1600" fill="white" />
+      <rect x="40" y="60" width="520" height="330" rx="14" fill="black" />
+      <rect x="40" y="410" width="520" height="330" rx="14" fill="black" />
+      <rect x="40" y="760" width="520" height="330" rx="14" fill="black" />
+      <rect x="40" y="1110" width="520" height="330" rx="14" fill="black" />
+    </mask>
+  </defs>
+
+  <rect width="600" height="1600" rx="24" fill="#143326" mask="url(#cutouts-xmas)" />
+
+  <!-- ขอบแดง-ทองเทศกาลคริสต์มาส -->
+  <rect x="14" y="14" width="572" height="1572" rx="18" stroke="#ef4444" stroke-width="5" stroke-dasharray="18 12" />
+  <rect x="40" y="60" width="520" height="330" rx="14" stroke="#fca5a5" stroke-width="3" />
+  <rect x="40" y="410" width="520" height="330" rx="14" stroke="#fde047" stroke-width="3" />
+  <rect x="40" y="760" width="520" height="330" rx="14" stroke="#fca5a5" stroke-width="3" />
+  <rect x="40" y="1110" width="520" height="330" rx="14" stroke="#fde047" stroke-width="3" />
+
+  <!-- เกล็ดหิมะ & ลูกเบอร์รีฮอลลี -->
+  <circle cx="64" cy="34" r="6" fill="#ef4444" />
+  <circle cx="78" cy="34" r="6" fill="#ef4444" />
+  <circle cx="71" cy="24" r="6" fill="#ef4444" />
+  <text x="300" y="42" text-anchor="middle" fill="#fde047" font-size="18" font-weight="bold" letter-spacing="4" font-family="sans-serif">❄ HOLLY JOLLY ❄</text>
+  <circle cx="522" cy="34" r="6" fill="#ef4444" />
+  <circle cx="536" cy="34" r="6" fill="#ef4444" />
+  <circle cx="529" cy="24" r="6" fill="#ef4444" />
+
+  <circle cx="20" cy="240" r="5" fill="#ffffff" fill-opacity="0.7" />
+  <circle cx="580" cy="540" r="5" fill="#fde047" fill-opacity="0.8" />
+  <circle cx="20" cy="920" r="5" fill="#ffffff" fill-opacity="0.7" />
+  <circle cx="580" cy="1260" r="5" fill="#ef4444" fill-opacity="0.85" />
+
+  <!-- ต้นคริสต์มาสน้อยด้านล่าง -->
+  <path d="M90 1474L114 1506H66L90 1474Z" fill="#22c55e" />
+  <path d="M90 1494L120 1532H60L90 1494Z" fill="#16a34a" />
+  <rect x="84" y="1532" width="12" height="14" fill="#92400e" />
+  <circle cx="90" cy="1470" r="5" fill="#fde047" />
+
+  <text x="335" y="1518" text-anchor="middle" fill="#ffffff" font-size="34" font-weight="900" letter-spacing="3" font-family="sans-serif">MERRY XMAS</text>
+  <text x="335" y="1550" text-anchor="middle" fill="#fca5a5" font-size="14" font-weight="bold" letter-spacing="4" font-family="monospace">WINTER WISHES ❄</text>
+</svg>

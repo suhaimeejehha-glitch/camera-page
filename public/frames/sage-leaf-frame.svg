@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 1600" width="600" height="1600" fill="none">
+  <defs>
+    <mask id="cutouts-sage-leaf">
+      <rect width="600" height="1600" fill="white" />
+      <rect x="40" y="60" width="520" height="330" rx="10" fill="black" />
+      <rect x="40" y="410" width="520" height="330" rx="10" fill="black" />
+      <rect x="40" y="760" width="520" height="330" rx="10" fill="black" />
+      <rect x="40" y="1110" width="520" height="330" rx="10" fill="black" />
+    </mask>
+  </defs>
+
+  <rect width="600" height="1600" rx="18" fill="#e8f0eb" mask="url(#cutouts-sage-leaf)" />
+
+  <rect x="18" y="18" width="564" height="1564" rx="14" stroke="#84a98c" stroke-opacity="0.55" stroke-width="2" />
+
+  <!-- ลายใบไม้มินิมอลมุมบนซ้ายและขวาล่าง -->
+  <path d="M40 44C46 28 62 20 78 24C70 38 56 46 40 44Z" fill="#65a30d" fill-opacity="0.55" />
+  <path d="M74 44C82 32 96 28 108 34C98 44 86 48 74 44Z" fill="#4d7c0f" fill-opacity="0.45" />
+  <path d="M560 44C554 28 538 20 522 24C530 38 544 46 560 44Z" fill="#65a30d" fill-opacity="0.55" />
+
+  <rect x="40" y="60" width="520" height="330" rx="10" stroke="#84a98c" stroke-width="2" />
+  <rect x="40" y="410" width="520" height="330" rx="10" stroke="#84a98c" stroke-width="2" />
+  <rect x="40" y="760" width="520" height="330" rx="10" stroke="#84a98c" stroke-width="2" />
+  <rect x="40" y="1110" width="520" height="330" rx="10" stroke="#84a98c" stroke-width="2" />
+
+  <!-- กิ่งใบไม้ด้านล่าง -->
+  <path d="M220 1478H380" stroke="#84a98c" stroke-width="1.5" />
+  <circle cx="300" cy="1478" r="4" fill="#4d7c0f" />
+
+  <text x="300" y="1518" text-anchor="middle" fill="#365314" font-size="28" font-weight="600" letter-spacing="8" font-family="sans-serif">SAGE SOFT</text>
+  <text x="300" y="1548" text-anchor="middle" fill="#4d7c0f" font-size="13" letter-spacing="4" font-family="monospace">NATURAL BOTANICAL</text>
+</svg>

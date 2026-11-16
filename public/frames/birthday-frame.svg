@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 1600" width="600" height="1600" fill="none">
+  <defs>
+    <mask id="cutouts-bday">
+      <rect width="600" height="1600" fill="white" />
+      <rect x="40" y="60" width="520" height="330" rx="12" fill="black" />
+      <rect x="40" y="410" width="520" height="330" rx="12" fill="black" />
+      <rect x="40" y="760" width="520" height="330" rx="12" fill="black" />
+      <rect x="40" y="1110" width="520" height="330" rx="12" fill="black" />
+    </mask>
+  </defs>
+
+  <rect width="600" height="1600" rx="24" fill="#1e1b4b" mask="url(#cutouts-bday)" />
+
+  <rect x="40" y="60" width="520" height="330" rx="12" stroke="#fde047" stroke-width="3" />
+  <rect x="40" y="410" width="520" height="330" rx="12" stroke="#f472b6" stroke-width="3" />
+  <rect x="40" y="760" width="520" height="330" rx="12" stroke="#38bdf8" stroke-width="3" />
+  <rect x="40" y="1110" width="520" height="330" rx="12" stroke="#fde047" stroke-width="3" />
+
+  <!-- ธงราวปาร์ตี้ด้านบน -->
+  <path d="M40 12L72 44L104 12Z" fill="#fde047" />
+  <path d="M116 12L148 44L180 12Z" fill="#f472b6" />
+  <path d="M192 12L224 44L256 12Z" fill="#38bdf8" />
+  <path d="M344 12L376 44L408 12Z" fill="#38bdf8" />
+  <path d="M420 12L452 44L484 12Z" fill="#f472b6" />
+  <path d="M496 12L528 44L560 12Z" fill="#fde047" />
+
+  <!-- คอนเฟตติโปรยรอบๆ -->
+  <circle cx="20" cy="240" r="6" fill="#fde047" />
+  <circle cx="580" cy="310" r="6" fill="#f472b6" />
+  <circle cx="22" cy="640" r="6" fill="#38bdf8" />
+  <circle cx="578" cy="890" r="6" fill="#fde047" />
+  <circle cx="20" cy="1260" r="6" fill="#f472b6" />
+
+  <!-- เค้กวันเกิดและข้อความด้านล่าง -->
+  <g transform="translate(60 1470)">
+    <rect x="0" y="28" width="64" height="36" rx="8" fill="#f472b6" stroke="#fff" stroke-width="3" />
+    <path d="M0 36C10 44 22 44 32 36C42 44 54 44 64 36" stroke="#fff" stroke-width="3" />
+    <rect x="28" y="10" width="8" height="18" rx="2" fill="#38bdf8" />
+    <path d="M32 0C36 4 36 9 32 10C28 9 28 4 32 0Z" fill="#fde047" />
+  </g>
+
+  <text x="345" y="1518" text-anchor="middle" fill="#fde047" font-size="34" font-weight="900" letter-spacing="2" font-family="sans-serif">HAPPY B-DAY!</text>
+  <text x="345" y="1552" text-anchor="middle" fill="#c7d2fe" font-size="14" font-weight="bold" letter-spacing="3" font-family="monospace">SPECIAL PARTY EDITION</text>
+</svg>

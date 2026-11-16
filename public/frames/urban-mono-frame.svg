@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 1600" width="600" height="1600" fill="none">
+  <defs>
+    <mask id="cutouts-mono">
+      <rect width="600" height="1600" fill="white" />
+      <rect x="40" y="60" width="520" height="330" rx="2" fill="black" />
+      <rect x="40" y="410" width="520" height="330" rx="2" fill="black" />
+      <rect x="40" y="760" width="520" height="330" rx="2" fill="black" />
+      <rect x="40" y="1110" width="520" height="330" rx="2" fill="black" />
+    </mask>
+  </defs>
+
+  <rect width="600" height="1600" rx="14" fill="#e4e4e7" mask="url(#cutouts-mono)" />
+
+  <rect x="40" y="60" width="520" height="330" stroke="#18181b" stroke-width="3" />
+  <rect x="40" y="410" width="520" height="330" stroke="#18181b" stroke-width="3" />
+  <rect x="40" y="760" width="520" height="330" stroke="#18181b" stroke-width="3" />
+  <rect x="40" y="1110" width="520" height="330" stroke="#18181b" stroke-width="3" />
+
+  <text x="40" y="40" fill="#18181b" font-size="16" font-weight="900" letter-spacing="3" font-family="sans-serif">ARCHIVE // 04</text>
+  <text x="560" y="40" text-anchor="end" fill="#52525b" font-size="14" font-weight="bold" font-family="monospace">RAW MONO</text>
+
+  <!-- บาร์โค้ดด้านล่างขวา -->
+  <g fill="#18181b" transform="translate(410 1485)">
+    <rect x="0" y="0" width="6" height="58" />
+    <rect x="10" y="0" width="2" height="58" />
+    <rect x="16" y="0" width="8" height="58" />
+    <rect x="28" y="0" width="3" height="58" />
+    <rect x="36" y="0" width="6" height="58" />
+    <rect x="46" y="0" width="2" height="58" />
+    <rect x="54" y="0" width="10" height="58" />
+    <rect x="68" y="0" width="4" height="58" />
+    <rect x="76" y="0" width="6" height="58" />
+    <rect x="86" y="0" width="3" height="58" />
+    <rect x="94" y="0" width="8" height="58" />
+    <rect x="106" y="0" width="4" height="58" />
+    <rect x="114" y="0" width="8" height="58" />
+    <rect x="128" y="0" width="6" height="58" />
+    <rect x="140" y="0" width="10" height="58" />
+  </g>
+
+  <text x="40" y="1518" fill="#18181b" font-size="34" font-weight="900" letter-spacing="2" font-family="sans-serif">URBAN MONO</text>
+  <text x="40" y="1552" fill="#52525b" font-size="15" font-weight="bold" font-family="monospace">MINIMAL GALLERY EDITION</text>
+</svg>

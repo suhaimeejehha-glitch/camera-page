@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 1600" width="600" height="1600" fill="none">
+  <defs>
+    <mask id="cutouts-hearts">
+      <rect width="600" height="1600" fill="white" />
+      <path d="M300 378C300 378 70 250 70 140C70 86 114 60 168 60C222 60 272 90 300 128C328 90 378 60 432 60C486 60 530 86 530 140C530 250 300 378 300 378Z" fill="black" />
+      <path d="M300 728C300 728 70 600 70 490C70 436 114 410 168 410C222 410 272 440 300 478C328 440 378 410 432 410C486 410 530 436 530 490C530 600 300 728 300 728Z" fill="black" />
+      <path d="M300 1078C300 1078 70 950 70 840C70 786 114 760 168 760C222 760 272 790 300 828C328 790 378 760 432 760C486 760 530 786 530 840C530 950 300 1078 300 1078Z" fill="black" />
+      <path d="M300 1428C300 1428 70 1300 70 1190C70 1136 114 1110 168 1110C222 1110 272 1140 300 1178C328 1140 378 1110 432 1110C486 1110 530 1136 530 1190C530 1300 300 1428 300 1428Z" fill="black" />
+    </mask>
+  </defs>
+
+  <rect width="600" height="1600" rx="28" fill="#f7ccd4" mask="url(#cutouts-hearts)" />
+
+  <!-- ขอบหัวใจทั้ง 4 ช่อง -->
+  <path d="M300 378C300 378 70 250 70 140C70 86 114 60 168 60C222 60 272 90 300 128C328 90 378 60 432 60C486 60 530 86 530 140C530 250 300 378 300 378Z" stroke="#fff" stroke-width="5" />
+  <path d="M300 728C300 728 70 600 70 490C70 436 114 410 168 410C222 410 272 440 300 478C328 440 378 410 432 410C486 410 530 436 530 490C530 600 300 728 300 728Z" stroke="#fff" stroke-width="5" />
+  <path d="M300 1078C300 1078 70 950 70 840C70 786 114 760 168 760C222 760 272 790 300 828C328 790 378 760 432 760C486 760 530 786 530 840C530 950 300 1078 300 1078Z" stroke="#fff" stroke-width="5" />
+  <path d="M300 1428C300 1428 70 1300 70 1190C70 1136 114 1110 168 1110C222 1110 272 1140 300 1178C328 1140 378 1110 432 1110C486 1110 530 1136 530 1190C530 1300 300 1428 300 1428Z" stroke="#fff" stroke-width="5" />
+
+  <!-- หัวใจเล็กโปรยรอบๆ กรอบ -->
+  <path d="M46 378C46 373 54 371 56 376C58 371 66 373 66 378C66 385 56 390 56 390C56 390 46 385 46 378Z" fill="#e11d48" />
+  <path d="M530 410C530 405 538 403 540 408C542 403 550 405 550 410C550 417 540 422 540 422C540 422 530 417 530 410Z" fill="#e11d48" />
+  <path d="M46 735C46 730 54 728 56 733C58 728 66 730 66 735C66 742 56 747 56 747C56 747 46 742 46 735Z" fill="#f43f5e" />
+  <path d="M536 1085C536 1080 544 1078 546 1083C548 1078 556 1080 556 1085C556 1092 546 1097 546 1097C546 1097 536 1092 536 1085Z" fill="#e11d48" />
+
+  <!-- ข้อความ i love you + คู่แมวถือหัวใจด้านล่าง -->
+  <text x="300" y="1468" text-anchor="middle" fill="#881337" font-size="26" font-style="italic" font-weight="bold" font-family="serif">i love you</text>
+
+  <g transform="translate(155 1482)">
+    <!-- แมวดำถือหัวใจ love -->
+    <path d="M12 34L20 6L40 22H78L98 6L106 34V94C106 108 86 116 59 116C32 116 12 108 12 94V34Z" fill="#292524" stroke="#1c1917" stroke-width="3.5" />
+    <circle cx="42" cy="50" r="6" fill="#fef08a" />
+    <circle cx="42" cy="50" r="3" fill="#1c1917" />
+    <circle cx="76" cy="50" r="6" fill="#fef08a" />
+    <circle cx="76" cy="50" r="3" fill="#1c1917" />
+    <path d="M38 78C38 69 51 67 59 75C67 67 80 69 80 78C80 90 59 102 59 102C59 102 38 90 38 78Z" fill="#e11d48" stroke="#fff" stroke-width="2" />
+    <text x="59" y="88" text-anchor="middle" fill="#fff" font-size="11" font-weight="bold" font-family="sans-serif">love</text>
+
+    <!-- แมวส้มถือหัวใจ you -->
+    <g transform="translate(165 0)">
+      <path d="M12 34L20 6L40 22H78L98 6L106 34V94C106 108 86 116 59 116C32 116 12 108 12 94V34Z" fill="#f59e0b" stroke="#5c3a2e" stroke-width="3.5" />
+      <circle cx="42" cy="50" r="6" fill="#5c3a2e" />
+      <circle cx="76" cy="50" r="6" fill="#5c3a2e" />
+      <path d="M38 78C38 69 51 67 59 75C67 67 80 69 80 78C80 90 59 102 59 102C59 102 38 90 38 78Z" fill="#e11d48" stroke="#fff" stroke-width="2" />
+      <text x="59" y="88" text-anchor="middle" fill="#fff" font-size="11" font-weight="bold" font-family="sans-serif">you</text>
+    </g>
+  </g>
+</svg>

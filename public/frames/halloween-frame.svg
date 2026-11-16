@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 1600" width="600" height="1600" fill="none">
+  <defs>
+    <mask id="cutouts-halloween">
+      <rect width="600" height="1600" fill="white" />
+      <rect x="40" y="60" width="520" height="330" rx="14" fill="black" />
+      <rect x="40" y="410" width="520" height="330" rx="14" fill="black" />
+      <rect x="40" y="760" width="520" height="330" rx="14" fill="black" />
+      <rect x="40" y="1110" width="520" height="330" rx="14" fill="black" />
+    </mask>
+  </defs>
+
+  <rect width="600" height="1600" rx="24" fill="#241435" mask="url(#cutouts-halloween)" />
+
+  <rect x="14" y="14" width="572" height="1572" rx="18" stroke="#fb923c" stroke-opacity="0.5" stroke-width="3" />
+  <rect x="40" y="60" width="520" height="330" rx="14" stroke="#fb923c" stroke-width="3" />
+  <rect x="40" y="410" width="520" height="330" rx="14" stroke="#c084fc" stroke-width="3" />
+  <rect x="40" y="760" width="520" height="330" rx="14" stroke="#fb923c" stroke-width="3" />
+  <rect x="40" y="1110" width="520" height="330" rx="14" stroke="#c084fc" stroke-width="3" />
+
+  <!-- ค้างคาว & พระจันทร์เสี้ยวด้านบน -->
+  <path d="M56 32C64 22 72 22 78 30C84 22 92 22 100 32C91 31 85 34 78 40C71 34 65 31 56 32Z" fill="#fb923c" />
+  <text x="300" y="40" text-anchor="middle" fill="#e9d5ff" font-size="16" font-weight="900" letter-spacing="4" font-family="monospace">TRICK OR TREAT</text>
+  <path d="M500 32C508 22 516 22 522 30C528 22 536 22 544 32C535 31 529 34 522 40C515 34 509 31 500 32Z" fill="#fb923c" />
+
+  <!-- ฟักทองฮาโลวีนด้านล่าง -->
+  <g transform="translate(66 1482)">
+    <rect x="24" y="0" width="8" height="12" rx="2" fill="#4ade80" />
+    <ellipse cx="28" cy="34" rx="26" ry="22" fill="#f97316" />
+    <polygon points="16,28 22,28 19,22" fill="#241435" />
+    <polygon points="34,28 40,28 37,22" fill="#241435" />
+    <path d="M16 40Q28 48 40 40" stroke="#241435" stroke-width="3" stroke-linecap="round" />
+  </g>
+
+  <text x="340" y="1518" text-anchor="middle" fill="#fb923c" font-size="34" font-weight="900" letter-spacing="3" font-family="sans-serif">SPOOKY BOO</text>
+  <text x="340" y="1552" text-anchor="middle" fill="#d8b4fe" font-size="14" font-weight="bold" letter-spacing="4" font-family="monospace">HALLOWEEN NIGHT ☾</text>
+</svg>

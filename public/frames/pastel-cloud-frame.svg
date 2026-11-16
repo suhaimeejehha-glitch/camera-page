@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 1600" width="600" height="1600" fill="none">
+  <defs>
+    <mask id="cutouts-pastel-cloud">
+      <rect width="600" height="1600" fill="white" />
+      <rect x="40" y="60" width="520" height="330" rx="18" fill="black" />
+      <rect x="40" y="410" width="520" height="330" rx="18" fill="black" />
+      <rect x="40" y="760" width="520" height="330" rx="18" fill="black" />
+      <rect x="40" y="1110" width="520" height="330" rx="18" fill="black" />
+    </mask>
+    <linearGradient id="bg-pastel-cloud" x1="0" y1="0" x2="600" y2="1600" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#ede9fe" />
+      <stop offset="50%" stop-color="#f5d0fe" />
+      <stop offset="100%" stop-color="#dbeafe" />
+    </linearGradient>
+  </defs>
+
+  <rect width="600" height="1600" rx="28" fill="url(#bg-pastel-cloud)" mask="url(#cutouts-pastel-cloud)" />
+
+  <rect x="40" y="60" width="520" height="330" rx="18" stroke="#a78bfa" stroke-width="4" />
+  <rect x="40" y="410" width="520" height="330" rx="18" stroke="#f472b6" stroke-width="4" />
+  <rect x="40" y="760" width="520" height="330" rx="18" stroke="#60a5fa" stroke-width="4" />
+  <rect x="40" y="1110" width="520" height="330" rx="18" stroke="#a78bfa" stroke-width="4" />
+
+  <!-- ก้อนเมฆน่ารักด้านบน -->
+  <path d="M55 44H145C154 44 160 37 160 29C160 21 153 15 144 16C141 7 132 2 122 4C116 -1 103 0 97 8C89 6 80 11 78 19C68 18 58 24 55 34C50 35 48 44 55 44Z" fill="#ffffff" fill-opacity="0.92" />
+  <path d="M445 46H545C553 46 558 39 558 32C558 24 550 18 542 19C539 10 529 5 519 8C512 2 499 4 493 12C485 10 476 15 473 23C463 22 453 28 450 37C443 38 440 46 445 46Z" fill="#ffffff" fill-opacity="0.92" />
+
+  <!-- ดาววิ้งและพระจันทร์เสี้ยวด้านข้าง -->
+  <path d="M22 220L26 230L36 234L26 238L22 248L18 238L8 234L18 230Z" fill="#7c3aed" fill-opacity="0.65" />
+  <path d="M578 570L582 580L592 584L582 588L578 598L574 588L564 584L574 580Z" fill="#ec4899" fill-opacity="0.65" />
+  <path d="M22 930L26 940L36 944L26 948L22 958L18 948L8 944L18 940Z" fill="#3b82f6" fill-opacity="0.65" />
+  <circle cx="578" cy="1270" r="6" fill="#ffffff" />
+  <circle cx="22" cy="560" r="5" fill="#ffffff" />
+
+  <!-- ก้อนเมฆล่าง + ข้อความ -->
+  <path d="M44 1556H150C160 1556 167 1548 167 1538C167 1528 158 1521 148 1522C144 1510 132 1504 120 1507C112 1499 96 1501 89 1511C79 1509 68 1515 64 1525C52 1524 41 1532 39 1543C33 1545 34 1556 44 1556Z" fill="#ffffff" fill-opacity="0.92" />
+  <text x="355" y="1520" text-anchor="middle" fill="#6d28d9" font-size="32" font-weight="900" letter-spacing="3" font-family="sans-serif">PASTEL CLOUD</text>
+  <text x="355" y="1552" text-anchor="middle" fill="#9333ea" font-size="14" font-weight="bold" letter-spacing="4" font-family="monospace">DREAMY DAY ☁ ♡</text>
+</svg>

@@ -1,0 +1,74 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 1600" width="600" height="1600" fill="none">
+  <defs>
+    <mask id="cutouts-cute">
+      <rect width="600" height="1600" fill="white" />
+      <rect x="40" y="60" width="520" height="330" rx="10" fill="black" />
+      <rect x="40" y="410" width="520" height="330" rx="10" fill="black" />
+      <rect x="40" y="760" width="520" height="330" rx="10" fill="black" />
+      <rect x="40" y="1110" width="520" height="330" rx="10" fill="black" />
+    </mask>
+  </defs>
+
+  <rect width="600" height="1600" rx="28" fill="#f8d4dc" mask="url(#cutouts-cute)" />
+
+  <rect x="40" y="60" width="520" height="330" rx="10" stroke="#fff" stroke-width="4" />
+  <rect x="40" y="410" width="520" height="330" rx="10" stroke="#fff" stroke-width="4" />
+  <rect x="40" y="760" width="520" height="330" rx="10" stroke="#fff" stroke-width="4" />
+  <rect x="40" y="1110" width="520" height="330" rx="10" stroke="#fff" stroke-width="4" />
+
+  <!-- หัวใจเล็กๆ ด้านบนขวา -->
+  <path d="M518 42C518 35 529 33 532 40C535 33 546 35 546 42C546 51 532 58 532 58C532 58 518 51 518 42Z" fill="#e11d48" stroke="#5c3a2e" stroke-width="2.5" />
+  <path d="M548 56C548 51 556 49 558 54C560 49 568 51 568 56C568 62 558 67 558 67C558 67 548 62 548 56Z" fill="#fb7185" stroke="#5c3a2e" stroke-width="2" />
+
+  <!-- โบว์สีชมพูขอบซ้าย -->
+  <g transform="translate(18 370) rotate(-10)">
+    <path d="M4 12C4 4 16 2 30 18L36 24L30 30C16 46 4 44 4 36V12Z" fill="#f472b6" stroke="#5c3a2e" stroke-width="3" />
+    <path d="M68 12C68 4 56 2 42 18L36 24L42 30C56 46 68 44 68 36V12Z" fill="#f472b6" stroke="#5c3a2e" stroke-width="3" />
+    <circle cx="36" cy="24" r="8" fill="#ec4899" stroke="#5c3a2e" stroke-width="3" />
+  </g>
+
+  <!-- แมวดำแอบดูขอบขวาช่อง 1 -->
+  <g transform="translate(445 340)">
+    <path d="M8 22L14 4L28 16H46L60 4L66 22V50C66 56 58 60 37 60C16 60 8 56 8 50V22Z" fill="#292524" stroke="#1c1917" stroke-width="3" stroke-linejoin="round" />
+    <circle cx="26" cy="32" r="5" fill="#fef08a" />
+    <circle cx="26" cy="32" r="2.5" fill="#1c1917" />
+    <circle cx="48" cy="32" r="5" fill="#fef08a" />
+    <circle cx="48" cy="32" r="2.5" fill="#1c1917" />
+    <ellipse cx="18" cy="40" rx="5" ry="3" fill="#fb7185" opacity="0.7" />
+    <ellipse cx="56" cy="40" rx="5" ry="3" fill="#fb7185" opacity="0.7" />
+  </g>
+
+  <!-- ข้อความ hugs & kisses คั่นช่อง 2-3 -->
+  <rect x="44" y="734" width="210" height="32" rx="16" fill="#fff0f3" />
+  <text x="149" y="756" text-anchor="middle" fill="#e11d48" font-size="18" font-style="italic" font-weight="bold" font-family="serif">hugs &amp; kisses</text>
+
+  <!-- ช่อดอกทิวลิปขอบขวา -->
+  <g transform="translate(500 715) rotate(12)">
+    <line x1="28" y1="45" x2="22" y2="95" stroke="#15803d" stroke-width="4" stroke-linecap="round" />
+    <line x1="38" y1="48" x2="26" y2="95" stroke="#16a34a" stroke-width="4" stroke-linecap="round" />
+    <path d="M16 26C16 14 26 10 30 22C34 10 44 14 44 26C44 38 36 44 30 44C24 44 16 38 16 26Z" fill="#f43f5e" stroke="#5c3a2e" stroke-width="2.5" />
+    <path d="M32 34C32 24 40 20 44 30C48 20 56 24 56 34C56 44 50 48 44 48C38 48 32 44 32 34Z" fill="#fb7185" stroke="#5c3a2e" stroke-width="2.5" />
+  </g>
+
+  <!-- น้องแมวดำใส่โบว์ใหญ่ด้านล่างซ้าย -->
+  <g transform="translate(46 1390)">
+    <path d="M16 42L24 8L48 28H92L116 8L124 42V116C124 134 104 148 70 148C36 148 16 134 16 116V42Z" fill="#292524" stroke="#1c1917" stroke-width="4" stroke-linejoin="round" />
+    <circle cx="46" cy="64" r="10" fill="#fef08a" />
+    <circle cx="48" cy="64" r="5" fill="#1c1917" />
+    <circle cx="94" cy="64" r="10" fill="#fef08a" />
+    <circle cx="92" cy="64" r="5" fill="#1c1917" />
+    <ellipse cx="32" cy="78" rx="8" ry="4" fill="#fb7185" opacity="0.8" />
+    <ellipse cx="108" cy="78" rx="8" ry="4" fill="#fb7185" opacity="0.8" />
+    <!-- โบว์ชมพูที่คอ -->
+    <path d="M34 102C34 92 48 90 66 108L70 112L66 116C48 134 34 132 34 122V102Z" fill="#f472b6" stroke="#1c1917" stroke-width="3" />
+    <path d="M106 102C106 92 92 90 74 108L70 112L74 116C92 134 106 132 106 122V102Z" fill="#f472b6" stroke="#1c1917" stroke-width="3" />
+    <circle cx="70" cy="112" r="9" fill="#ec4899" stroke="#1c1917" stroke-width="3" />
+  </g>
+
+  <!-- คำว่า CUTE & i love you -->
+  <text x="380" y="1485" text-anchor="middle" fill="#f472b6" stroke="#5c3a2e" stroke-width="6" paint-order="stroke" font-size="44" font-weight="900" font-family="sans-serif">CUTE</text>
+  <text x="380" y="1522" text-anchor="middle" fill="#9d174d" font-size="22" font-style="italic" font-weight="bold" font-family="serif">i love you</text>
+
+  <rect x="424" y="1540" width="132" height="30" rx="15" fill="#d9777f" opacity="0.85" />
+  <text x="490" y="1560" text-anchor="middle" fill="#fff" font-size="14" font-weight="bold" font-family="sans-serif">photobooth</text>
+</svg>

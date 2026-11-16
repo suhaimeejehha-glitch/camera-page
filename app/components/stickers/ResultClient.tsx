@@ -17,9 +17,11 @@ import { STICKERS } from "@/lib/stickers";
 import { renderPhotoboothStrip, renderPrintSheet } from "@/lib/canvasRenderer";
 import { clearMotionFrames, loadMotionFrames } from "@/lib/mediaStore";
 import { createAnimatedGifBlob } from "@/lib/gifBuilder";
+import { PHOTO_TONES, type PhotoTone } from "@/lib/filters";
 import type { PhotoShot, PlacedSticker, StickerItem } from "@/types/photobooth";
 
 const STORAGE_KEY = "photobooth_photos";
+const ALL_PHOTOS_KEY = "photobooth_all_photos";
 
 function clamp(value: number, min: number, max: number) {
   return Math.min(max, Math.max(min, value));
@@ -47,11 +49,13 @@ export function ResultClient() {
     [frameIdParam, shots, orientation]
   );
 
+  const [allPhotos, setAllPhotos] = useState<PhotoShot[]>([]);
   const [photos, setPhotos] = useState<PhotoShot[]>([]);
+  const [activeSlotIndex, setActiveSlotIndex] = useState<number>(0);
+  const [selectedToneId, setSelectedToneId] = useState<string>("normal");
+
   const [placedStickers, setPlacedStickers] = useState<PlacedSticker[]>([]);
-  const [selectedStickerId, setSelectedStickerId] = useState<string | null>(
-    null
-  );
+  const [selectedStickerId, setSelectedStickerId] = useState<string | null>(null);
 
   const [driveQr, setDriveQr] = useState<DriveQrState | null>(null);
   const [isDriveReady, setIsDriveReady] = useState(false);
@@ -67,16 +71,50 @@ export function ResultClient() {
   const printTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const folderIdRef = useRef<string | null>(null);
 
+  const activeTone = useMemo<PhotoTone>(
+    () => PHOTO_TONES.find((t) => t.id === selectedToneId) ?? PHOTO_TONES[0],
+    [selectedToneId]
+  );
+
+  // โหลดรูปภาพทั้งหมดที่ถ่ายมา และรูปที่เลือกใส่ในแต่ละช่อง
   useEffect(() => {
     try {
-      const raw = sessionStorage.getItem(STORAGE_KEY);
-      if (raw) {
-        const parsed = JSON.parse(raw) as PhotoShot[];
-        if (Array.isArray(parsed)) {
-          // eslint-disable-next-line react-hooks/set-state-in-effect
-          setPhotos(parsed);
+      let captured: PhotoShot[] = [];
+      const rawAll = sessionStorage.getItem(ALL_PHOTOS_KEY);
+      if (rawAll) {
+        const parsed = JSON.parse(rawAll);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          captured = parsed;
         }
       }
+
+      let selected: PhotoShot[] = [];
+      const rawSelected = sessionStorage.getItem(STORAGE_KEY);
+      if (rawSelected) {
+        const parsed = JSON.parse(rawSelected);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          selected = parsed;
+        }
+      }
+
+      if (captured.length === 0 && selected.length > 0) {
+        captured = selected;
+      }
+      if (selected.length === 0 && captured.length > 0) {
+        selected = captured.slice(0, frame.shotCount);
+      }
+
+      // เติมให้ครบจำนวนช่องของกรอบ
+      if (selected.length < frame.shotCount && captured.length > 0) {
+        const filled = [...selected];
+        for (let i = filled.length; i < frame.shotCount; i++) {
+          filled.push(captured[i % captured.length]);
+        }
+        selected = filled;
+      }
+
+      setAllPhotos(captured);
+      setPhotos(selected);
     } catch {
       // ข้ามถ้าอ่าน storage ไม่ได้
     }
@@ -84,14 +122,38 @@ export function ResultClient() {
     return () => {
       if (printTimerRef.current) clearTimeout(printTimerRef.current);
     };
-  }, []);
+  }, [frame.shotCount]);
+
+  // รูปที่กำลังแสดงพรีวิวขนาดใหญ่
+  const activePhoto = useMemo(() => {
+    if (photos[activeSlotIndex]) return photos[activeSlotIndex];
+    if (allPhotos.length > 0) return allPhotos[0];
+    return null;
+  }, [photos, activeSlotIndex, allPhotos]);
+
+  // เมื่อผู้ใช้กดเลือกรูปภาพจากแถบด้านล่าง
+  const handleSelectPhotoForSlot = (shot: PhotoShot) => {
+    setPhotos((prev) => {
+      const next = [...prev];
+      while (next.length < frame.shotCount) {
+        next.push(shot);
+      }
+      next[activeSlotIndex] = shot;
+      try {
+        sessionStorage.setItem(STORAGE_KEY, JSON.stringify(next));
+      } catch {}
+      return next;
+    });
+
+    // เลื่อนไปยังช่องถัดไปอัตโนมัติ เพื่อให้ผู้ใช้กดเลือกทีละช่องได้สะดวก
+    setActiveSlotIndex((prev) => (prev + 1) % frame.shotCount);
+  };
 
   // 1. สร้างโฟลเดอร์ Google Drive ล่วงหน้าทันที เพื่อให้แสดง QR Code ได้อัตโนมัติภายใน <1 วินาที!
   useEffect(() => {
     let cancelled = false;
 
     async function initDriveFolder() {
-      // ตรวจสอบว่ามี QR ใน session หรือยัง
       try {
         const raw = sessionStorage.getItem("photobooth_drive_qr");
         if (raw) {
@@ -144,7 +206,6 @@ export function ResultClient() {
         sessionStorage.setItem("photobooth_drive_qr", JSON.stringify(state));
       } catch (err) {
         console.error("Init drive folder error:", err);
-        // Fallback: ใช้โฟลเดอร์หลัก Studio Booth เพื่อให้มี QR Code แสดงให้ลูกค้าสแกนได้เสมอ ไม่หมุนค้าง
         try {
           const fallbackUrl =
             "https://drive.google.com/drive/folders/1Fd5YvZXhsASQAObgnYk53ybwjgxeQB35?usp=sharing";
@@ -194,7 +255,7 @@ export function ResultClient() {
     };
   }, [photos]);
 
-  // 3. อัปโหลดไฟล์ (รูปภาพ + GIF) เข้าโฟลเดอร์ Google Drive ในพื้นหลัง
+  // 3. อัปโหลดไฟล์ (รูปภาพพร้อมฟิลเตอร์โทนสี + GIF) เข้าโฟลเดอร์ Google Drive ในพื้นหลัง
   useEffect(() => {
     if (photos.length === 0 || !isDriveReady) return;
 
@@ -207,6 +268,7 @@ export function ResultClient() {
           frame,
           photos,
           stickers: placedStickers,
+          filterCss: activeTone.cssFilter,
         });
         if (cancelled) return;
 
@@ -251,7 +313,7 @@ export function ResultClient() {
       cancelled = true;
       clearTimeout(timer);
     };
-  }, [frame, photos, placedStickers, gifBlobCache, isDriveReady]);
+  }, [frame, photos, placedStickers, activeTone, gifBlobCache, isDriveReady]);
 
   const selectedSticker =
     placedStickers.find((s) => s.instanceId === selectedStickerId) ?? null;
@@ -303,6 +365,7 @@ export function ResultClient() {
         frame,
         photos,
         stickers: placedStickers,
+        filterCss: activeTone.cssFilter,
       });
 
       // สร้างแผ่นพิมพ์ขนาด 4x6 นิ้ว (ถ้าเป็นกรอบแนวตั้ง จะวาง 2 แถบคู่กันเป็น 2 ชุดสำหรับตัดแบ่ง)
@@ -326,9 +389,8 @@ export function ResultClient() {
   const handleFinishSession = useCallback(() => {
     try {
       sessionStorage.removeItem(STORAGE_KEY);
-    } catch {
-      // ข้ามถ้าลบ storage ไม่ได้
-    }
+      sessionStorage.removeItem(ALL_PHOTOS_KEY);
+    } catch {}
     void clearMotionFrames();
     router.replace("/thank-you");
   }, [router]);
@@ -359,60 +421,216 @@ export function ResultClient() {
           currentStep={5}
         />
 
-        <div className="flex min-h-0 w-full max-w-6xl flex-1 flex-col items-center justify-evenly gap-5 py-2 landscape:flex-row landscape:items-center landscape:justify-center landscape:gap-10">
-          {/* ฝั่งซ้าย/บน: ตัวอย่างแถบรูป (แสดง 2 แถบคู่กันสำหรับแนวตั้งเหมือนหน้าตู้จริง) */}
-          <div className="flex shrink-0 flex-col items-center gap-2.5">
-            {orientation === "vertical" ? (
-              <div className="flex items-center justify-center gap-2.5 rounded-3xl border border-zinc-800 bg-zinc-950/80 p-3 shadow-2xl backdrop-blur-md">
-                {/* แถบที่ 1 (แถบหลักสำหรับแปะสติกเกอร์) */}
-                <div className="relative">
-                  <StripPreview frame={frame} photos={photos}>
+        {/* พื้นที่หลัก: แบ่ง 2 ฝั่ง (ฝั่งซ้าย: ดูรูปใหญ่ + เลือกโทนสี + แถบเลือกรูปด้านล่าง | ฝั่งขวา: พรีวิวแถบคู่ + QR + สติกเกอร์ + สั่งปริ้นต์) */}
+        <div className="flex min-h-0 w-full max-w-7xl flex-1 flex-col gap-4 overflow-y-auto px-3 py-2 sm:px-6 landscape:flex-row landscape:items-start landscape:justify-center landscape:gap-6">
+          
+          {/* ฝั่งซ้าย: การเลือกรูปภาพและปรับโทนสี (ตามรูปตัวอย่างตู้ Photobooth) */}
+          <div className="flex flex-1 flex-col gap-3 rounded-3xl border border-zinc-800/90 bg-zinc-950/70 p-4 shadow-2xl backdrop-blur-md sm:p-5">
+            
+            {/* 1. รูปภาพพรีวิวขนาดใหญ่ของช่องที่กำลังเลือก */}
+            <div className="relative flex aspect-video w-full items-center justify-center overflow-hidden rounded-2xl border border-zinc-800 bg-black shadow-inner sm:max-h-[38dvh]">
+              {activePhoto ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  src={activePhoto.dataUrl}
+                  alt={`Slot ${activeSlotIndex + 1} Preview`}
+                  className="h-full w-full object-contain transition duration-200"
+                  style={{ filter: activeTone.cssFilter }}
+                />
+              ) : (
+                <div className="flex flex-col items-center gap-2 text-zinc-500">
+                  <span className="font-mono text-sm">ไม่มีรูปภาพ</span>
+                </div>
+              )}
+
+              {/* ป้ายบอกช่องปัจจุบัน */}
+              <div className="pointer-events-none absolute top-3 left-3 flex items-center gap-2 rounded-full border border-pink-500/40 bg-black/75 px-3.5 py-1 text-xs font-bold text-pink-300 backdrop-blur-md">
+                <span className="h-2 w-2 rounded-full bg-pink-500 animate-pulse" />
+                <span>ช่องที่ {activeSlotIndex + 1} จาก {frame.shotCount}</span>
+              </div>
+
+              {/* ป้ายบอกโทนสีที่กำลังใช้ */}
+              <div className="pointer-events-none absolute top-3 right-3 flex items-center gap-2 rounded-full border border-white/20 bg-black/75 px-3 py-1 font-mono text-xs font-bold text-zinc-200 backdrop-blur-md">
+                <span
+                  className="h-2.5 w-2.5 rounded-full"
+                  style={{ backgroundColor: activeTone.previewColor }}
+                />
+                <span>{activeTone.labelEn}</span>
+              </div>
+            </div>
+
+            {/* 2. โซนเลือกโทนสีหลายๆโทน (Color Tones) */}
+            <div className="flex flex-col gap-1.5">
+              <div className="flex items-center justify-between">
+                <span className="font-mono text-xs font-bold tracking-wider text-zinc-400 uppercase">
+                  🎨 โทนสีรูปภาพ / COLOR TONES
+                </span>
+                <span className="text-xs text-pink-400 font-medium">
+                  {activeTone.name} ({activeTone.labelEn})
+                </span>
+              </div>
+
+              {/* แถบชิปโทนสีเลื่อนแนวนอน */}
+              <div className="flex items-center gap-2 overflow-x-auto pb-1 pt-0.5 no-scrollbar">
+                {PHOTO_TONES.map((tone) => {
+                  const isSelected = tone.id === selectedToneId;
+                  return (
+                    <button
+                      key={tone.id}
+                      type="button"
+                      onClick={() => setSelectedToneId(tone.id)}
+                      className={`flex shrink-0 items-center gap-2 rounded-full border px-3.5 py-2 text-xs font-bold transition active:scale-95 ${
+                        isSelected
+                          ? "border-pink-500 bg-pink-500/20 text-white shadow-md shadow-pink-500/30"
+                          : "border-zinc-800 bg-zinc-900/90 text-zinc-300 hover:border-zinc-700 hover:text-white"
+                      }`}
+                    >
+                      <span
+                        className="h-3 w-3 rounded-full border border-white/30"
+                        style={{ backgroundColor: tone.previewColor }}
+                      />
+                      <span>{tone.name}</span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* 3. แถบกดเลือกภาพด้านล่าง (Filmstrip Selector ตรงตามรูปภาพที่ลูกค้าส่งมา) */}
+            <div className="flex flex-col gap-1.5 pt-1">
+              <div className="flex items-center justify-between">
+                <span className="font-mono text-xs font-bold tracking-wider text-zinc-400 uppercase">
+                  📸 แตะเลือกรูปสำหรับช่องที่ {activeSlotIndex + 1}
+                </span>
+                <span className="text-[11px] text-zinc-500">
+                  แตะรูปเพื่อเปลี่ยนรูปในช่องนี้
+                </span>
+              </div>
+
+              {/* แถบรูปภาพแนวนอนเลื่อนได้ */}
+              <div className="flex items-center gap-2.5 overflow-x-auto rounded-2xl border border-zinc-800/80 bg-zinc-900/60 p-2.5 no-scrollbar">
+                {allPhotos.map((shot, idx) => {
+                  // ตรวจสอบว่ารูปนี้ถูกเลือกใส่ในช่องไหนบ้าง
+                  const placedSlotIndices = photos
+                    .map((p, i) => (p?.id === shot.id ? i + 1 : null))
+                    .filter((v): v is number => v !== null);
+
+                  const isCurrentActive =
+                    photos[activeSlotIndex]?.id === shot.id;
+
+                  return (
+                    <button
+                      key={shot.id}
+                      type="button"
+                      onClick={() => handleSelectPhotoForSlot(shot)}
+                      className={`group relative h-20 w-28 shrink-0 overflow-hidden rounded-xl border-2 transition active:scale-95 sm:h-24 sm:w-32 ${
+                        isCurrentActive
+                          ? "border-pink-500 ring-2 ring-pink-500/50 shadow-lg shadow-pink-500/30"
+                          : placedSlotIndices.length > 0
+                          ? "border-zinc-700 opacity-90 hover:border-pink-400"
+                          : "border-zinc-800 opacity-75 hover:border-zinc-600 hover:opacity-100"
+                      }`}
+                    >
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src={shot.dataUrl}
+                        alt={`Photo shot ${idx + 1}`}
+                        className="h-full w-full object-cover transition"
+                        style={{ filter: activeTone.cssFilter }}
+                      />
+
+                      {/* หมายเลขช็อตที่ถ่าย */}
+                      <span className="absolute top-1 left-1 rounded bg-black/70 px-1.5 py-0.5 font-mono text-[10px] font-bold text-white backdrop-blur-sm">
+                        #{idx + 1}
+                      </span>
+
+                      {/* ป้ายบอกว่าวางอยู่ในช่องไหนของกรอบรูป */}
+                      {placedSlotIndices.length > 0 ? (
+                        <span className="absolute right-1 bottom-1 rounded bg-pink-500/90 px-1.5 py-0.5 text-[10px] font-bold text-white shadow-sm">
+                          ช่อง {placedSlotIndices.join(", ")}
+                        </span>
+                      ) : null}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+          </div>
+
+          {/* ฝั่งขวา: พรีวิวกรอบรูปคู่ 2 ชุด + Google Drive QR + สติกเกอร์ + สั่งปริ้นต์ */}
+          <div className="flex w-full flex-col items-center gap-4 landscape:w-[420px] landscape:shrink-0">
+            
+            {/* พรีวิวแถบรูปคู่ (Dual Strip) หรือแผ่นเดี่ยว */}
+            <div className="flex flex-col items-center gap-2">
+              {orientation === "vertical" ? (
+                <div className="flex items-center justify-center gap-2 rounded-3xl border border-zinc-800 bg-zinc-950/80 p-2.5 shadow-2xl backdrop-blur-md">
+                  {/* แถบที่ 1 (แถบหลักสำหรับแปะสติกเกอร์และแตะเลือกช่อง) */}
+                  <div className="relative">
+                    <StripPreview
+                      frame={frame}
+                      photos={photos}
+                      filterCss={activeTone.cssFilter}
+                      activeSlotIndex={activeSlotIndex}
+                      onSlotClick={(index) => setActiveSlotIndex(index)}
+                    >
+                      <StickerCanvas
+                        stickers={placedStickers}
+                        selectedStickerId={selectedStickerId}
+                        isHorizontal={false}
+                        onSelectSticker={setSelectedStickerId}
+                        onUpdateSticker={handleUpdateSticker}
+                        onRemoveSticker={handleRemoveSticker}
+                      />
+                    </StripPreview>
+                  </div>
+
+                  {/* แถบที่ 2 (แถบคู่แฝด สำหรับปริ้นต์ 2 ชุดในใบ 4x6 เดียวกัน) */}
+                  <div className="relative">
+                    <StripPreview
+                      frame={frame}
+                      photos={photos}
+                      filterCss={activeTone.cssFilter}
+                      activeSlotIndex={activeSlotIndex}
+                      onSlotClick={(index) => setActiveSlotIndex(index)}
+                    >
+                      <StickerCanvas
+                        stickers={placedStickers}
+                        isHorizontal={false}
+                        readOnly
+                      />
+                    </StripPreview>
+                  </div>
+                </div>
+              ) : (
+                <div className="flex items-center justify-center rounded-3xl border border-zinc-800 bg-zinc-950/80 p-3 shadow-2xl backdrop-blur-md">
+                  <StripPreview
+                    frame={frame}
+                    photos={photos}
+                    filterCss={activeTone.cssFilter}
+                    activeSlotIndex={activeSlotIndex}
+                    onSlotClick={(index) => setActiveSlotIndex(index)}
+                  >
                     <StickerCanvas
                       stickers={placedStickers}
                       selectedStickerId={selectedStickerId}
-                      isHorizontal={false}
+                      isHorizontal={true}
                       onSelectSticker={setSelectedStickerId}
                       onUpdateSticker={handleUpdateSticker}
                       onRemoveSticker={handleRemoveSticker}
                     />
                   </StripPreview>
                 </div>
+              )}
 
-                {/* แถบที่ 2 (แถบคู่แฝด สะท้อนเหมือนชุดที่ 1 สำหรับพิมพ์ 2 ชุด) */}
-                <div className="relative">
-                  <StripPreview frame={frame} photos={photos}>
-                    <StickerCanvas
-                      stickers={placedStickers}
-                      isHorizontal={false}
-                      readOnly
-                    />
-                  </StripPreview>
-                </div>
-              </div>
-            ) : (
-              <div className="flex items-center justify-center rounded-3xl border border-zinc-800 bg-zinc-950/80 p-3.5 shadow-2xl backdrop-blur-md">
-                <StripPreview frame={frame} photos={photos}>
-                  <StickerCanvas
-                    stickers={placedStickers}
-                    selectedStickerId={selectedStickerId}
-                    isHorizontal={true}
-                    onSelectSticker={setSelectedStickerId}
-                    onUpdateSticker={handleUpdateSticker}
-                    onRemoveSticker={handleRemoveSticker}
-                  />
-                </StripPreview>
-              </div>
-            )}
-            <p className="text-center text-xs text-zinc-400">
-              แตะและลากสติกเกอร์เพื่อตกแต่งภาพ (แสดง 2 แถบคู่กัน)
-            </p>
-          </div>
+              <p className="text-center text-[11px] text-zinc-400">
+                แตะช่องบนแถบรูปเพื่อเปลี่ยนรูป • ลากสติกเกอร์เพื่อตกแต่ง
+              </p>
+            </div>
 
-          {/* ฝั่งขวา/ล่าง: QR Code + สติกเกอร์ + ปุ่มปริ้นต์ ในดีไซน์ Dark Studio Kiosk */}
-          <div className="flex max-h-full w-full flex-1 flex-col gap-4 overflow-y-auto rounded-3xl border border-zinc-800 bg-zinc-900/90 p-5 shadow-2xl backdrop-blur-md sm:p-6 landscape:max-w-xl landscape:max-h-[82dvh] portrait:max-h-[48dvh]">
-            {/* โซนบน: QR Code ตรงกลาง ขนาดใหญ่ขึ้น และคำอธิบายอยู่ใต้คิวอาร์ */}
-            <div className="flex flex-col items-center justify-center gap-3 rounded-2xl border border-zinc-800 bg-zinc-950/80 p-4 text-center">
-              <div className="flex h-36 w-36 items-center justify-center overflow-hidden rounded-2xl border border-zinc-800 bg-white p-2 shadow-sm sm:h-40 sm:w-40">
+            {/* การ์ด QR Code ของ Google Drive แบบตรงกลางขนาดใหญ่ พร้อมคำอธิบาย */}
+            <div className="flex w-full flex-col items-center justify-center gap-2.5 rounded-2xl border border-zinc-800 bg-zinc-950/80 p-3.5 text-center shadow-lg">
+              <div className="flex h-32 w-32 items-center justify-center overflow-hidden rounded-xl border border-zinc-800 bg-white p-2 shadow-sm sm:h-36 sm:w-36">
                 {driveQr ? (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img
@@ -422,21 +640,21 @@ export function ResultClient() {
                   />
                 ) : (
                   <div className="flex flex-col items-center gap-1.5 text-center">
-                    <div className="h-7 w-7 animate-spin rounded-full border-2 border-pink-500 border-t-transparent" />
-                    <span className="font-mono text-xs text-zinc-400">
+                    <div className="h-6 w-6 animate-spin rounded-full border-2 border-pink-500 border-t-transparent" />
+                    <span className="font-mono text-[10px] text-zinc-400">
                       กำลังเตรียม QR...
                     </span>
                   </div>
                 )}
               </div>
 
-              <p className="text-xs font-medium text-zinc-400 sm:text-sm">
+              <p className="text-xs font-medium text-zinc-300">
                 สแกนด้วยมือถือเพื่อเปิดโฟลเดอร์ Google Drive รวมทั้งรูปภาพและ GIF ทันที
               </p>
             </div>
 
-            {/* โซนสติกเกอร์ */}
-            <div className="flex flex-col gap-2">
+            {/* โซนสติกเกอร์ (แบบกระชับ) */}
+            <div className="flex w-full flex-col gap-2 rounded-2xl border border-zinc-800/90 bg-zinc-950/70 p-3 shadow-lg">
               <div className="flex items-center justify-between">
                 <span className="font-mono text-xs font-bold tracking-wider text-zinc-400 uppercase">
                   STICKERS
@@ -459,116 +677,92 @@ export function ResultClient() {
                 theme="dark"
                 onAddSticker={handleAddSticker}
               />
+
+              {selectedSticker ? (
+                <div className="flex flex-col gap-2 rounded-xl border border-zinc-700 bg-zinc-900/80 p-2.5 text-xs">
+                  <div className="flex items-center justify-between">
+                    <span className="font-mono text-[11px] font-bold text-pink-400">
+                      สติกเกอร์ที่เลือก
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => handleRemoveSticker(selectedSticker.instanceId)}
+                      className="rounded bg-rose-500/20 px-2 py-0.5 text-[11px] font-bold text-rose-300"
+                    >
+                      ลบชิ้นนี้
+                    </button>
+                  </div>
+                  <div className="flex items-center justify-between gap-2">
+                    <div className="flex items-center gap-1.5">
+                      <span className="text-zinc-400">ขนาด:</span>
+                      <button
+                        type="button"
+                        onClick={() =>
+                          handleUpdateSticker(selectedSticker.instanceId, {
+                            scale: clamp(Number((selectedSticker.scale - 0.15).toFixed(2)), 0.5, 2.2),
+                          })
+                        }
+                        className="h-7 w-7 rounded border border-zinc-700 bg-zinc-800 text-white"
+                      >
+                        −
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() =>
+                          handleUpdateSticker(selectedSticker.instanceId, {
+                            scale: clamp(Number((selectedSticker.scale + 0.15).toFixed(2)), 0.5, 2.2),
+                          })
+                        }
+                        className="h-7 w-7 rounded border border-zinc-700 bg-zinc-800 text-white"
+                      >
+                        +
+                      </button>
+                    </div>
+
+                    <div className="flex items-center gap-1.5">
+                      <span className="text-zinc-400">หมุน:</span>
+                      <button
+                        type="button"
+                        onClick={() =>
+                          handleUpdateSticker(selectedSticker.instanceId, {
+                            rotation: selectedSticker.rotation - 15,
+                          })
+                        }
+                        className="rounded border border-zinc-700 bg-zinc-800 px-2 py-1 text-[11px] text-zinc-200"
+                      >
+                        ↺ -15°
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() =>
+                          handleUpdateSticker(selectedSticker.instanceId, {
+                            rotation: selectedSticker.rotation + 15,
+                          })
+                        }
+                        className="rounded border border-zinc-700 bg-zinc-800 px-2 py-1 text-[11px] text-zinc-200"
+                      >
+                        ↻ +15°
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ) : null}
             </div>
 
-            {selectedSticker ? (
-              <div className="flex flex-col gap-3 rounded-2xl border border-zinc-700 bg-zinc-950/70 p-4">
-                <div className="flex items-center justify-between">
-                  <span className="font-mono text-xs font-bold tracking-wider text-pink-400 uppercase">
-                    Selected: {selectedSticker.stickerId}
-                  </span>
-                  <button
-                    type="button"
-                    onClick={() =>
-                      handleRemoveSticker(selectedSticker.instanceId)
-                    }
-                    className="min-h-9 rounded-full border border-rose-500/30 bg-rose-500/20 px-3.5 text-xs font-bold text-rose-300 transition active:scale-95 hover:bg-rose-500/30"
-                  >
-                    ลบชิ้นนี้
-                  </button>
-                </div>
-
-                <div className="flex flex-wrap items-center gap-3">
-                  <div className="flex items-center gap-2">
-                    <span className="font-mono text-xs text-zinc-400">Size</span>
-                    <button
-                      type="button"
-                      onClick={() =>
-                        handleUpdateSticker(selectedSticker.instanceId, {
-                          scale: clamp(
-                            Number((selectedSticker.scale - 0.15).toFixed(2)),
-                            0.5,
-                            2.2
-                          ),
-                        })
-                      }
-                      className="flex h-10 w-10 items-center justify-center rounded-xl border border-zinc-700 bg-zinc-800 text-lg font-bold text-white shadow-sm transition active:scale-95 hover:bg-zinc-700"
-                    >
-                      −
-                    </button>
-                    <span className="w-12 text-center font-mono text-xs font-bold text-zinc-200">
-                      {Math.round(selectedSticker.scale * 100)}%
-                    </span>
-                    <button
-                      type="button"
-                      onClick={() =>
-                        handleUpdateSticker(selectedSticker.instanceId, {
-                          scale: clamp(
-                            Number((selectedSticker.scale + 0.15).toFixed(2)),
-                            0.5,
-                            2.2
-                          ),
-                        })
-                      }
-                      className="flex h-10 w-10 items-center justify-center rounded-xl border border-zinc-700 bg-zinc-800 text-lg font-bold text-white shadow-sm transition active:scale-95 hover:bg-zinc-700"
-                    >
-                      +
-                    </button>
-                  </div>
-
-                  <div className="flex items-center gap-2">
-                    <span className="font-mono text-xs text-zinc-400">
-                      Rotate
-                    </span>
-                    <button
-                      type="button"
-                      onClick={() =>
-                        handleUpdateSticker(selectedSticker.instanceId, {
-                          rotation: selectedSticker.rotation - 15,
-                        })
-                      }
-                      className="h-10 rounded-xl border border-zinc-700 bg-zinc-800 px-3 font-mono text-xs font-bold text-zinc-200 shadow-sm transition active:scale-95 hover:bg-zinc-700"
-                    >
-                      ↺ -15°
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() =>
-                        handleUpdateSticker(selectedSticker.instanceId, {
-                          rotation: 0,
-                        })
-                      }
-                      className="h-10 rounded-xl border border-zinc-700 bg-zinc-800 px-3 font-mono text-xs font-bold text-zinc-400 shadow-sm transition active:scale-95 hover:bg-zinc-700"
-                    >
-                      0°
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() =>
-                        handleUpdateSticker(selectedSticker.instanceId, {
-                          rotation: selectedSticker.rotation + 15,
-                        })
-                      }
-                      className="h-10 rounded-xl border border-zinc-700 bg-zinc-800 px-3 font-mono text-xs font-bold text-zinc-200 shadow-sm transition active:scale-95 hover:bg-zinc-700"
-                    >
-                      ↻ +15°
-                    </button>
-                  </div>
-                </div>
-              </div>
-            ) : null}
-
             {exportError ? (
-              <p className="text-xs font-medium text-rose-400">{exportError}</p>
+              <p className="text-center text-xs font-medium text-rose-400">
+                {exportError}
+              </p>
             ) : null}
+
           </div>
         </div>
 
         {/* แถบปุ่ม Back (ซ้ายล่าง) และ Print / Next (ขวาล่าง) สไตล์ White Pill Kiosk */}
-        <div className="flex w-full max-w-6xl shrink-0 items-center justify-between gap-4 pt-3">
+        <div className="flex w-full max-w-7xl shrink-0 items-center justify-between gap-4 px-4 py-3 sm:px-6">
           <Link
             href={`/booth?frame=${frame.id}&shots=${shots}&orientation=${orientation}`}
-            className="inline-flex min-h-12 items-center justify-center rounded-full border border-zinc-700 bg-zinc-800/80 px-8 text-sm font-bold tracking-wider text-zinc-200 uppercase shadow-lg transition active:scale-95 hover:bg-zinc-700 hover:text-white"
+            className="inline-flex min-h-12 items-center justify-center rounded-full border border-zinc-700 bg-zinc-800/80 px-7 text-sm font-bold tracking-wider text-zinc-200 uppercase shadow-lg transition active:scale-95 hover:bg-zinc-700 hover:text-white"
           >
             ← Back
           </Link>

@@ -20,6 +20,9 @@ const HEART_MASK_STYLE: CSSProperties = {
 interface StripPreviewProps {
   frame: FrameConfig;
   photos?: PhotoShot[];
+  filterCss?: string;
+  activeSlotIndex?: number | null;
+  onSlotClick?: (index: number) => void;
   compact?: boolean;
   children?: ReactNode;
 }
@@ -30,6 +33,9 @@ interface StripPreviewProps {
 export function StripPreview({
   frame,
   photos = [],
+  filterCss = "none",
+  activeSlotIndex = null,
+  onSlotClick,
   compact = false,
   children,
 }: StripPreviewProps) {
@@ -55,11 +61,19 @@ export function StripPreview({
       {frame.slots.map((slot, index) => {
         const shot = photos[index];
         const isHeart = !frame.overlayImage && slot.shape === "heart";
+        const isActive = activeSlotIndex === index;
 
         return (
           <div
             key={index}
-            className="absolute overflow-hidden bg-white"
+            onClick={() => onSlotClick?.(index)}
+            className={`absolute overflow-hidden bg-white transition-all ${
+              onSlotClick ? "cursor-pointer" : ""
+            } ${
+              isActive
+                ? "z-10 ring-4 ring-pink-500 ring-offset-2 ring-offset-black/60 shadow-lg shadow-pink-500/50"
+                : ""
+            }`}
             style={{
               left: `${(slot.x / frame.canvasWidth) * 100}%`,
               top: `${(slot.y / frame.canvasHeight) * 100}%`,
@@ -76,8 +90,15 @@ export function StripPreview({
               <img
                 src={shot.dataUrl}
                 alt={`Shot ${index + 1}`}
-                className="h-full w-full object-cover"
+                className="h-full w-full object-cover transition"
+                style={{ filter: filterCss || "none" }}
               />
+            ) : null}
+
+            {onSlotClick ? (
+              <span className="pointer-events-none absolute top-1 left-1 rounded bg-black/60 px-1.5 py-0.5 font-mono text-[9px] font-bold text-white backdrop-blur-sm">
+                #{index + 1}
+              </span>
             ) : null}
           </div>
         );

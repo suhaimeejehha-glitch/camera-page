@@ -4,6 +4,7 @@ export interface RenderStripOptions {
   frame: FrameConfig;
   photos: PhotoShot[];
   stickers: PlacedSticker[];
+  filterCss?: string;
 }
 
 function loadImage(src: string): Promise<HTMLImageElement> {
@@ -65,7 +66,7 @@ export async function renderPhotoboothStrip(
   ctx.fillStyle = frame.overlayImage ? "#ffffff" : frame.backgroundColor;
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-  // Layer 2: วาดช่องสีขาว + รูปถ่ายแต่ละช่อง
+  // Layer 2: วาดช่องสีขาว + รูปถ่ายแต่ละช่อง (พร้อมใส่โทนสี/ฟิลเตอร์ที่เลือก)
   for (let i = 0; i < frame.slots.length; i++) {
     const slot = frame.slots[i];
     const photo = photos[i];
@@ -75,7 +76,13 @@ export async function renderPhotoboothStrip(
 
     if (!photo) continue;
     const photoImg = await loadImage(photo.dataUrl);
+
+    ctx.save();
+    if (options.filterCss && options.filterCss !== "none") {
+      ctx.filter = options.filterCss;
+    }
     drawImageCover(ctx, photoImg, slot.x, slot.y, slot.width, slot.height);
+    ctx.restore();
   }
 
   // Layer 3: วาดภาพกรอบซ้อนทับ หรือวาดขอบ+ข้อความสำหรับกรอบสี 1-3 รูป / แนวนอน

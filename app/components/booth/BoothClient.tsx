@@ -16,6 +16,8 @@ import { clearMotionFrames, saveMotionFrames } from "@/lib/mediaStore";
 import type { PhotoShot } from "@/types/photobooth";
 
 const STORAGE_KEY = "photobooth_photos";
+const ALL_PHOTOS_KEY = "photobooth_all_photos";
+const MAX_BOOTH_SHOTS = 8;
 
 export function BoothClient() {
   const searchParams = useSearchParams();
@@ -42,14 +44,18 @@ export function BoothClient() {
     void clearMotionFrames();
   }, []);
 
-  // บันทึกรูปที่ถ่ายลง sessionStorage เพื่อให้หน้า /result นำไปตกแต่งต่อได้
+  // บันทึกรูปที่ถ่ายลง sessionStorage เพื่อให้หน้า /result นำไปเลือกรูปและตกแต่งต่อได้
   useEffect(() => {
     try {
-      sessionStorage.setItem(STORAGE_KEY, JSON.stringify(photos));
+      sessionStorage.setItem(ALL_PHOTOS_KEY, JSON.stringify(photos));
+      sessionStorage.setItem(
+        STORAGE_KEY,
+        JSON.stringify(photos.slice(0, frame.shotCount))
+      );
     } catch {
       // ข้ามถ้า storage เต็ม
     }
-  }, [photos]);
+  }, [photos, frame.shotCount]);
 
   useEffect(() => {
     return () => {
@@ -122,13 +128,13 @@ export function BoothClient() {
     setTimeout(() => setIsFlashing(false), 150);
 
     setPhotos((prev) => {
-      if (prev.length >= frame.shotCount) return prev;
+      if (prev.length >= MAX_BOOTH_SHOTS) return prev;
       return [...prev, { id: `shot-${Date.now()}`, dataUrl }];
     });
-  }, [frame.shotCount, isMirrored]);
+  }, [isMirrored]);
 
   const handleTakePhoto = () => {
-    if (!isCameraReady || countdown !== null || photos.length >= frame.shotCount) {
+    if (!isCameraReady || countdown !== null || photos.length >= MAX_BOOTH_SHOTS) {
       return;
     }
 
@@ -154,7 +160,8 @@ export function BoothClient() {
     }, 1000);
   };
 
-  const isFull = photos.length >= frame.shotCount;
+  const canProceed = photos.length >= frame.shotCount;
+  const isFull = photos.length >= MAX_BOOTH_SHOTS;
 
   return (
     <div className="relative h-dvh w-full overflow-hidden bg-black">
@@ -188,7 +195,7 @@ export function BoothClient() {
 
         <div className="pointer-events-auto flex items-center gap-2.5">
           <span className="inline-flex min-h-11 items-center rounded-full border border-pink-400/50 bg-black/55 px-4 font-mono text-xs font-bold tracking-wider text-pink-300 uppercase backdrop-blur-md">
-            SHOT {photos.length} / {frame.shotCount}
+            SHOT {photos.length} / {MAX_BOOTH_SHOTS}
           </span>
 
           <button
@@ -242,7 +249,7 @@ export function BoothClient() {
           <div />
         )}
 
-        {isFull ? (
+        {canProceed ? (
           <Link
             href={`/result?frame=${frame.id}&shots=${shots}&orientation=${orientation}`}
             className="pointer-events-auto inline-flex min-h-14 items-center justify-center rounded-full bg-pink-500 px-9 text-base font-black tracking-wider text-white uppercase shadow-2xl shadow-pink-500/40 transition active:scale-95 hover:bg-pink-400"

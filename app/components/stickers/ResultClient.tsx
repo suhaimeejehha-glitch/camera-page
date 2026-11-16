@@ -376,9 +376,9 @@ export function ResultClient() {
 
           {/* ฝั่งขวา/ล่าง: QR Code + สติกเกอร์ + ปุ่มปริ้นต์ */}
           <div className="flex max-h-full w-full flex-1 flex-col gap-4 overflow-y-auto rounded-3xl border border-zinc-200 bg-white p-5 shadow-2xl shadow-pink-500/10 sm:p-6 landscape:max-w-xl landscape:max-h-[82dvh] portrait:max-h-[48dvh]">
-            {/* โซนบน: QR Code สแกนรับรูป & GIF */}
-            <div className="flex items-center gap-4 rounded-2xl border border-zinc-200 bg-zinc-50/70 p-3.5">
-              <div className="flex h-24 w-24 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-zinc-200 bg-white p-1.5 shadow-sm sm:h-28 sm:w-28">
+            {/* โซนบน: QR Code ตรงกลาง ขนาดใหญ่ขึ้น และคำอธิบายอยู่ใต้คิวอาร์ */}
+            <div className="flex flex-col items-center justify-center gap-3 rounded-2xl border border-zinc-200 bg-zinc-50/70 p-4 text-center">
+              <div className="flex h-36 w-36 items-center justify-center overflow-hidden rounded-2xl border border-zinc-200 bg-white p-2 shadow-sm sm:h-40 sm:w-40">
                 {driveQr ? (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img
@@ -388,38 +388,17 @@ export function ResultClient() {
                   />
                 ) : (
                   <div className="flex flex-col items-center gap-1.5 text-center">
-                    <div className="h-6 w-6 animate-spin rounded-full border-2 border-pink-500 border-t-transparent" />
-                    <span className="font-mono text-[10px] text-zinc-400">
+                    <div className="h-7 w-7 animate-spin rounded-full border-2 border-pink-500 border-t-transparent" />
+                    <span className="font-mono text-xs text-zinc-400">
                       กำลังเตรียม QR...
                     </span>
                   </div>
                 )}
               </div>
 
-              <div className="flex min-w-0 flex-1 flex-col justify-center gap-1.5">
-                <div className="flex items-center gap-2">
-                  <svg className="h-4 w-4 shrink-0" viewBox="0 0 87.3 78" fill="none">
-                    <path d="m6.6 66.85 3.85 6.65c.8 1.4 1.95 2.5 3.3 3.3l13.75-23.8H0c0 1.55.4 3.1 1.2 4.5z" fill="#0066da"/>
-                    <path d="M43.65 25 29.9 1.2c-1.35.8-2.5 1.9-3.3 3.3l-25.4 44A9.06 9.06 0 0 0 0 53h27.5z" fill="#00ac47"/>
-                    <path d="M73.55 76.8c1.35-.8 2.5-1.9 3.3-3.3l1.6-2.75 7.65-13.25c.8-1.4 1.2-2.95 1.2-4.5H59.8l5.85 10.1z" fill="#ea4335"/>
-                    <path d="M43.65 25 57.4 1.2C56.05.4 54.5 0 52.9 0H34.4c-1.6 0-3.15.45-4.5 1.2z" fill="#00832d"/>
-                    <path d="M59.8 53H87.3c0-1.55-.4-3.1-1.2-4.5l-13.75-23.8c-.8-1.4-1.95-2.5-3.3-3.3L56.25 44.5z" fill="#2684fc"/>
-                    <path d="m27.5 53 16.15-28-13.75-23.8c-1.35.8-2.5 1.9-3.3 3.3L1.2 48.5c-.8 1.4-1.2 2.95-1.2 4.5z" fill="#ffba00"/>
-                  </svg>
-                  <span className="font-mono text-sm font-bold tracking-wider text-zinc-900 uppercase">
-                    SCAN FOR PHOTO & GIF
-                  </span>
-                </div>
-                <p className="text-xs text-zinc-500">
-                  สแกนด้วยกล้องมือถือ เพื่อดาวน์โหลดรูปและ GIF
-                </p>
-                <div className="flex items-center gap-2 pt-0.5">
-                  <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-200/60 bg-emerald-50 px-2.5 py-0.5 font-mono text-[11px] font-semibold text-emerald-700">
-                    <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
-                    พร้อมดาวน์โหลด
-                  </span>
-                </div>
-              </div>
+              <p className="text-xs font-medium text-zinc-600 sm:text-sm">
+                สแกนด้วยมือถือเพื่อเปิดโฟลเดอร์ Google Drive รวมทั้งรูปภาพและ GIF ทันที
+              </p>
             </div>
 
             {/* โซนสติกเกอร์ */}

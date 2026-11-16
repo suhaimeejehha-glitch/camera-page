@@ -8,33 +8,26 @@ import { clearMotionFrames } from "@/lib/mediaStore";
 
 const AUTO_RETURN_SECONDS = 45;
 
-interface QrMediaState {
+interface DriveQrState {
   qrDataUrl: string;
-  mediaUrl: string;
+  folderUrl: string;
 }
 
 /**
  * หน้าจอ Thank You เต็มจอหลังจบการถ่ายและปริ้นต์
- * แสดง QR Code ให้ลูกค้าสแกนรับภาพ PNG และ GIF เข้ามือถือ
+ * แสดง 1 QR Code สำหรับเปิด Google Drive รวมทั้งรูปภาพและ GIF บนมือถือ
  */
 export function ThankYouClient() {
   const router = useRouter();
   const [secondsLeft, setSecondsLeft] = useState(AUTO_RETURN_SECONDS);
-  const [photoQr, setPhotoQr] = useState<QrMediaState | null>(null);
-  const [gifQr, setGifQr] = useState<QrMediaState | null>(null);
+  const [driveQr, setDriveQr] = useState<DriveQrState | null>(null);
 
-  // ดึง QR Code จาก session ที่สร้างไว้ในหน้า Result
+  // ดึง QR Code ของ Google Drive จาก session
   useEffect(() => {
     try {
-      const rawPhoto =
-        sessionStorage.getItem("photobooth_qr_photo") ||
-        sessionStorage.getItem("photobooth_qr_png");
-      if (rawPhoto) {
-        setPhotoQr(JSON.parse(rawPhoto) as QrMediaState);
-      }
-      const rawGif = sessionStorage.getItem("photobooth_qr_gif");
-      if (rawGif) {
-        setGifQr(JSON.parse(rawGif) as QrMediaState);
+      const raw = sessionStorage.getItem("photobooth_drive_qr");
+      if (raw) {
+        setDriveQr(JSON.parse(raw) as DriveQrState);
       }
     } catch {
       // ข้ามถ้าอ่าน storage ไม่ได้
@@ -44,8 +37,7 @@ export function ThankYouClient() {
   const handleFinish = () => {
     try {
       sessionStorage.removeItem("photobooth_photos");
-      sessionStorage.removeItem("photobooth_qr_photo");
-      sessionStorage.removeItem("photobooth_qr_gif");
+      sessionStorage.removeItem("photobooth_drive_qr");
     } catch {
       // ข้ามถ้าลบ storage ไม่ได้
     }
@@ -90,8 +82,8 @@ export function ThankYouClient() {
         <FullscreenButton />
       </div>
 
-      {/* โซนกลาง: ข้อความขอบคุณ + แสดง QR Code ทั้งรูปภาพและ GIF */}
-      <div className="relative z-10 my-auto flex w-full max-w-4xl flex-col items-center justify-center gap-6 py-4 text-center">
+      {/* โซนกลาง: ข้อความขอบคุณ + 1 QR Code เข้า Google Drive ตรง */}
+      <div className="relative z-10 my-auto flex w-full max-w-2xl flex-col items-center justify-center gap-6 py-4 text-center">
         <div className="flex flex-col gap-2">
           <span className="mx-auto rounded-full border border-pink-400/40 bg-pink-500/15 px-5 py-1.5 font-mono text-xs font-bold tracking-widest text-pink-300 uppercase sm:text-sm">
             SESSION COMPLETE • กรุณารับภาพที่ช่องรับรูป
@@ -102,59 +94,55 @@ export function ThankYouClient() {
           </h1>
 
           <p className="text-sm text-zinc-300 sm:text-base">
-            📱 ใช้โทรศัพท์มือถือสแกน QR Code ด้านล่าง เพื่อรับไฟล์รูปภาพและ GIF เข้าเครื่อง
+            📱 สแกน QR Code เพื่อเปิดดูและบันทึกทั้งรูปภาพและ GIF ลงใน Google Drive ของคุณ
           </p>
         </div>
 
-        {/* กล่องแสดง QR Code 2 แบบ: รูปภาพ และ GIF */}
-        <div className="grid w-full max-w-2xl grid-cols-1 gap-5 sm:grid-cols-2">
-          {/* QR รูปภาพ (.PNG) */}
-          <div className="flex flex-col items-center gap-3 rounded-3xl border border-zinc-800 bg-zinc-900/90 p-5 shadow-2xl backdrop-blur">
-            <span className="rounded-full bg-pink-500/20 px-3 py-1 font-mono text-xs font-bold tracking-wider text-pink-400 uppercase">
-              📸 รูปภาพโฟโต้บูธ (.PNG)
-            </span>
-
-            <div className="flex h-44 w-44 items-center justify-center overflow-hidden rounded-2xl border-2 border-zinc-700 bg-white p-2 shadow-inner sm:h-48 sm:w-48">
-              {photoQr ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img
-                  src={photoQr.qrDataUrl}
-                  alt="QR Code Photo"
-                  className="h-full w-full object-contain"
-                />
-              ) : (
-                <span className="font-mono text-xs text-zinc-400">กำลังเตรียม QR...</span>
-              )}
-            </div>
-
-            <p className="font-mono text-xs text-zinc-400">
-              สแกนเพื่อบันทึกแถบรูปภาพ
-            </p>
+        {/* 1 กล่อง QR Code เข้า Google Drive รวมทั้งรูปและ GIF */}
+        <div className="flex w-full max-w-sm flex-col items-center gap-4 rounded-3xl border border-emerald-500/30 bg-zinc-900/90 p-6 shadow-2xl backdrop-blur-md">
+          <div className="flex items-center gap-2 rounded-full border border-emerald-400/30 bg-emerald-500/10 px-4 py-1.5 font-mono text-xs font-bold text-emerald-300 uppercase">
+            {/* Google Drive Logo */}
+            <svg className="h-4 w-4 shrink-0" viewBox="0 0 87.3 78" fill="none">
+              <path d="m6.6 66.85 3.85 6.65c.8 1.4 1.95 2.5 3.3 3.3l13.75-23.8H0c0 1.55.4 3.1 1.2 4.5z" fill="#0066da"/>
+              <path d="M43.65 25 29.9 1.2c-1.35.8-2.5 1.9-3.3 3.3l-25.4 44A9.06 9.06 0 0 0 0 53h27.5z" fill="#00ac47"/>
+              <path d="M73.55 76.8c1.35-.8 2.5-1.9 3.3-3.3l1.6-2.75 7.65-13.25c.8-1.4 1.2-2.95 1.2-4.5H59.8l5.85 10.1z" fill="#ea4335"/>
+              <path d="M43.65 25 57.4 1.2C56.05.4 54.5 0 52.9 0H34.4c-1.6 0-3.15.45-4.5 1.2z" fill="#00832d"/>
+              <path d="M59.8 53H87.3c0-1.55-.4-3.1-1.2-4.5l-13.75-23.8c-.8-1.4-1.95-2.5-3.3-3.3L56.25 44.5z" fill="#2684fc"/>
+              <path d="m27.5 53 16.15-28-13.75-23.8c-1.35.8-2.5 1.9-3.3 3.3L1.2 48.5c-.8 1.4-1.2 2.95-1.2 4.5z" fill="#ffba00"/>
+            </svg>
+            <span>GOOGLE DRIVE (1-SCAN)</span>
           </div>
 
-          {/* QR ภาพเคลื่อนไหว (.GIF) */}
-          <div className="flex flex-col items-center gap-3 rounded-3xl border border-zinc-800 bg-zinc-900/90 p-5 shadow-2xl backdrop-blur">
-            <span className="rounded-full bg-purple-500/20 px-3 py-1 font-mono text-xs font-bold tracking-wider text-purple-400 uppercase">
-              🎬 วิดีโอดุ๊กดิ๊ก (.GIF)
-            </span>
-
-            <div className="flex h-44 w-44 items-center justify-center overflow-hidden rounded-2xl border-2 border-zinc-700 bg-white p-2 shadow-inner sm:h-48 sm:w-48">
-              {gifQr ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img
-                  src={gifQr.qrDataUrl}
-                  alt="QR Code GIF"
-                  className="h-full w-full object-contain"
-                />
-              ) : (
-                <span className="font-mono text-xs text-zinc-400">กำลังเตรียม GIF...</span>
-              )}
-            </div>
-
-            <p className="font-mono text-xs text-zinc-400">
-              สแกนเพื่อบันทึกภาพเคลื่อนไหว
-            </p>
+          <div className="flex h-52 w-52 items-center justify-center overflow-hidden rounded-2xl border-2 border-emerald-500/40 bg-white p-3 shadow-inner sm:h-56 sm:w-56">
+            {driveQr ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={driveQr.qrDataUrl}
+                alt="Google Drive QR Code"
+                className="h-full w-full object-contain"
+              />
+            ) : (
+              <div className="flex flex-col items-center gap-2 text-center">
+                <div className="h-8 w-8 animate-spin rounded-full border-2 border-emerald-500 border-t-transparent" />
+                <span className="font-mono text-xs text-zinc-400">กำลังเตรียม Drive...</span>
+              </div>
+            )}
           </div>
+
+          <p className="text-center font-mono text-xs text-zinc-300">
+            สแกนด้วยกล้องมือถือ เพื่อเปิดโฟลเดอร์ Google Drive
+          </p>
+
+          {driveQr ? (
+            <a
+              href={driveQr.folderUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1.5 rounded-full border border-emerald-500/40 bg-emerald-500/15 px-4 py-1.5 font-mono text-xs font-bold text-emerald-300 transition active:scale-95 hover:bg-emerald-500/25"
+            >
+              ↗ เปิดดูใน Google Drive
+            </a>
+          ) : null}
         </div>
 
         {/* แถบนับถอยหลัง + ปุ่มกลับหน้าแรก */}

@@ -25,9 +25,9 @@ function clamp(value: number, min: number, max: number) {
   return Math.min(max, Math.max(min, value));
 }
 
-interface QrMediaState {
+export interface DriveQrState {
   qrDataUrl: string;
-  mediaUrl: string;
+  folderUrl: string;
 }
 
 async function dataUrlToBlob(dataUrl: string): Promise<Blob> {
@@ -35,15 +35,17 @@ async function dataUrlToBlob(dataUrl: string): Promise<Blob> {
   return res.blob();
 }
 
-async function uploadMediaForQr(
-  kind: "png" | "gif",
-  blob: Blob
-): Promise<QrMediaState> {
+async function uploadToGoogleDriveSession(
+  photoBlob: Blob,
+  gifBlob: Blob | null
+): Promise<DriveQrState> {
   const formData = new FormData();
-  formData.append("kind", kind);
-  formData.append("file", blob, `studio-booth.${kind}`);
+  formData.append("photo", photoBlob, "photo-strip.png");
+  if (gifBlob) {
+    formData.append("gif", gifBlob, "photo-motion.gif");
+  }
 
-  const response = await fetch("/api/export-media", {
+  const response = await fetch("/api/upload-drive", {
     method: "POST",
     body: formData,
   });
@@ -52,47 +54,12 @@ async function uploadMediaForQr(
     const err = (await response.json().catch(() => null)) as {
       error?: string;
     } | null;
-    throw new Error(err?.error ?? "สร้างลิงก์ QR Code ไม่สำเร็จ");
+    throw new Error(err?.error ?? "อัปโหลดเข้า Google Drive ไม่สำเร็จ");
   }
 
-  const data = (await response.json()) as { urlPath: string };
-  let rawMediaUrl = data.urlPath;
-
-  // หากเซิร์ฟเวอร์อัปโหลดขึ้น Cloud ไม่สำเร็จ ให้เบราว์เซอร์ของตู้ช่วยอัปโหลดตรงไปยัง FreeImage ทันที
-  if (!rawMediaUrl.startsWith("http")) {
-    try {
-      const fd = new FormData();
-      fd.append("key", "6d207e02198a847aaa93d42226e7e40e");
-      fd.append("action", "upload");
-      fd.append("source", blob, `studio-booth.${kind}`);
-      fd.append("format", "json");
-
-      const clientRes = await fetch("https://freeimage.host/api/1/upload", {
-        method: "POST",
-        body: fd,
-      });
-      if (clientRes.ok) {
-        const clientData = (await clientRes.json()) as {
-          image?: { url?: string };
-        };
-        if (clientData?.image?.url) {
-          rawMediaUrl = clientData.image.url;
-        }
-      }
-    } catch {
-      // fallback
-    }
-
-    if (!rawMediaUrl.startsWith("http")) {
-      rawMediaUrl = `${window.location.origin}${data.urlPath}`;
-    }
-  }
-
-  // ชี้ไปที่หน้าดาวน์โหลดสวยงามบนมือถือ พร้อมส่งชื่อไฟล์
-  const downloadViewerUrl = `${window.location.origin}/download?src=${encodeURIComponent(rawMediaUrl)}&type=${kind}&name=studio-booth.${kind}`;
-
-  const qrDataUrl = await QRCode.toDataURL(downloadViewerUrl, {
-    width: 240,
+  const data = (await response.json()) as { folderUrl: string };
+  const qrDataUrl = await QRCode.toDataURL(data.folderUrl, {
+    width: 280,
     margin: 1,
     color: {
       dark: "#09090b",
@@ -100,66 +67,14 @@ async function uploadMediaForQr(
     },
   });
 
-  const state: QrMediaState = { qrDataUrl, mediaUrl: downloadViewerUrl };
+  const state: DriveQrState = { qrDataUrl, folderUrl: data.folderUrl };
   try {
-    sessionStorage.setItem(`photobooth_qr_${kind}`, JSON.stringify(state));
-    if (kind === "png") {
-      sessionStorage.setItem("photobooth_qr_photo", JSON.stringify(state));
-    }
+    sessionStorage.setItem("photobooth_drive_qr", JSON.stringify(state));
   } catch {
     // ข้ามถ้า storage เต็ม
   }
 
   return state;
-}
-
-function QrMediaCard({
-  title,
-  subtitle,
-  downloadName,
-  media,
-  isLoading,
-}: {
-  title: string;
-  subtitle: string;
-  downloadName: string;
-  media: QrMediaState | null;
-  isLoading: boolean;
-}) {
-  return (
-    <div className="flex items-center gap-3.5 rounded-2xl border border-zinc-200 bg-zinc-50/90 p-3.5 shadow-sm">
-      <div className="flex h-20 w-20 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-zinc-200 bg-white p-1.5 sm:h-24 sm:w-24">
-        {media ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
-            src={media.qrDataUrl}
-            alt={title}
-            className="h-full w-full object-contain"
-          />
-        ) : (
-          <span className="text-center font-mono text-[10px] font-bold text-zinc-400">
-            {isLoading ? "กำลังสร้าง..." : "รอภาพ"}
-          </span>
-        )}
-      </div>
-
-      <div className="flex min-w-0 flex-1 flex-col gap-1">
-        <p className="truncate text-xs font-black tracking-wide text-zinc-900 uppercase sm:text-sm">
-          {title}
-        </p>
-        <p className="text-[11px] text-zinc-500">{subtitle}</p>
-        {media ? (
-          <a
-            href={media.mediaUrl}
-            download={downloadName}
-            className="mt-0.5 inline-flex w-fit items-center rounded-full border border-pink-200 bg-pink-50 px-3 py-1 font-mono text-[10px] font-bold text-pink-600 uppercase transition active:scale-95 hover:bg-pink-100"
-          >
-            ⬇ โหลดไฟล์
-          </a>
-        ) : null}
-      </div>
-    </div>
-  );
 }
 
 export function ResultClient() {
@@ -179,10 +94,9 @@ export function ResultClient() {
     null
   );
 
-  const [photoQr, setPhotoQr] = useState<QrMediaState | null>(null);
-  const [gifQr, setGifQr] = useState<QrMediaState | null>(null);
-  const [isBuildingPhotoQr, setIsBuildingPhotoQr] = useState(false);
-  const [isBuildingGifQr, setIsBuildingGifQr] = useState(false);
+  const [driveQr, setDriveQr] = useState<DriveQrState | null>(null);
+  const [isUploadingDrive, setIsUploadingDrive] = useState(false);
+  const [gifBlobCache, setGifBlobCache] = useState<Blob | null>(null);
 
   const [printStripUrl, setPrintStripUrl] = useState<string | null>(null);
   const [isPrinting, setIsPrinting] = useState(false);
@@ -211,13 +125,38 @@ export function ResultClient() {
     };
   }, []);
 
-  // สร้าง QR โหลดรูปภาพ (.png) อัตโนมัติ และอัปเดตเมื่อลูกค้าติดสติกเกอร์เพิ่ม
+  // สร้างไฟล์ GIF ล่วงหน้าไว้รอบเดียว
+  useEffect(() => {
+    if (photos.length === 0) return;
+    let cancelled = false;
+
+    async function prepareGif() {
+      try {
+        const motionFrames = await loadMotionFrames();
+        const blob = await createAnimatedGifBlob(motionFrames, photos);
+        if (!cancelled && blob) {
+          setGifBlobCache(blob);
+        }
+      } catch (err) {
+        console.error("Prepare GIF error:", err);
+      }
+    }
+
+    void prepareGif();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [photos]);
+
+  // อัปโหลดเข้า Google Drive ทันทีที่ภาพพร้อม หรือเมื่อลูกค้าติดสติกเกอร์เพิ่ม
   useEffect(() => {
     if (photos.length === 0) return;
 
     let cancelled = false;
     const timer = setTimeout(async () => {
-      setIsBuildingPhotoQr(true);
+      setIsUploadingDrive(true);
+      setExportError(null);
       try {
         const stripDataUrl = await renderPhotoboothStrip({
           frame,
@@ -228,52 +167,29 @@ export function ResultClient() {
 
         setPrintStripUrl(stripDataUrl);
         const stripBlob = await dataUrlToBlob(stripDataUrl);
-        const media = await uploadMediaForQr("png", stripBlob);
+
+        const result = await uploadToGoogleDriveSession(
+          stripBlob,
+          gifBlobCache
+        );
         if (!cancelled) {
-          setPhotoQr(media);
+          setDriveQr(result);
         }
       } catch (error) {
-        console.error("Photo QR error:", error);
+        console.error("Google Drive upload error:", error);
+        if (!cancelled) {
+          setExportError("กำลังเตรียม Google Drive กรุณารอสักครู่...");
+        }
       } finally {
-        if (!cancelled) setIsBuildingPhotoQr(false);
+        if (!cancelled) setIsUploadingDrive(false);
       }
-    }, 500);
+    }, 600);
 
     return () => {
       cancelled = true;
       clearTimeout(timer);
     };
-  }, [frame, photos, placedStickers]);
-
-  // สร้าง QR โหลดไฟล์ภาพเคลื่อนไหว GIF Animation (.gif)
-  useEffect(() => {
-    if (photos.length === 0) return;
-
-    let cancelled = false;
-    async function buildGifQr() {
-      setIsBuildingGifQr(true);
-      try {
-        const motionFrames = await loadMotionFrames();
-        const gifBlob = await createAnimatedGifBlob(motionFrames, photos);
-        if (cancelled || !gifBlob) return;
-
-        const media = await uploadMediaForQr("gif", gifBlob);
-        if (!cancelled) {
-          setGifQr(media);
-        }
-      } catch (error) {
-        console.error("GIF QR error:", error);
-      } finally {
-        if (!cancelled) setIsBuildingGifQr(false);
-      }
-    }
-
-    void buildGifQr();
-
-    return () => {
-      cancelled = true;
-    };
-  }, [photos]);
+  }, [frame, photos, placedStickers, gifBlobCache]);
 
   const selectedSticker =
     placedStickers.find((s) => s.instanceId === selectedStickerId) ?? null;
@@ -396,26 +312,58 @@ export function ResultClient() {
             </p>
           </div>
 
-          {/* ฝั่งขวา/ล่าง: QR โหลดภาพ & วิดีโอ GIF (ด้านบน) + สติกเกอร์ + ปุ่มปริ้นต์เดียว */}
+          {/* ฝั่งขวา/ล่าง: 1 QR Code Google Drive (ด้านบน) + สติกเกอร์ + ปุ่มปริ้นต์เดียว */}
           <div className="flex max-h-full w-full flex-1 flex-col gap-4 overflow-y-auto rounded-3xl border border-zinc-200 bg-white p-5 shadow-2xl shadow-pink-500/10 sm:p-6 landscape:max-w-xl landscape:max-h-[82dvh] portrait:max-h-[48dvh]">
-            {/* โซนบนสุดเหนือสติกเกอร์: QR โหลดรูปภาพ (.png) และ QR โหลด GIF Animation (.gif) */}
-            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-              <QrMediaCard
-                title="QR โหลดภาพ (.PNG)"
-                subtitle="สแกนบันทึกรูปภาพ"
-                downloadName={`studio-booth-${frame.id}.png`}
-                media={photoQr}
-                isLoading={isBuildingPhotoQr}
-              />
-              <QrMediaCard
-                title="QR โหลดวิดีโอ GIF"
-                subtitle="สแกนเก็บ GIF เคลื่อนไหว"
-                downloadName={`studio-booth-${frame.id}.gif`}
-                media={gifQr}
-                isLoading={isBuildingGifQr}
-              />
+            {/* โซนบนสุด: 1 QR Code สำหรับ Google Drive รวมทั้งรูปภาพและวิดีโอ GIF */}
+            <div className="flex items-center gap-4 rounded-2xl border border-emerald-200 bg-emerald-50/80 p-3.5 shadow-sm">
+              <div className="flex h-24 w-24 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-emerald-300 bg-white p-1.5 shadow-inner sm:h-28 sm:w-28">
+                {driveQr ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    src={driveQr.qrDataUrl}
+                    alt="Google Drive QR Code"
+                    className="h-full w-full object-contain"
+                  />
+                ) : (
+                  <div className="flex flex-col items-center gap-1.5 text-center">
+                    <div className="h-6 w-6 animate-spin rounded-full border-2 border-emerald-500 border-t-transparent" />
+                    <span className="font-mono text-[10px] font-bold text-emerald-700">
+                      {isUploadingDrive ? "กำลังส่งเข้า Drive..." : "เตรียม QR..."}
+                    </span>
+                  </div>
+                )}
+              </div>
+
+              <div className="flex min-w-0 flex-1 flex-col gap-1">
+                <div className="flex items-center gap-1.5 font-mono text-xs font-black tracking-wide text-emerald-950 uppercase sm:text-sm">
+                  {/* Google Drive Authentic Logo */}
+                  <svg className="h-4 w-4 shrink-0" viewBox="0 0 87.3 78" fill="none">
+                    <path d="m6.6 66.85 3.85 6.65c.8 1.4 1.95 2.5 3.3 3.3l13.75-23.8H0c0 1.55.4 3.1 1.2 4.5z" fill="#0066da"/>
+                    <path d="M43.65 25 29.9 1.2c-1.35.8-2.5 1.9-3.3 3.3l-25.4 44A9.06 9.06 0 0 0 0 53h27.5z" fill="#00ac47"/>
+                    <path d="M73.55 76.8c1.35-.8 2.5-1.9 3.3-3.3l1.6-2.75 7.65-13.25c.8-1.4 1.2-2.95 1.2-4.5H59.8l5.85 10.1z" fill="#ea4335"/>
+                    <path d="M43.65 25 57.4 1.2C56.05.4 54.5 0 52.9 0H34.4c-1.6 0-3.15.45-4.5 1.2z" fill="#00832d"/>
+                    <path d="M59.8 53H87.3c0-1.55-.4-3.1-1.2-4.5l-13.75-23.8c-.8-1.4-1.95-2.5-3.3-3.3L56.25 44.5z" fill="#2684fc"/>
+                    <path d="m27.5 53 16.15-28-13.75-23.8c-1.35.8-2.5 1.9-3.3 3.3L1.2 48.5c-.8 1.4-1.2 2.95-1.2 4.5z" fill="#ffba00"/>
+                  </svg>
+                  <span>GOOGLE DRIVE (1-SCAN)</span>
+                </div>
+                <p className="text-[11px] text-zinc-600">
+                  สแกนเพื่อเปิดดูภาพ (.PNG) และวิดีโอ (.GIF) รวมใน Google Drive ทันที
+                </p>
+                {driveQr ? (
+                  <a
+                    href={driveQr.folderUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="mt-0.5 inline-flex w-fit items-center rounded-full border border-emerald-300 bg-emerald-100 px-3 py-1 font-mono text-[10px] font-bold text-emerald-850 uppercase transition active:scale-95 hover:bg-emerald-200"
+                  >
+                    ↗ เปิดโฟลเดอร์ Drive
+                  </a>
+                ) : null}
+              </div>
             </div>
 
+            {/* โซนสติกเกอร์ */}
             <div>
               <div className="mb-2.5 flex items-center justify-between">
                 <h2 className="font-mono text-sm font-bold tracking-wider text-zinc-800 uppercase">
@@ -538,7 +486,7 @@ export function ResultClient() {
             ) : null}
 
             {exportError ? (
-              <p className="text-xs font-medium text-rose-500">{exportError}</p>
+              <p className="text-xs font-medium text-emerald-600">{exportError}</p>
             ) : null}
           </div>
         </div>

@@ -1,0 +1,248 @@
+import crypto from "node:crypto";
+
+interface GoogleDriveConfig {
+  clientEmail: string;
+  privateKey: string;
+  parentFolderId: string;
+}
+
+const DEFAULT_CLIENT_EMAIL = "booth-uploader@studio-booth-020.iam.gserviceaccount.com";
+const DEFAULT_FOLDER_ID = "1Fd5YvZXhsASQAObgnYk53ybwjgxeQB35";
+const DEFAULT_PRIVATE_KEY = `-----BEGIN PRIVATE KEY-----
+MIIEvwIBADANBgkqhkiG9w0BAQEFAASCBKkwggSlAgEAAoIBAQDEilhhbO795vE8
+QlakZq0elRVZcNnhT6M/xKkk5aCwCiA5ilDmG7DCR0myKNgmWw9ROn1FARUAEjjK
+5pwCYGoOLe0ZeDIHx6hk77F81vGCjUg4rOLQv4LwYQRumH/lKmUGu+qSZ19NdCcN
+kUI877IprXbA8up3sc/7XaArrHMqU7sv8WFd7RkzPQdtSoLbew8axRBmPU+u6rDF
+WxfGc/hqvv2i7ckHdYO+4UG0bkafFNkttLxuXz424vD+vzte+qllOzu6np7Amc5G
+w67MYqUjII+scog3CkDKBZqFPioMm9zUjrfFoTV2gTNLzLLCkoA3zCV06YaNuSba
+YXNXqDKBAgMBAAECggEAL9DJokA+n7J3J7Yq/pnFTf6uwEESnPyDRsEZdpLQJmv8
+PYt/VZBQj1+JGClUNvap8hTlA6v4+Di2rPRwaaqbusHlIHBr2ZUzTIU9HNZtUNn/
+A1zaXLdvC3zK934uBWqsQ/hlYAN6vez/kE8x+oHFSlr7nIMs1HyD0U+Mp3tv1FC3
+8iiB454WAvTlaKSM/t07ryyi+k+z9hgEvDSLyfQYG+bjhRwQTza5jM5c4CzbCWsg
+82svtbNGGIevFwRTq0fGnsrScdMcRl9LJoaHiOWqVSVQID7edxns+bSHIx+sZGWx
+VnuqEON0M2Ct3+7W4BX3DPuFNlydZw3wsU4ruL3crQKBgQDn48DMEuqxqAbY7zP5
+HaDnfzvwQL458dcNV0f/je+RVK/7zhxNEKN3sr/aAViUdOM4MCkGk0x0mVgfhDOE
+4D+YRVTV9RPXRaNguVv7BTwl8jUh8G80WBIrkzsxcL/OyvO/tJQ+1Y5wMch6OaOM
+zN4FvK8+KCkdreFwCM7dDinZfQKBgQDY+bHw7y+TZ2iLEgtSHPbC+XIbX+rGmiKi
+JVtRgBerurp6VdGFi4rKYdB/Ck8YuMapiRHX/AdKb3YScypVp+k9yokUonR4znTZ
+GyPbXXNs2q5KkSPC4dtcj37l2zyzDqlh5tjpIskj/kIKltTiwDSDrosAAPdfeZSx
+Uc48BZ+sVQKBgQC3p9Etj5njhKGPtLukBIxIbKPLH2vJtrlM7qCuTPq9TqZmtxIB
+Ezl0dtSt070VLxI6kSIc/BJkkoKRy4GGLpkPf3G2VvkU2SmRVJz9zWKa5x6ft65L
+dalGa8BI4vR20pSEc3+p2DeMslEGRJo8zJDXWF4uy13tDKbstX0o5KvOfQKBgQC9
+WBEfZytGYBxMGGAGtT3l4dbg6rAvxfxpMV5iXfzKIPZwoYlpF9/zQq623mEt+rlq
+4zHOIKKgI2qPKS8Ndq1E/gToG+i2L7yqZVPCL+f1W1Rzv/rMK1rJiHO91LdAro/D
+3rb1pCSRI2WwZfW7Nu3c6ClmxHEbQTcwEmp92I6BzQKBgQDWmV1ppnjSdrY+lzAf
+nLcL024w9ILa1oxS/eh9c/I2vT/LzOG613uDDTjT4WiItNGAgrgeEuHrmnGDZGlf
+UN6qnlHFIGBwH/dUv3vchiIqSEp3+izTwBw5vBvKDKXceCTkdBkwbhvfUIJ4Kn8/
+/Rutvfk1R1sDccRTKSbZn7OeZQ==
+-----END PRIVATE KEY-----`;
+
+function getGoogleDriveConfig(): GoogleDriveConfig {
+  const clientEmail =
+    process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL || DEFAULT_CLIENT_EMAIL;
+  const privateKey =
+    (process.env.GOOGLE_PRIVATE_KEY || DEFAULT_PRIVATE_KEY).replace(/\\n/g, "\n");
+  const parentFolderId =
+    process.env.GOOGLE_DRIVE_FOLDER_ID || DEFAULT_FOLDER_ID;
+
+  return { clientEmail, privateKey, parentFolderId };
+}
+
+/**
+ * สร้าง Google OAuth 2.0 Access Token โดยใช้ Service Account Private Key (JWT Bearer)
+ * ไม่จำเป็นต้องติดตั้งไลบรารีภายนอก ใช้ Built-in crypto ของ Node.js โดยตรง
+ */
+async function getAccessToken(clientEmail: string, privateKey: string): Promise<string> {
+  const now = Math.floor(Date.now() / 1000);
+  const header = {
+    alg: "RS256",
+    typ: "JWT",
+  };
+  const claim = {
+    iss: clientEmail,
+    scope: "https://www.googleapis.com/auth/drive",
+    aud: "https://oauth2.googleapis.com/token",
+    exp: now + 3600,
+    iat: now,
+  };
+
+  const base64Url = (obj: object) =>
+    Buffer.from(JSON.stringify(obj))
+      .toString("base64")
+      .replace(/=/g, "")
+      .replace(/\+/g, "-")
+      .replace(/\//g, "_");
+
+  const unsignedToken = `${base64Url(header)}.${base64Url(claim)}`;
+
+  const signer = crypto.createSign("RSA-SHA256");
+  signer.update(unsignedToken);
+  const signature = signer
+    .sign(privateKey, "base64")
+    .replace(/=/g, "")
+    .replace(/\+/g, "-")
+    .replace(/\//g, "_");
+
+  const jwt = `${unsignedToken}.${signature}`;
+
+  const res = await fetch("https://oauth2.googleapis.com/token", {
+    method: "POST",
+    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+    body: new URLSearchParams({
+      grant_type: "urn:ietf:params:oauth:grant-type:jwt-bearer",
+      assertion: jwt,
+    }),
+  });
+
+  if (!res.ok) {
+    const errorText = await res.text();
+    throw new Error(`Google OAuth error: ${errorText}`);
+  }
+
+  const data = (await res.json()) as { access_token: string };
+  return data.access_token;
+}
+
+/**
+ * สร้างโฟลเดอร์ย่อยใน Google Drive สำหรับลูกค้ารอบนั้น
+ * พร้อมเปิดสิทธิ์ให้ทุกคนที่มีลิงก์สามารถดูและดาวน์โหลดไฟล์ได้
+ */
+async function createCustomerFolder(
+  accessToken: string,
+  parentFolderId: string,
+  folderName: string
+): Promise<{ folderId: string; folderUrl: string }> {
+  // 1. สร้างโฟลเดอร์
+  const createRes = await fetch("https://www.googleapis.com/drive/v3/files", {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      name: folderName,
+      mimeType: "application/vnd.google-apps.folder",
+      parents: [parentFolderId],
+    }),
+  });
+
+  if (!createRes.ok) {
+    throw new Error(`Failed to create Google Drive folder: ${await createRes.text()}`);
+  }
+
+  const folder = (await createRes.json()) as { id: string };
+  const folderId = folder.id;
+
+  // 2. ตั้งสิทธิ์ให้ทุกคนที่มีลิงก์เข้าดูได้ (Anyone with link can view)
+  await fetch(
+    `https://www.googleapis.com/drive/v3/files/${folderId}/permissions`,
+    {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        role: "reader",
+        type: "anyone",
+      }),
+    }
+  );
+
+  return {
+    folderId,
+    folderUrl: `https://drive.google.com/drive/folders/${folderId}?usp=sharing`,
+  };
+}
+
+/**
+ * อัปโหลดไฟล์ (รูปภาพ หรือ GIF) เข้าไปในโฟลเดอร์ Google Drive
+ */
+async function uploadFileToFolder(
+  accessToken: string,
+  folderId: string,
+  filename: string,
+  mimeType: string,
+  bytes: Uint8Array
+): Promise<void> {
+  const boundary = `-------StudioBooth${Date.now()}`;
+
+  const metadata = JSON.stringify({
+    name: filename,
+    parents: [folderId],
+  });
+
+  const multipartBody = Buffer.concat([
+    Buffer.from(`--${boundary}\r\nContent-Type: application/json; charset=UTF-8\r\n\r\n${metadata}\r\n`),
+    Buffer.from(`--${boundary}\r\nContent-Type: ${mimeType}\r\n\r\n`),
+    Buffer.from(bytes),
+    Buffer.from(`\r\n--${boundary}--\r\n`),
+  ]);
+
+  const uploadRes = await fetch(
+    "https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart",
+    {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        "Content-Type": `multipart/related; boundary=${boundary}`,
+      },
+      body: multipartBody,
+    }
+  );
+
+  if (!uploadRes.ok) {
+    throw new Error(`Failed to upload ${filename} to Drive: ${await uploadRes.text()}`);
+  }
+}
+
+/**
+ * อัปโหลดทั้งรูปภาพ (.PNG) และวิดีโอ (.GIF) เข้า Google Drive ในโฟลเดอร์เดียว
+ * แล้วส่งคืนลิงก์ Google Drive ของโฟลเดอร์นั้นกลับมาเพื่อสร้าง 1 QR Code
+ */
+export async function uploadSessionToGoogleDrive(params: {
+  photoBytes: Uint8Array;
+  gifBytes?: Uint8Array;
+}): Promise<string | null> {
+  const config = getGoogleDriveConfig();
+
+  try {
+    const accessToken = await getAccessToken(config.clientEmail, config.privateKey);
+
+    const now = new Date();
+    const dateStr = now.toISOString().replace(/T/, "_").replace(/\..+/, "").replace(/:/g, "-");
+    const folderName = `PhotoBooth_${dateStr}`;
+
+    // สร้างโฟลเดอร์ย่อยใน Google Drive
+    const { folderId, folderUrl } = await createCustomerFolder(
+      accessToken,
+      config.parentFolderId,
+      folderName
+    );
+
+    // อัปโหลดรูปภาพ
+    await uploadFileToFolder(
+      accessToken,
+      folderId,
+      "photo-strip.png",
+      "image/png",
+      params.photoBytes
+    );
+
+    // อัปโหลด GIF (ถ้ามี)
+    if (params.gifBytes && params.gifBytes.length > 0) {
+      await uploadFileToFolder(
+        accessToken,
+        folderId,
+        "photo-motion.gif",
+        "image/gif",
+        params.gifBytes
+      );
+    }
+
+    return folderUrl;
+  } catch (error) {
+    console.error("Google Drive Upload Error:", error);
+    return null;
+  }
+}

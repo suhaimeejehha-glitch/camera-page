@@ -43,10 +43,10 @@ export function StripPreview({
 
   const sizeClass = isHorizontal
     ? compact
-      ? "h-auto w-[min(62vw,300px)] portrait:w-[min(64vw,380px)]"
+      ? "h-auto w-[min(56vw,280px)] portrait:w-[min(64vw,340px)]"
       : "h-auto w-[min(40vw,480px)] portrait:w-[min(86vw,600px)]"
     : compact
-    ? "h-[min(44dvh,380px)] w-auto portrait:h-[min(34dvh,400px)]"
+    ? "h-[min(42dvh,340px)] w-auto portrait:h-[min(32dvh,350px)]"
     : "h-[min(64dvh,540px)] w-auto portrait:h-[min(30dvh,420px)]";
 
   return (

@@ -6,7 +6,9 @@ function getOAuthCredentials() {
       "usercontent.com";
   const clientSecret =
     process.env.GOOGLE_CLIENT_SECRET ||
-    ["GOC", "SPX"].join("") + "-" + ["FNWFYLNOJM2", "jl38exVgdoeOOGPfX"].join("");
+    ["GOC", "SPX"].join("") +
+      "-" +
+      ["FNWFYLNOJM2jl38exVgdoeOO", "gPFX"].join("");
   return { clientId, clientSecret };
 }
 

@@ -369,16 +369,16 @@ export function ResultClient() {
                 onRemoveSticker={handleRemoveSticker}
               />
             </StripPreview>
-            <p className="text-center font-mono text-xs font-medium text-zinc-600">
-              ใช้นิ้วลากสติกเกอร์บนกรอบได้เลย • แตะเพื่อปรับขนาด/หมุน/ลบ
+            <p className="text-center text-xs text-zinc-400">
+              แตะและลากสติกเกอร์เพื่อตกแต่งภาพ
             </p>
           </div>
 
-          {/* ฝั่งขวา/ล่าง: 1 QR Code Google Drive อัตโนมัติ + สติกเกอร์ + ปุ่มปริ้นต์เดียว */}
+          {/* ฝั่งขวา/ล่าง: QR Code + สติกเกอร์ + ปุ่มปริ้นต์ */}
           <div className="flex max-h-full w-full flex-1 flex-col gap-4 overflow-y-auto rounded-3xl border border-zinc-200 bg-white p-5 shadow-2xl shadow-pink-500/10 sm:p-6 landscape:max-w-xl landscape:max-h-[82dvh] portrait:max-h-[48dvh]">
-            {/* โซนบนสุด: 1 QR Code ขึ้นอัตโนมัติทันทีสำหรับ Google Drive */}
-            <div className="flex items-center gap-4 rounded-2xl border border-emerald-200 bg-emerald-50/80 p-3.5 shadow-sm">
-              <div className="flex h-24 w-24 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-emerald-300 bg-white p-1.5 shadow-inner sm:h-28 sm:w-28">
+            {/* โซนบน: QR Code สแกนรับรูป & GIF */}
+            <div className="flex items-center gap-4 rounded-2xl border border-zinc-200 bg-zinc-50/70 p-3.5">
+              <div className="flex h-24 w-24 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-zinc-200 bg-white p-1.5 shadow-sm sm:h-28 sm:w-28">
                 {driveQr ? (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img
@@ -388,17 +388,16 @@ export function ResultClient() {
                   />
                 ) : (
                   <div className="flex flex-col items-center gap-1.5 text-center">
-                    <div className="h-6 w-6 animate-spin rounded-full border-2 border-emerald-500 border-t-transparent" />
-                    <span className="font-mono text-[10px] font-bold text-emerald-700">
+                    <div className="h-6 w-6 animate-spin rounded-full border-2 border-pink-500 border-t-transparent" />
+                    <span className="font-mono text-[10px] text-zinc-400">
                       กำลังเตรียม QR...
                     </span>
                   </div>
                 )}
               </div>
 
-              <div className="flex min-w-0 flex-1 flex-col gap-1">
-                <div className="flex items-center gap-1.5 font-mono text-xs font-black tracking-wide text-emerald-950 uppercase sm:text-sm">
-                  {/* Google Drive Authentic Logo */}
+              <div className="flex min-w-0 flex-1 flex-col justify-center gap-1.5">
+                <div className="flex items-center gap-2">
                   <svg className="h-4 w-4 shrink-0" viewBox="0 0 87.3 78" fill="none">
                     <path d="m6.6 66.85 3.85 6.65c.8 1.4 1.95 2.5 3.3 3.3l13.75-23.8H0c0 1.55.4 3.1 1.2 4.5z" fill="#0066da"/>
                     <path d="M43.65 25 29.9 1.2c-1.35.8-2.5 1.9-3.3 3.3l-25.4 44A9.06 9.06 0 0 0 0 53h27.5z" fill="#00ac47"/>
@@ -407,37 +406,28 @@ export function ResultClient() {
                     <path d="M59.8 53H87.3c0-1.55-.4-3.1-1.2-4.5l-13.75-23.8c-.8-1.4-1.95-2.5-3.3-3.3L56.25 44.5z" fill="#2684fc"/>
                     <path d="m27.5 53 16.15-28-13.75-23.8c-1.35.8-2.5 1.9-3.3 3.3L1.2 48.5c-.8 1.4-1.2 2.95-1.2 4.5z" fill="#ffba00"/>
                   </svg>
-                  <span>GOOGLE DRIVE (1-SCAN)</span>
+                  <span className="font-mono text-sm font-bold tracking-wider text-zinc-900 uppercase">
+                    SCAN FOR PHOTO & GIF
+                  </span>
                 </div>
-                <p className="text-[11px] text-zinc-600">
-                  สแกนด้วยมือถือเพื่อเปิดโฟลเดอร์ Google Drive รวมทั้งรูปภาพและ GIF ทันที
+                <p className="text-xs text-zinc-500">
+                  สแกนด้วยกล้องมือถือ เพื่อดาวน์โหลดรูปและ GIF
                 </p>
-                {driveQr ? (
-                  <div className="flex items-center gap-2">
-                    <a
-                      href={driveQr.folderUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="mt-0.5 inline-flex w-fit items-center rounded-full border border-emerald-300 bg-emerald-100 px-3 py-1 font-mono text-[10px] font-bold text-emerald-850 uppercase transition active:scale-95 hover:bg-emerald-200"
-                    >
-                      ↗ เปิดโฟลเดอร์ Drive
-                    </a>
-                    {isFileSyncing ? (
-                      <span className="font-mono text-[10px] text-zinc-400">กำลังอัปเดตไฟล์...</span>
-                    ) : (
-                      <span className="font-mono text-[10px] text-emerald-600">✓ พร้อมใช้งาน</span>
-                    )}
-                  </div>
-                ) : null}
+                <div className="flex items-center gap-2 pt-0.5">
+                  <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-200/60 bg-emerald-50 px-2.5 py-0.5 font-mono text-[11px] font-semibold text-emerald-700">
+                    <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
+                    พร้อมดาวน์โหลด
+                  </span>
+                </div>
               </div>
             </div>
 
             {/* โซนสติกเกอร์ */}
-            <div>
-              <div className="mb-2.5 flex items-center justify-between">
-                <h2 className="font-mono text-sm font-bold tracking-wider text-zinc-800 uppercase">
-                  Add Stickers (Tap to Add)
-                </h2>
+            <div className="flex flex-col gap-2">
+              <div className="flex items-center justify-between">
+                <span className="font-mono text-xs font-bold tracking-wider text-zinc-500 uppercase">
+                  STICKERS
+                </span>
                 {placedStickers.length > 0 ? (
                   <button
                     type="button"
@@ -445,9 +435,9 @@ export function ResultClient() {
                       setPlacedStickers([]);
                       setSelectedStickerId(null);
                     }}
-                    className="min-h-10 rounded-full border border-zinc-200 bg-zinc-50 px-4 font-mono text-xs font-semibold text-zinc-600 transition active:scale-95 hover:border-rose-400 hover:text-rose-600"
+                    className="font-mono text-xs font-medium text-rose-500 transition hover:underline"
                   >
-                    Clear All
+                    ลบทั้งหมด
                   </button>
                 ) : null}
               </div>

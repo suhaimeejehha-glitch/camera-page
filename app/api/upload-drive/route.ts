@@ -7,8 +7,25 @@ import {
 
 export async function POST(request: Request) {
   try {
-    const formData = await request.formData();
-    const action = formData.get("action");
+    const contentType = request.headers.get("content-type") || "";
+    let action: string | null = null;
+    let folderId: string | null = null;
+    let photoFile: File | null = null;
+    let gifFile: File | null = null;
+
+    if (contentType.includes("application/json")) {
+      const json = await request.json();
+      action = json.action || null;
+      folderId = json.folderId || null;
+    } else {
+      const formData = await request.formData();
+      action = (formData.get("action") as string) || null;
+      folderId = (formData.get("folderId") as string) || null;
+      const p = formData.get("photo");
+      if (p instanceof File && p.size > 0) photoFile = p;
+      const g = formData.get("gif");
+      if (g instanceof File && g.size > 0) gifFile = g;
+    }
 
     const accessToken = await getAccessToken();
 
@@ -18,20 +35,19 @@ export async function POST(request: Request) {
       const dateStr = now.toISOString().replace(/T/, "_").replace(/\..+/, "").replace(/:/g, "-");
       const folderName = `PhotoBooth_${dateStr}`;
 
-      const { folderId, folderUrl } = await createCustomerFolder(
+      const { folderId: createdId, folderUrl } = await createCustomerFolder(
         accessToken,
         folderName
       );
 
       return NextResponse.json({
         success: true,
-        folderId,
+        folderId: createdId,
         folderUrl,
       });
     }
 
     // 2. อัปโหลดไฟล์ภาพและ GIF เข้าโฟลเดอร์
-    let folderId = formData.get("folderId") as string | null;
     let folderUrl: string | undefined;
 
     // หากยังไม่มี folderId ให้สร้างใหม่
@@ -48,11 +64,8 @@ export async function POST(request: Request) {
       folderUrl = `https://drive.google.com/drive/folders/${folderId}?usp=sharing`;
     }
 
-    const photoFile = formData.get("photo");
-    const gifFile = formData.get("gif");
-
     // อัปโหลดรูปภาพ
-    if (photoFile instanceof File && photoFile.size > 0) {
+    if (photoFile) {
       const photoBytes = new Uint8Array(await photoFile.arrayBuffer());
       await uploadFileToFolder(
         accessToken,
@@ -64,7 +77,7 @@ export async function POST(request: Request) {
     }
 
     // อัปโหลด GIF
-    if (gifFile instanceof File && gifFile.size > 0) {
+    if (gifFile) {
       const gifBytes = new Uint8Array(await gifFile.arrayBuffer());
       await uploadFileToFolder(
         accessToken,

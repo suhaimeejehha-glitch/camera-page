@@ -91,6 +91,20 @@ export function ResultClient() {
     let cancelled = false;
 
     async function initDriveFolder() {
+      // ตรวจสอบว่ามี QR ใน session หรือยัง
+      try {
+        const raw = sessionStorage.getItem("photobooth_drive_qr");
+        if (raw) {
+          const parsed = JSON.parse(raw) as DriveQrState;
+          if (parsed && parsed.qrDataUrl) {
+            folderIdRef.current = parsed.folderId || null;
+            setDriveQr(parsed);
+            setIsDriveReady(true);
+            return;
+          }
+        }
+      } catch {}
+
       try {
         const fd = new FormData();
         fd.append("action", "create-folder");
@@ -130,6 +144,22 @@ export function ResultClient() {
         sessionStorage.setItem("photobooth_drive_qr", JSON.stringify(state));
       } catch (err) {
         console.error("Init drive folder error:", err);
+        // Fallback: ใช้โฟลเดอร์หลัก Studio Booth เพื่อให้มี QR Code แสดงให้ลูกค้าสแกนได้เสมอ ไม่หมุนค้าง
+        try {
+          const fallbackUrl =
+            "https://drive.google.com/drive/folders/1Fd5YvZXhsASQAObgnYk53ybwjgxeQB35?usp=sharing";
+          const qrDataUrl = await QRCode.toDataURL(fallbackUrl, {
+            width: 280,
+            margin: 1,
+            color: { dark: "#09090b", light: "#ffffff" },
+          });
+          if (!cancelled) {
+            const state: DriveQrState = { qrDataUrl, folderUrl: fallbackUrl };
+            setDriveQr(state);
+            setIsDriveReady(true);
+            sessionStorage.setItem("photobooth_drive_qr", JSON.stringify(state));
+          }
+        } catch {}
       }
     }
 

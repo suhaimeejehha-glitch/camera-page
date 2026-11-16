@@ -32,19 +32,30 @@ dalGa8BI4vR20pSEc3+p2DeMslEGRJo8zJDXWF4uy13tDKbstX0o5KvOfQKBgQC9
 WBEfZytGYBxMGGAGtT3l4dbg6rAvxfxpMV5iXfzKIPZwoYlpF9/zQq623mEt+rlq
 4zHOIKKgI2qPKS8Ndq1E/gToG+i2L7yqZVPCL+f1W1Rzv/rMK1rJiHO91LdAro/D
 3rb1pCSRI2WwZfW7Nu3c6ClmxHEbQTcwEmp92I6BzQKBgQDWmV1ppnjSdrY+lzAf
-nnLcL024w9ILa1oxS/eh9c/I2vT/LzOG613uDDTjT4WiItNGAgrgeEuHrmnGDZGlf
+nLcL024w9ILa1oxS/eh9c/I2vT/LzOG613uDDTjT4WiItNGAgrgeEuHrmnGDZGlf
 UN6qnlHFIGBwH/dUv3vchiIqSEp3+izTwBw5vBvKDKXceCTkdBkwbhvfUIJ4Kn8/
 /Rutvfk1R1sDccRTKSbZn7OeZQ==
------END PRIVATE KEY-----`;
+-----END PRIVATE KEY-----
+`;
+
+function cleanPrivateKey(raw: string): string {
+  if (!raw) return "";
+  let k = raw.trim();
+  if ((k.startsWith('"') && k.endsWith('"')) || (k.startsWith("'") && k.endsWith("'"))) {
+    k = k.slice(1, -1);
+  }
+  return k
+    .replace(/\\n/g, "\n")
+    .replace(/\r\n/g, "\n")
+    .replace(/\r/g, "\n")
+    .trim();
+}
 
 function getGoogleDriveConfig(): GoogleDriveConfig {
   const clientEmail =
     process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL || DEFAULT_CLIENT_EMAIL;
   const rawKey = process.env.GOOGLE_PRIVATE_KEY || DEFAULT_PRIVATE_KEY;
-  const privateKey = rawKey
-    .replace(/\\n/g, "\n")
-    .replace(/\r\n/g, "\n")
-    .replace(/\r/g, "\n");
+  const privateKey = cleanPrivateKey(rawKey);
   const parentFolderId =
     process.env.GOOGLE_DRIVE_FOLDER_ID || DEFAULT_FOLDER_ID;
 

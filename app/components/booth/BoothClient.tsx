@@ -418,46 +418,6 @@ export function BoothClient() {
                 />
               </div>
             )}
-
-            <p className="text-center text-[11px] text-zinc-400">
-              รูปจะถูกนำไปจัดเรียงลงในแถบรูปอัตโนมัติ
-            </p>
-          </div>
-
-          {/* กล่องควบคุมการถ่ายภาพฝั่งขวา */}
-          <div className="flex w-full flex-col items-center gap-3 rounded-2xl border border-zinc-800 bg-zinc-950/80 p-4 text-center shadow-lg">
-            {!isFull ? (
-              <div className="flex flex-col items-center gap-2">
-                <button
-                  type="button"
-                  onClick={handleTakePhoto}
-                  disabled={!isCameraReady || countdown !== null}
-                  aria-label="Take Photo"
-                  className="flex h-16 w-16 sm:h-20 sm:w-20 items-center justify-center rounded-full border-4 border-white bg-pink-500 text-white shadow-2xl shadow-pink-500/40 transition active:scale-90 hover:bg-pink-400 disabled:cursor-not-allowed disabled:opacity-45"
-                >
-                  <svg
-                    viewBox="0 0 24 24"
-                    fill="currentColor"
-                    className="h-8 w-8 sm:h-10 sm:w-10"
-                    aria-hidden="true"
-                  >
-                    <path d="M9 3L7.17 5H4C2.9 5 2 5.9 2 7V19C2 20.1 2.9 21 4 21H20C21.1 21 22 20.1 22 19V7C22 5.9 21.1 5 20 5H16.83L15 3H9ZM12 18C9.24 18 7 15.76 7 13C7 10.24 9.24 8 12 8C14.76 8 17 10.24 17 13C17 15.76 14.76 18 12 18ZM12 10C10.34 10 9 11.34 9 13C9 14.66 10.34 16 12 16C13.66 16 15 14.66 15 13C15 11.34 13.66 10 12 10Z" />
-                  </svg>
-                </button>
-                <p className="text-xs text-zinc-300 font-medium">
-                  {countdown !== null
-                    ? `กำลังนับถอยหลัง ${countdown} วิ...`
-                    : `แตะชัตเตอร์เพื่อถ่ายรูป (ช็อตที่ ${photos.length + 1})`}
-                </p>
-              </div>
-            ) : (
-              <div className="flex flex-col items-center gap-1 text-emerald-400 py-2">
-                <span className="text-2xl">✓</span>
-                <span className="text-xs font-bold font-mono">
-                  ถ่ายครบ {MAX_BOOTH_SHOTS} ช็อตเรียบร้อยแล้ว
-                </span>
-              </div>
-            )}
           </div>
 
         </div>

@@ -193,50 +193,50 @@ export function BoothClient() {
   const isFull = photos.length >= frame.shotCount;
 
   return (
-    <div className="flex h-full w-full max-w-7xl flex-1 flex-col justify-between gap-2 overflow-hidden select-none touch-manipulation">
-      {/* 1. Kiosk Top Bar: Studio Booth Brand + Shot Status + Controls */}
-      <header className="flex w-full shrink-0 items-center justify-between gap-2 border-b border-zinc-800/80 pb-2">
+    <div className="flex h-full w-full max-w-7xl flex-1 flex-col justify-between gap-2.5 overflow-hidden select-none touch-manipulation font-sans">
+      {/* 1. Kiosk Top Bar: Studio Booth Brand + Shot Status + Controls ขนาดใหญ่สำหรับทัชสกรีน */}
+      <header className="flex w-full shrink-0 items-center justify-between gap-3 border-b border-zinc-800/80 pb-2.5">
         {/* Brand & Shot Status */}
-        <div className="flex items-center gap-2 sm:gap-3">
-          <div className="flex items-center gap-2 text-xs sm:text-sm font-black tracking-widest text-white uppercase">
-            <span className="inline-flex h-8 w-8 items-center justify-center rounded-xl bg-pink-500 font-mono text-xs text-white shadow-md shadow-pink-500/40">
+        <div className="flex items-center gap-2.5 sm:gap-4">
+          <div className="flex items-center gap-2 text-sm sm:text-base font-black tracking-widest text-white uppercase">
+            <span className="inline-flex h-9 w-9 sm:h-10 sm:w-10 items-center justify-center rounded-xl bg-pink-500 font-mono text-sm font-bold text-white shadow-lg shadow-pink-500/40">
               ◉
             </span>
-            <span className="font-extrabold tracking-wider">STUDIO BOOTH</span>
+            <span className="font-extrabold tracking-wide text-white text-base sm:text-lg">STUDIO BOOTH</span>
           </div>
 
-          <div className="flex items-center gap-1.5 rounded-full border border-pink-500/50 bg-pink-500/15 px-3 py-1 font-mono text-xs font-bold text-pink-300">
-            <span className="h-2 w-2 rounded-full bg-pink-500 animate-pulse" />
+          <div className="flex items-center gap-2 rounded-full border border-pink-500/60 bg-pink-500/20 px-4 py-1.5 font-bold text-xs sm:text-sm text-pink-200 shadow-md">
+            <span className="h-2.5 w-2.5 rounded-full bg-pink-400 animate-pulse" />
             <span>
               ช็อตที่ {photos.length < frame.shotCount ? photos.length + 1 : frame.shotCount} / {frame.shotCount}
             </span>
           </div>
         </div>
 
-        {/* Action Controls for Touchscreen */}
-        <div className="flex items-center gap-2">
+        {/* Action Controls for Touchscreen (ปุ่มใหญ่ แตะง่าย ไม่ต้องเล็ง) */}
+        <div className="flex items-center gap-2 sm:gap-2.5">
           {/* สลับกล้องหน้า/หลัง (สำหรับ iPad หรือแท็บเล็ตที่มี 2 กล้อง) */}
           <button
             type="button"
             onClick={handleToggleCamera}
             title="สลับกล้องหน้า/หลัง"
-            className="inline-flex min-h-9 sm:min-h-10 items-center gap-1.5 rounded-full border border-white/20 bg-zinc-900/80 px-3 sm:px-3.5 font-mono text-xs font-bold text-zinc-200 backdrop-blur-md transition active:scale-95 hover:bg-zinc-800"
+            className="inline-flex min-h-11 sm:min-h-12 items-center gap-2 rounded-full border border-white/25 bg-zinc-900/90 px-4 sm:px-5 text-xs sm:text-sm font-bold text-zinc-100 shadow-lg backdrop-blur-md transition active:scale-90 hover:bg-zinc-800 touch-manipulation cursor-pointer"
           >
-            <span>🔄</span>
-            <span className="hidden sm:inline">FLIP</span>
+            <span className="text-base">🔄</span>
+            <span>สลับกล้อง</span>
           </button>
 
           {/* สลับกลับด้าน Mirror */}
           <button
             type="button"
             onClick={() => setIsMirrored((prev) => !prev)}
-            className={`inline-flex min-h-9 sm:min-h-10 items-center rounded-full border px-3 sm:px-3.5 font-mono text-xs font-bold uppercase backdrop-blur-md transition active:scale-95 ${
+            className={`inline-flex min-h-11 sm:min-h-12 items-center rounded-full border px-4 sm:px-5 text-xs sm:text-sm font-bold uppercase shadow-lg backdrop-blur-md transition active:scale-90 touch-manipulation cursor-pointer ${
               isMirrored
-                ? "border-pink-400/80 bg-pink-500/25 text-pink-200"
-                : "border-white/20 bg-zinc-900/80 text-zinc-300"
+                ? "border-pink-400 bg-pink-500/30 text-pink-100 ring-2 ring-pink-500/40"
+                : "border-white/25 bg-zinc-900/90 text-zinc-200"
             }`}
           >
-            Mirror {isMirrored ? "ON" : "OFF"}
+            กระจก {isMirrored ? "เปิด (ON)" : "ปิด (OFF)"}
           </button>
 
           {/* ปุ่มเต็มหน้าจอสำหรับตู้ Kiosk */}
@@ -245,10 +245,10 @@ export function BoothClient() {
       </header>
 
       {/* 2. Main Stage (หน้าจอกลางแบบตู้ Kiosk): กล้องสดขยายเต็มฝั่งซ้าย + พรีวิวสตริปรูปฝั่งขวา */}
-      <div className="flex min-h-0 w-full flex-1 flex-col gap-2.5 landscape:flex-row landscape:items-stretch landscape:justify-center landscape:gap-4 overflow-hidden">
+      <div className="flex min-h-0 w-full flex-1 flex-col gap-3 landscape:flex-row landscape:items-stretch landscape:justify-center landscape:gap-4 overflow-hidden">
         
-        {/* ฝั่งซ้าย: กล้องสด Live Camera โดดเด่น ชัดเจน เต็มจอทัชสกรีน */}
-        <div className="relative flex min-h-0 flex-1 flex-col items-center justify-center overflow-hidden rounded-2xl sm:rounded-3xl border border-zinc-800 bg-black shadow-2xl">
+        {/* ฝั่งซ้าย: กล้องสด Live Camera โดดเด่น ชัดเจน เต็มตา */}
+        <div className="relative flex min-h-0 flex-1 flex-col items-center justify-center overflow-hidden rounded-2xl sm:rounded-3xl border-2 border-zinc-800 bg-black shadow-2xl">
           <CameraView
             videoRef={videoRef}
             isMirrored={isMirrored}
@@ -258,70 +258,73 @@ export function BoothClient() {
             fullScreen
             onCameraStateChange={handleCameraStateChange}
           >
-            {/* มุมกรอบเล็งกล้องสีขาว 4 มุม */}
-            <div className="pointer-events-none absolute inset-x-6 inset-y-6 sm:inset-x-10 sm:inset-y-10 z-10">
-              <span className="absolute top-0 left-0 h-6 w-6 sm:h-10 sm:w-10 rounded-tl-xl border-t-4 border-l-4 border-white/90" />
-              <span className="absolute top-0 right-0 h-6 w-6 sm:h-10 sm:w-10 rounded-tr-xl border-t-4 border-r-4 border-white/90" />
-              <span className="absolute bottom-0 left-0 h-6 w-6 sm:h-10 sm:w-10 rounded-bl-xl border-b-4 border-l-4 border-white/90" />
-              <span className="absolute right-0 bottom-0 h-6 w-6 sm:h-10 sm:w-10 rounded-br-xl border-r-4 border-b-4 border-white/90" />
+            {/* มุมกรอบเล็งกล้องสีขาว 4 มุม เส้นหนาชัดเจน */}
+            <div className="pointer-events-none absolute inset-x-8 inset-y-8 sm:inset-x-12 sm:inset-y-12 z-10">
+              <span className="absolute top-0 left-0 h-8 w-8 sm:h-12 sm:w-12 rounded-tl-2xl border-t-4 border-l-4 sm:border-t-5 sm:border-l-5 border-white/95" />
+              <span className="absolute top-0 right-0 h-8 w-8 sm:h-12 sm:w-12 rounded-tr-2xl border-t-4 border-r-4 sm:border-t-5 sm:border-r-5 border-white/95" />
+              <span className="absolute bottom-0 left-0 h-8 w-8 sm:h-12 sm:w-12 rounded-bl-2xl border-b-4 border-l-4 sm:border-b-5 sm:border-l-5 border-white/95" />
+              <span className="absolute right-0 bottom-0 h-8 w-8 sm:h-12 sm:w-12 rounded-br-2xl border-r-4 border-b-4 sm:border-r-5 sm:border-b-5 border-white/95" />
             </div>
 
             <CountdownOverlay secondsLeft={countdown} />
           </CameraView>
 
-          {/* ป้ายบอกสถานะกล้องสด ● LIVE CAMERA */}
-          <div className="pointer-events-none absolute top-3 left-3 flex items-center gap-1.5 rounded-full border border-pink-500/40 bg-black/75 px-3 py-1 text-[11px] font-bold text-pink-300 backdrop-blur-md sm:text-xs">
-            <span className="h-2 w-2 rounded-full bg-pink-500 animate-pulse" />
-            <span>LIVE CAMERA</span>
+          {/* ป้ายบอกสถานะกล้องสด ● LIVE CAMERA ตัวอักษรใหญ่ */}
+          <div className="pointer-events-none absolute top-3.5 left-3.5 flex items-center gap-2 rounded-full border border-pink-500/50 bg-black/80 px-4 py-1.5 text-xs sm:text-sm font-bold text-pink-300 backdrop-blur-md shadow-lg">
+            <span className="h-2.5 w-2.5 rounded-full bg-pink-500 animate-pulse" />
+            <span>กล้องสด (LIVE)</span>
           </div>
 
           {/* ป้ายบอกโทนสีที่กำลังใช้งาน */}
-          <div className="pointer-events-none absolute top-3 right-3 flex items-center gap-1.5 rounded-full border border-white/20 bg-black/75 px-3 py-1 font-mono text-[11px] font-bold text-zinc-200 backdrop-blur-md sm:text-xs">
+          <div className="pointer-events-none absolute top-3.5 right-3.5 flex items-center gap-2 rounded-full border border-white/30 bg-black/80 px-4 py-1.5 text-xs sm:text-sm font-bold text-zinc-100 backdrop-blur-md shadow-lg">
             <span
-              className="h-2.5 w-2.5 rounded-full"
+              className="h-3.5 w-3.5 rounded-full border border-white/40 shadow-sm"
               style={{ backgroundColor: activeTone.previewColor }}
             />
-            <span>{activeTone.name}</span>
+            <span>โทน: {activeTone.name}</span>
           </div>
 
-          {/* ปุ่มชัตเตอร์ขนาดใหญ่พิเศษสำหรับจอทัชสกรีน แตะถ่ายง่าย */}
+          {/* ปุ่มชัตเตอร์ขนาดใหญ่พิเศษ (Huge Touch Target) แตะถ่ายง่ายที่สุดบนจอทัชสกรีน */}
           {!isFull ? (
-            <div className="absolute inset-x-0 bottom-3 sm:bottom-4 flex items-center justify-center z-20">
+            <div className="absolute inset-x-0 bottom-4 sm:bottom-6 flex flex-col items-center justify-center gap-1.5 z-20">
               <button
                 type="button"
                 onClick={handleTakePhoto}
                 disabled={!isCameraReady || countdown !== null}
                 aria-label="Take Photo"
-                className="group relative flex h-16 w-16 sm:h-20 sm:w-20 items-center justify-center rounded-full border-4 border-white bg-pink-500 text-white shadow-2xl shadow-pink-500/60 transition active:scale-90 hover:bg-pink-400 disabled:cursor-not-allowed disabled:opacity-40 select-none touch-manipulation cursor-pointer"
+                className="group relative flex h-20 w-20 sm:h-24 sm:w-24 items-center justify-center rounded-full border-4 border-white bg-pink-500 text-white shadow-2xl shadow-pink-500/70 transition active:scale-85 hover:bg-pink-400 disabled:cursor-not-allowed disabled:opacity-40 select-none touch-manipulation cursor-pointer"
               >
-                {/* วงแหวนสะท้อนแสงรอบปุ่มชัตเตอร์ */}
-                <span className="pointer-events-none absolute -inset-2 rounded-full border-2 border-pink-400/50 animate-ping opacity-60" />
+                {/* วงแหวนเรืองแสงรอบปุ่มชัตเตอร์ */}
+                <span className="pointer-events-none absolute -inset-3 rounded-full border-2 border-pink-400 animate-ping opacity-60" />
                 <svg
                   viewBox="0 0 24 24"
                   fill="currentColor"
-                  className="h-8 w-8 sm:h-9 sm:w-9 transition group-active:scale-95"
+                  className="h-10 w-10 sm:h-12 sm:w-12 transition group-active:scale-90"
                   aria-hidden="true"
                 >
                   <path d="M9 3L7.17 5H4C2.9 5 2 5.9 2 7V19C2 20.1 2.9 21 4 21H20C21.1 21 22 20.1 22 19V7C22 5.9 21.1 5 20 5H16.83L15 3H9ZM12 18C9.24 18 7 15.76 7 13C7 10.24 9.24 8 12 8C14.76 8 17 10.24 17 13C17 15.76 14.76 18 12 18ZM12 10C10.34 10 9 11.34 9 13C9 14.66 10.34 16 12 16C13.66 16 15 14.66 15 13C15 11.34 13.66 10 12 10Z" />
                 </svg>
               </button>
+              <span className="rounded-full bg-black/75 px-3 py-1 font-bold text-xs text-white backdrop-blur-md shadow">
+                แตะเพื่อถ่ายรูป
+              </span>
             </div>
           ) : (
-            <div className="absolute inset-x-0 bottom-3 flex items-center justify-center z-20">
-              <div className="rounded-full border border-emerald-500/60 bg-black/85 px-4 py-1.5 font-mono text-xs font-bold text-emerald-400 shadow-xl backdrop-blur-md">
-                ✓ ถ่ายครบ {frame.shotCount} ช็อตแล้ว พร้อมไปต่อ
+            <div className="absolute inset-x-0 bottom-4 flex items-center justify-center z-20">
+              <div className="rounded-full border-2 border-emerald-400 bg-black/90 px-6 py-2.5 text-sm sm:text-base font-bold text-emerald-300 shadow-2xl backdrop-blur-md">
+                ✓ ถ่ายครบ {frame.shotCount} ช็อตแล้ว พร้อมไปต่อ 🎉
               </div>
             </div>
           )}
         </div>
 
-        {/* ฝั่งขวา: พรีวิวสตริปรูปจริง (STRIP PREVIEW) จัดวางเรียบหรู ดูง่าย */}
-        <div className="flex shrink-0 flex-col items-center justify-between gap-1.5 rounded-2xl sm:rounded-3xl border border-zinc-800/80 bg-zinc-950/85 p-2 sm:p-2.5 shadow-2xl backdrop-blur-md landscape:w-auto landscape:self-stretch">
+        {/* ฝั่งขวา: พรีวิวสตริปรูปจริง (STRIP PREVIEW) จัดวางเรียบหรู ชัดเจน */}
+        <div className="flex shrink-0 flex-col items-center justify-between gap-2 rounded-2xl sm:rounded-3xl border border-zinc-800/80 bg-zinc-950/85 p-2.5 sm:p-3 shadow-2xl backdrop-blur-md landscape:w-auto landscape:self-stretch">
           <div className="flex w-full items-center justify-between px-1">
-            <span className="text-[11px] font-mono font-bold tracking-wider text-pink-400 uppercase">
-              🎞️ STRIP PREVIEW
+            <span className="text-xs sm:text-sm font-bold tracking-wider text-pink-400 uppercase">
+              🎞️ ตัวอย่างรูปจริง (STRIP PREVIEW)
             </span>
-            <span className="text-[10px] text-zinc-400 font-mono">
+            <span className="text-xs sm:text-sm font-bold text-zinc-300">
               {photos.length} / {frame.shotCount}
             </span>
           </div>
@@ -329,7 +332,7 @@ export function BoothClient() {
           {/* กรอบรูปสตริป (แสดง 2 แถบคู่สำหรับทั้งแนวตั้งและแนวนอน) */}
           <div className="flex flex-1 items-center justify-center">
             {orientation === "vertical" ? (
-              <div className="flex items-center justify-center gap-1.5 sm:gap-2">
+              <div className="flex items-center justify-center gap-2 sm:gap-2.5">
                 <div className="relative">
                   <StripPreview
                     frame={frame}
@@ -348,7 +351,7 @@ export function BoothClient() {
                 </div>
               </div>
             ) : (
-              <div className="flex flex-col items-center justify-center gap-1.5 sm:gap-2">
+              <div className="flex flex-col items-center justify-center gap-2 sm:gap-2.5">
                 <div className="relative">
                   <StripPreview
                     frame={frame}
@@ -369,7 +372,7 @@ export function BoothClient() {
             )}
           </div>
 
-          <span className="text-[10px] text-zinc-500 font-mono text-center">
+          <span className="text-xs font-medium text-zinc-400 text-center">
             {orientation === "vertical"
               ? "พิมพ์ 2 แถบคู่ (Dual Strip ซ้าย-ขวา)"
               : "พิมพ์ 2 แถบคู่ (Dual Strip บน-ล่าง)"}
@@ -378,22 +381,22 @@ export function BoothClient() {
 
       </div>
 
-      {/* 3. แถบควบคุมจอทัชสกรีนด้านล่าง (Touchscreen Dock): โทนสี + ช่องเลือกรูปช็อต */}
-      <div className="flex shrink-0 flex-col gap-1.5 sm:gap-2 rounded-2xl sm:rounded-3xl border border-zinc-800/90 bg-zinc-950/85 p-2 sm:p-3 shadow-2xl backdrop-blur-md">
+      {/* 3. แถบควบคุมจอทัชสกรีนด้านล่าง (Touchscreen Dock): โทนสี + ช่องเลือกรูปช็อต ปุ่มใหญ่ทัชง่าย */}
+      <div className="flex shrink-0 flex-col gap-2 rounded-2xl sm:rounded-3xl border border-zinc-800/90 bg-zinc-950/90 p-2.5 sm:p-3.5 shadow-2xl backdrop-blur-md">
         
         {/* แถวที่ 1: 🎨 โทนสีรูปภาพ (COLOR TONES) สำหรับแตะเปลี่ยนสดๆ */}
-        <div className="flex flex-col gap-1">
+        <div className="flex flex-col gap-1.5">
           <div className="flex items-center justify-between px-1">
-            <div className="flex items-center gap-1.5 font-mono text-[11px] sm:text-xs font-bold tracking-wider text-zinc-300 uppercase">
-              <span>🎨 โทนสีรูปภาพ / COLOR TONES</span>
+            <div className="flex items-center gap-2 text-xs sm:text-sm font-bold tracking-wide text-zinc-200">
+              <span>🎨 เลือกโทนสี (COLOR TONES)</span>
             </div>
-            <span className="text-[11px] sm:text-xs text-pink-400 font-medium">
+            <span className="text-xs sm:text-sm text-pink-400 font-bold">
               {activeTone.name} ({activeTone.labelEn})
             </span>
           </div>
 
-          {/* แถบชิปโทนสี แตะเลื่อนได้สำหรับ Touchscreen */}
-          <div className="flex items-center gap-1.5 sm:gap-2 overflow-x-auto pb-0.5 pt-0.5 no-scrollbar touch-pan-x">
+          {/* แถบชิปโทนสี แตะเลื่อนได้สำหรับ Touchscreen (ปุ่มใหญ่ กดติดง่ายด้วยนิ้วมือ) */}
+          <div className="flex items-center gap-2 sm:gap-2.5 overflow-x-auto pb-1 pt-0.5 no-scrollbar touch-pan-x">
             {PHOTO_TONES.map((tone) => {
               const isSelected = tone.id === selectedToneId;
               return (
@@ -401,14 +404,14 @@ export function BoothClient() {
                   key={tone.id}
                   type="button"
                   onClick={() => setSelectedToneId(tone.id)}
-                  className={`flex shrink-0 items-center gap-1.5 sm:gap-2 rounded-full border px-3 py-1 sm:px-3.5 sm:py-1.5 text-xs font-bold transition active:scale-95 touch-manipulation cursor-pointer ${
+                  className={`flex shrink-0 items-center gap-2 rounded-full border px-4 py-2 sm:px-5 sm:py-2.5 text-xs sm:text-sm font-bold transition active:scale-90 touch-manipulation cursor-pointer ${
                     isSelected
-                      ? "border-pink-500 bg-pink-500/25 text-white shadow-md shadow-pink-500/30 ring-1 ring-pink-500/50"
-                      : "border-zinc-800 bg-zinc-900/90 text-zinc-300 hover:border-zinc-700 hover:text-white"
+                      ? "border-pink-500 bg-pink-500/30 text-white shadow-lg shadow-pink-500/40 ring-2 ring-pink-500/60"
+                      : "border-zinc-800 bg-zinc-900 text-zinc-200 hover:border-zinc-700 hover:text-white"
                   }`}
                 >
                   <span
-                    className="h-2.5 w-2.5 sm:h-3 sm:w-3 rounded-full border border-white/40 shrink-0"
+                    className="h-3.5 w-3.5 sm:h-4 sm:w-4 rounded-full border border-white/50 shrink-0 shadow-sm"
                     style={{ backgroundColor: tone.previewColor }}
                   />
                   <span>{tone.name}</span>
@@ -419,36 +422,36 @@ export function BoothClient() {
         </div>
 
         {/* แถวที่ 2: 📸 แถบเลือกรูปแต่ละช็อต (TOUCH FILMSTRIP) เหมือนตู้ทัชสกรีน */}
-        <div className="flex flex-col gap-1 pt-1 border-t border-zinc-900">
+        <div className="flex flex-col gap-1.5 pt-1.5 border-t border-zinc-800/80">
           <div className="flex items-center justify-between px-1">
-            <div className="flex items-center gap-1.5 font-mono text-[11px] sm:text-xs font-bold tracking-wider text-zinc-300 uppercase">
-              <span>📸 แถบรูปแต่ละช็อต ({photos.length} / {frame.shotCount})</span>
+            <div className="flex items-center gap-2 text-xs sm:text-sm font-bold tracking-wide text-zinc-200">
+              <span>📸 ภาพแต่ละช็อต ({photos.length} / {frame.shotCount})</span>
             </div>
-            <span className="text-[10px] sm:text-[11px] text-zinc-400">
+            <span className="text-xs sm:text-sm text-zinc-300 font-medium">
               {photos.length >= frame.shotCount
-                ? "ถ่ายครบแล้ว พร้อมไปต่อ 🎉"
-                : "แตะชัตเตอร์เพื่อถ่ายภาพต่อไป"}
+                ? "ถ่ายครบทุกช็อตแล้ว แตะปุ่ม 'ถัดไป' ด้านล่างได้เลย"
+                : "แตะชัตเตอร์วงกลมสีชมพูด้านบนเพื่อถ่ายภาพ"}
             </span>
           </div>
 
           {/* แสดงช็อต 1 ถึง shotCount ครบทุกช่องตามแบบตู้ Photobooth ทัชสกรีน */}
-          <div className="flex items-center gap-2 sm:gap-2.5 overflow-x-auto rounded-xl sm:rounded-2xl border border-zinc-800/80 bg-zinc-900/70 p-1.5 sm:p-2 no-scrollbar touch-pan-x">
+          <div className="flex items-center gap-2.5 sm:gap-3 overflow-x-auto rounded-xl sm:rounded-2xl border border-zinc-800/90 bg-zinc-900/80 p-2 sm:p-2.5 no-scrollbar touch-pan-x">
             {Array.from({ length: frame.shotCount }).map((_, idx) => {
               const shot = photos[idx];
               const isCurrent = idx === photos.length;
               return (
                 <div
                   key={`slot-${idx}`}
-                  className={`relative h-14 w-20 sm:h-16 sm:w-24 md:h-18 md:w-28 shrink-0 overflow-hidden rounded-lg sm:rounded-xl border transition ${
+                  className={`relative h-18 w-26 sm:h-22 sm:w-32 shrink-0 overflow-hidden rounded-xl border-2 transition ${
                     shot
-                      ? "border-zinc-700 bg-black shadow-md"
+                      ? "border-zinc-700 bg-black shadow-lg"
                       : isCurrent
-                      ? "border-dashed border-pink-500 bg-pink-500/15 animate-pulse"
-                      : "border-dashed border-zinc-800 bg-zinc-900/40 opacity-50"
+                      ? "border-dashed border-pink-500 bg-pink-500/20 animate-pulse ring-2 ring-pink-500/40"
+                      : "border-dashed border-zinc-800 bg-zinc-900/50 opacity-60"
                   }`}
                 >
                   {shot ? (
-                    <div className="group relative h-full w-full">
+                    <div className="relative h-full w-full">
                       {/* eslint-disable-next-line @next/next/no-img-element */}
                       <img
                         src={shot.dataUrl}
@@ -456,25 +459,26 @@ export function BoothClient() {
                         className="h-full w-full object-cover"
                         style={{ filter: activeTone.cssFilter }}
                       />
-                      <span className="absolute top-1 left-1 rounded bg-black/75 px-1.5 py-0.5 font-mono text-[9px] sm:text-[10px] font-bold text-white backdrop-blur-sm">
+                      <span className="absolute top-1 left-1 rounded-md bg-black/80 px-2 py-0.5 text-xs font-black text-white shadow">
                         #{idx + 1}
                       </span>
+                      {/* ปุ่มลบเพื่อถ่ายใหม่ แสดงตลอดเวลาบนทัชสกรีน (ไม่มี hover) */}
                       <button
                         type="button"
                         onClick={() => handleDeleteShot(shot.id)}
-                        title="ลบเพื่อถ่ายช็อตนี้ใหม่"
-                        className="absolute top-1 right-1 flex h-5 w-5 sm:h-6 sm:w-6 items-center justify-center rounded-full bg-rose-500/90 text-[10px] font-bold text-white shadow transition hover:bg-rose-600 active:scale-90"
+                        title="แตะเพื่อลบและถ่ายช็อตนี้ใหม่"
+                        className="absolute top-1 right-1 flex items-center gap-1 rounded-full bg-rose-600 px-2 py-1 text-xs font-bold text-white shadow-lg transition active:scale-90 hover:bg-rose-500 touch-manipulation cursor-pointer"
                       >
-                        ✕
+                        ✕ ลบ
                       </button>
                     </div>
                   ) : (
-                    <div className="flex h-full w-full flex-col items-center justify-center p-1 text-center font-mono">
-                      <span className="text-[10px] sm:text-xs font-bold text-zinc-400">
-                        #{idx + 1}
+                    <div className="flex h-full w-full flex-col items-center justify-center p-1.5 text-center">
+                      <span className="text-xs sm:text-sm font-black text-zinc-300">
+                        ช็อตที่ {idx + 1}
                       </span>
-                      <span className={`text-[8px] sm:text-[9px] ${isCurrent ? "text-pink-400 font-bold" : "text-zinc-500"}`}>
-                        {isCurrent ? "รอถ่าย..." : "ว่าง"}
+                      <span className={`text-xs font-bold ${isCurrent ? "text-pink-400" : "text-zinc-500"}`}>
+                        {isCurrent ? "● รอถ่าย" : "ว่าง"}
                       </span>
                     </div>
                   )}
@@ -486,11 +490,11 @@ export function BoothClient() {
 
       </div>
 
-      {/* 4. Bottom Footer: Back Button ซ้ายล่าง • Next Button ขวาล่าง ปุ่มใหญ่กดง่าย */}
-      <div className="flex w-full shrink-0 items-center justify-between gap-2.5 border-t border-zinc-800/80 pt-2">
+      {/* 4. Bottom Footer: Back Button ซ้ายล่าง • Next Button ขวาล่าง ปุ่มใหญ่พิเศษสำหรับทัชสกรีน */}
+      <div className="flex w-full shrink-0 items-center justify-between gap-3 border-t border-zinc-800/80 pt-2.5">
         <Link
           href={`/frames?shots=${shots}&orientation=${orientation}`}
-          className="inline-flex min-h-11 sm:min-h-12 items-center justify-center rounded-full border border-zinc-700 bg-zinc-900/80 px-5 sm:px-7 text-xs sm:text-sm font-bold tracking-wider text-zinc-200 uppercase shadow-lg transition active:scale-95 hover:bg-zinc-800 hover:text-white touch-manipulation"
+          className="inline-flex min-h-13 sm:min-h-15 items-center justify-center rounded-2xl border-2 border-zinc-700 bg-zinc-900 px-6 sm:px-8 text-sm sm:text-base font-bold text-zinc-200 shadow-xl transition active:scale-95 hover:bg-zinc-800 hover:text-white touch-manipulation cursor-pointer"
         >
           ← เปลี่ยนกรอบ (Back)
         </Link>
@@ -498,12 +502,12 @@ export function BoothClient() {
         {canProceed ? (
           <Link
             href={`/result?frame=${frame.id}&shots=${shots}&orientation=${orientation}`}
-            className="inline-flex min-h-11 sm:min-h-12 items-center justify-center rounded-full bg-gradient-to-r from-pink-500 to-rose-500 px-6 sm:px-9 text-xs sm:text-base font-black tracking-wider text-white uppercase shadow-xl shadow-pink-500/40 transition active:scale-95 hover:from-pink-400 hover:to-rose-400 animate-pulse touch-manipulation"
+            className="inline-flex min-h-13 sm:min-h-15 items-center justify-center rounded-2xl bg-gradient-to-r from-pink-500 via-rose-500 to-pink-500 px-8 sm:px-12 text-base sm:text-lg font-black text-white uppercase shadow-2xl shadow-pink-500/50 transition active:scale-95 hover:from-pink-400 hover:to-rose-400 animate-pulse touch-manipulation cursor-pointer"
           >
             ไปหน้าแต่งรูป & ปริ้นต์ (Next) →
           </Link>
         ) : (
-          <div className="text-xs sm:text-sm font-mono text-zinc-400">
+          <div className="text-sm sm:text-base font-bold text-zinc-400">
             ถ่ายอีก {frame.shotCount - photos.length} ช็อต เพื่อไปต่อ
           </div>
         )}

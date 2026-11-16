@@ -1,16 +1,13 @@
 import type { Metadata, Viewport } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Kanit } from "next/font/google";
 import { KioskGuard } from "@/app/components/ui/KioskGuard";
 import "./globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
+const kanit = Kanit({
+  variable: "--font-kanit",
+  weight: ["300", "400", "500", "600", "700", "800", "900"],
+  subsets: ["thai", "latin"],
+  display: "swap",
 });
 
 export const metadata: Metadata = {
@@ -30,8 +27,16 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="th"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      className={`${kanit.variable} font-sans h-full antialiased`}
     >
+      <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link
+          href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700;800;900&display=swap"
+          rel="stylesheet"
+        />
+      </head>
       <body className="min-h-dvh flex flex-col select-none overflow-x-hidden">
         <KioskGuard>{children}</KioskGuard>
       </body>

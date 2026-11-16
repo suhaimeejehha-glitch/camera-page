@@ -607,13 +607,13 @@ export function ResultClient() {
           </div>
         </div>
 
-        {/* แถบปุ่ม Back (ซ้ายล่าง) และ Print / Next (ขวาล่าง) สไตล์ White Pill Kiosk */}
+        {/* แถบปุ่ม Back (ซ้ายล่าง) และ Print / Next (ขวาล่าง) ปุ่มใหญ่พิเศษสำหรับ Touchscreen */}
         <div className="flex w-full max-w-6xl shrink-0 items-center justify-between gap-4 pt-3">
           <Link
             href={`/booth?frame=${frame.id}&shots=${shots}&orientation=${orientation}`}
-            className="inline-flex min-h-12 items-center justify-center rounded-full border border-zinc-700 bg-zinc-800/80 px-8 text-sm font-bold tracking-wider text-zinc-200 uppercase shadow-lg transition active:scale-95 hover:bg-zinc-700 hover:text-white"
+            className="inline-flex min-h-13 sm:min-h-15 items-center justify-center rounded-2xl border-2 border-zinc-700 bg-zinc-900 px-7 sm:px-8 text-sm sm:text-base font-bold text-zinc-200 shadow-xl transition active:scale-95 hover:bg-zinc-800 hover:text-white touch-manipulation cursor-pointer"
           >
-            ← Back
+            ← ย้อนกลับไปถ่ายใหม่ (Back)
           </Link>
 
           <div className="flex items-center gap-3">
@@ -621,18 +621,18 @@ export function ResultClient() {
               type="button"
               onClick={handlePrint}
               disabled={isPrinting || photos.length === 0}
-              className="inline-flex min-h-12 items-center justify-center rounded-full bg-white px-9 text-base font-black tracking-wider text-zinc-950 uppercase shadow-xl transition active:scale-95 hover:bg-zinc-100 disabled:cursor-not-allowed disabled:opacity-50"
+              className="inline-flex min-h-13 sm:min-h-15 items-center justify-center rounded-2xl bg-white px-8 sm:px-11 text-base sm:text-lg font-black text-zinc-950 shadow-2xl shadow-white/30 transition active:scale-95 hover:bg-zinc-100 disabled:cursor-not-allowed disabled:opacity-50 touch-manipulation cursor-pointer"
             >
-              {isPrinting ? "กำลังสั่งปริ้นต์..." : "🖨️ ปริ้นต์รูป (Print)"}
+              {isPrinting ? "กำลังเตรียมการพิมพ์..." : "🖨️ สั่งพิมพ์รูป (PRINT)"}
             </button>
 
             {hasPrinted ? (
               <button
                 type="button"
                 onClick={handleFinishSession}
-                className="inline-flex min-h-12 items-center justify-center rounded-full bg-pink-500 px-8 text-base font-black tracking-wider text-white uppercase shadow-lg shadow-pink-500/30 transition active:scale-95 hover:bg-pink-400"
+                className="inline-flex min-h-13 sm:min-h-15 items-center justify-center rounded-2xl bg-pink-500 px-8 text-base font-black text-white shadow-lg shadow-pink-500/30 transition active:scale-95 hover:bg-pink-400 touch-manipulation cursor-pointer"
               >
-                Next ({postPrintSeconds}s) →
+                เสร็จสิ้น ({postPrintSeconds}s) →
               </button>
             ) : null}
           </div>

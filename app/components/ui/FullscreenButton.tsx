@@ -41,9 +41,9 @@ export function FullscreenButton({ theme = "dark" }: FullscreenButtonProps) {
     <button
       type="button"
       onClick={toggleFullscreen}
-      className={`inline-flex min-h-11 items-center gap-1.5 rounded-full border px-4 text-xs font-semibold tracking-wider uppercase transition active:scale-95 ${themeClass}`}
+      className={`inline-flex min-h-11 sm:min-h-12 items-center gap-2 rounded-full border px-4 sm:px-5 text-xs sm:text-sm font-bold tracking-wider uppercase transition active:scale-95 touch-manipulation cursor-pointer ${themeClass}`}
     >
-      <span>{isFullscreen ? "✕ Exit Fullscreen" : "⛶ Fullscreen"}</span>
+      <span>{isFullscreen ? "✕ ออกจากเต็มจอ" : "⛶ เต็มจอ (Fullscreen)"}</span>
     </button>
   );
 }

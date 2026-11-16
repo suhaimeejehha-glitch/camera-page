@@ -40,8 +40,11 @@ UN6qnlHFIGBwH/dUv3vchiIqSEp3+izTwBw5vBvKDKXceCTkdBkwbhvfUIJ4Kn8/
 function getGoogleDriveConfig(): GoogleDriveConfig {
   const clientEmail =
     process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL || DEFAULT_CLIENT_EMAIL;
-  const privateKey =
-    (process.env.GOOGLE_PRIVATE_KEY || DEFAULT_PRIVATE_KEY).replace(/\\n/g, "\n");
+  const rawKey = process.env.GOOGLE_PRIVATE_KEY || DEFAULT_PRIVATE_KEY;
+  const privateKey = rawKey
+    .replace(/\\n/g, "\n")
+    .replace(/\r\n/g, "\n")
+    .replace(/\r/g, "\n");
   const parentFolderId =
     process.env.GOOGLE_DRIVE_FOLDER_ID || DEFAULT_FOLDER_ID;
 
@@ -105,7 +108,6 @@ export async function getAccessToken(): Promise<string> {
 
 /**
  * สร้างโฟลเดอร์ย่อยใน Google Drive (ใช้เวลา ~0.3-0.5 วินาที)
- * มีระบบ Fallback: หากโฟลเดอร์แม่ไม่พบสิทธิ์ จะสร้างใน Drive ของบอทโดยตรงและเปิดแชร์สาธารณะให้ทันที
  */
 export async function createCustomerFolder(
   accessToken: string,
@@ -114,7 +116,7 @@ export async function createCustomerFolder(
   const config = getGoogleDriveConfig();
   const parentFolderId = config.parentFolderId;
 
-  // 1. ลองสร้างในโฟลเดอร์ Studio Booth ของผู้ใช้ก่อน
+  // 1. สร้างในโฟลเดอร์ Studio Booth
   let createRes = await fetch("https://www.googleapis.com/drive/v3/files?supportsAllDrives=true", {
     method: "POST",
     headers: {

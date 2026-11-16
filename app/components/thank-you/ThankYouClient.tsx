@@ -3,6 +3,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import QRCode from "qrcode";
 import { FullscreenButton } from "@/app/components/ui/FullscreenButton";
 import { clearMotionFrames } from "@/lib/mediaStore";
 
@@ -22,16 +23,55 @@ export function ThankYouClient() {
   const [secondsLeft, setSecondsLeft] = useState(AUTO_RETURN_SECONDS);
   const [driveQr, setDriveQr] = useState<DriveQrState | null>(null);
 
-  // ดึง QR Code ของ Google Drive จาก session
+  // ดึง QR Code ของ Google Drive จาก session หรือสร้างทันทีถ้ายังไม่มี
   useEffect(() => {
-    try {
-      const raw = sessionStorage.getItem("photobooth_drive_qr");
-      if (raw) {
-        setDriveQr(JSON.parse(raw) as DriveQrState);
+    let cancelled = false;
+
+    async function loadOrInitDriveQr() {
+      try {
+        const raw = sessionStorage.getItem("photobooth_drive_qr");
+        if (raw) {
+          const parsed = JSON.parse(raw) as DriveQrState;
+          if (parsed && parsed.qrDataUrl) {
+            setDriveQr(parsed);
+            return;
+          }
+        }
+
+        // หากยังไม่มี QR Code ให้เรียกสร้างทันที
+        const fd = new FormData();
+        fd.append("action", "create-folder");
+        const res = await fetch("/api/upload-drive", {
+          method: "POST",
+          body: fd,
+        });
+
+        if (res.ok) {
+          const data = (await res.json()) as { folderUrl?: string };
+          if (data?.folderUrl && !cancelled) {
+            const qrDataUrl = await QRCode.toDataURL(data.folderUrl, {
+              width: 280,
+              margin: 1,
+              color: { dark: "#09090b", light: "#ffffff" },
+            });
+            const state: DriveQrState = {
+              qrDataUrl,
+              folderUrl: data.folderUrl,
+            };
+            setDriveQr(state);
+            sessionStorage.setItem("photobooth_drive_qr", JSON.stringify(state));
+          }
+        }
+      } catch (err) {
+        console.error("Thank you QR error:", err);
       }
-    } catch {
-      // ข้ามถ้าอ่าน storage ไม่ได้
     }
+
+    void loadOrInitDriveQr();
+
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   const handleFinish = () => {
@@ -124,7 +164,7 @@ export function ThankYouClient() {
             ) : (
               <div className="flex flex-col items-center gap-2 text-center">
                 <div className="h-8 w-8 animate-spin rounded-full border-2 border-emerald-500 border-t-transparent" />
-                <span className="font-mono text-xs text-zinc-400">กำลังเตรียม Drive...</span>
+                <span className="font-mono text-xs text-zinc-400">กำลังเตรียม QR...</span>
               </div>
             )}
           </div>

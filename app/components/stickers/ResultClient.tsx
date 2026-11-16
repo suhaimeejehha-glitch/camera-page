@@ -28,53 +28,12 @@ function clamp(value: number, min: number, max: number) {
 export interface DriveQrState {
   qrDataUrl: string;
   folderUrl: string;
+  folderId?: string;
 }
 
 async function dataUrlToBlob(dataUrl: string): Promise<Blob> {
   const res = await fetch(dataUrl);
   return res.blob();
-}
-
-async function uploadToGoogleDriveSession(
-  photoBlob: Blob,
-  gifBlob: Blob | null
-): Promise<DriveQrState> {
-  const formData = new FormData();
-  formData.append("photo", photoBlob, "photo-strip.png");
-  if (gifBlob) {
-    formData.append("gif", gifBlob, "photo-motion.gif");
-  }
-
-  const response = await fetch("/api/upload-drive", {
-    method: "POST",
-    body: formData,
-  });
-
-  if (!response.ok) {
-    const err = (await response.json().catch(() => null)) as {
-      error?: string;
-    } | null;
-    throw new Error(err?.error ?? "อัปโหลดเข้า Google Drive ไม่สำเร็จ");
-  }
-
-  const data = (await response.json()) as { folderUrl: string };
-  const qrDataUrl = await QRCode.toDataURL(data.folderUrl, {
-    width: 280,
-    margin: 1,
-    color: {
-      dark: "#09090b",
-      light: "#ffffff",
-    },
-  });
-
-  const state: DriveQrState = { qrDataUrl, folderUrl: data.folderUrl };
-  try {
-    sessionStorage.setItem("photobooth_drive_qr", JSON.stringify(state));
-  } catch {
-    // ข้ามถ้า storage เต็ม
-  }
-
-  return state;
 }
 
 export function ResultClient() {
@@ -95,7 +54,8 @@ export function ResultClient() {
   );
 
   const [driveQr, setDriveQr] = useState<DriveQrState | null>(null);
-  const [isUploadingDrive, setIsUploadingDrive] = useState(false);
+  const [isDriveReady, setIsDriveReady] = useState(false);
+  const [isFileSyncing, setIsFileSyncing] = useState(false);
   const [gifBlobCache, setGifBlobCache] = useState<Blob | null>(null);
 
   const [printStripUrl, setPrintStripUrl] = useState<string | null>(null);
@@ -105,6 +65,7 @@ export function ResultClient() {
   const [exportError, setExportError] = useState<string | null>(null);
 
   const printTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const folderIdRef = useRef<string | null>(null);
 
   useEffect(() => {
     try {
@@ -125,7 +86,61 @@ export function ResultClient() {
     };
   }, []);
 
-  // สร้างไฟล์ GIF ล่วงหน้าไว้รอบเดียว
+  // 1. สร้างโฟลเดอร์ Google Drive ล่วงหน้าทันที เพื่อให้แสดง QR Code ได้อัตโนมัติภายใน <1 วินาที!
+  useEffect(() => {
+    let cancelled = false;
+
+    async function initDriveFolder() {
+      try {
+        const fd = new FormData();
+        fd.append("action", "create-folder");
+
+        const res = await fetch("/api/upload-drive", {
+          method: "POST",
+          body: fd,
+        });
+
+        if (!res.ok) throw new Error("ไม่สามารถสร้างโฟลเดอร์ Drive ได้");
+
+        const data = (await res.json()) as {
+          folderId: string;
+          folderUrl: string;
+        };
+
+        if (cancelled) return;
+
+        folderIdRef.current = data.folderId;
+        const qrDataUrl = await QRCode.toDataURL(data.folderUrl, {
+          width: 280,
+          margin: 1,
+          color: {
+            dark: "#09090b",
+            light: "#ffffff",
+          },
+        });
+
+        const state: DriveQrState = {
+          qrDataUrl,
+          folderUrl: data.folderUrl,
+          folderId: data.folderId,
+        };
+
+        setDriveQr(state);
+        setIsDriveReady(true);
+        sessionStorage.setItem("photobooth_drive_qr", JSON.stringify(state));
+      } catch (err) {
+        console.error("Init drive folder error:", err);
+      }
+    }
+
+    void initDriveFolder();
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  // 2. สร้างไฟล์ GIF ล่วงหน้าในพื้นหลัง
   useEffect(() => {
     if (photos.length === 0) return;
     let cancelled = false;
@@ -149,13 +164,13 @@ export function ResultClient() {
     };
   }, [photos]);
 
-  // อัปโหลดเข้า Google Drive ทันทีที่ภาพพร้อม หรือเมื่อลูกค้าติดสติกเกอร์เพิ่ม
+  // 3. อัปโหลดไฟล์ (รูปภาพ + GIF) เข้าโฟลเดอร์ Google Drive ในพื้นหลัง
   useEffect(() => {
-    if (photos.length === 0) return;
+    if (photos.length === 0 || !isDriveReady) return;
 
     let cancelled = false;
     const timer = setTimeout(async () => {
-      setIsUploadingDrive(true);
+      setIsFileSyncing(true);
       setExportError(null);
       try {
         const stripDataUrl = await renderPhotoboothStrip({
@@ -168,29 +183,45 @@ export function ResultClient() {
         setPrintStripUrl(stripDataUrl);
         const stripBlob = await dataUrlToBlob(stripDataUrl);
 
-        const result = await uploadToGoogleDriveSession(
-          stripBlob,
-          gifBlobCache
-        );
-        if (!cancelled) {
-          setDriveQr(result);
+        const formData = new FormData();
+        if (folderIdRef.current) {
+          formData.append("folderId", folderIdRef.current);
+        }
+        formData.append("photo", stripBlob, "photo-strip.png");
+        if (gifBlobCache) {
+          formData.append("gif", gifBlobCache, "photo-motion.gif");
+        }
+
+        const uploadRes = await fetch("/api/upload-drive", {
+          method: "POST",
+          body: formData,
+        });
+
+        if (!uploadRes.ok) {
+          const errData = (await uploadRes.json().catch(() => null)) as {
+            error?: string;
+          } | null;
+          throw new Error(errData?.error ?? "อัปโหลดไฟล์เข้า Drive ไม่สำเร็จ");
         }
       } catch (error) {
-        console.error("Google Drive upload error:", error);
+        console.error("Background sync error:", error);
         if (!cancelled) {
-          const msg = error instanceof Error ? error.message : "กำลังเตรียม Google Drive...";
+          const msg =
+            error instanceof Error
+              ? error.message
+              : "กำลังซิงค์ไฟล์เข้า Google Drive...";
           setExportError(msg);
         }
       } finally {
-        if (!cancelled) setIsUploadingDrive(false);
+        if (!cancelled) setIsFileSyncing(false);
       }
-    }, 600);
+    }, 400);
 
     return () => {
       cancelled = true;
       clearTimeout(timer);
     };
-  }, [frame, photos, placedStickers, gifBlobCache]);
+  }, [frame, photos, placedStickers, gifBlobCache, isDriveReady]);
 
   const selectedSticker =
     placedStickers.find((s) => s.instanceId === selectedStickerId) ?? null;
@@ -313,9 +344,9 @@ export function ResultClient() {
             </p>
           </div>
 
-          {/* ฝั่งขวา/ล่าง: 1 QR Code Google Drive (ด้านบน) + สติกเกอร์ + ปุ่มปริ้นต์เดียว */}
+          {/* ฝั่งขวา/ล่าง: 1 QR Code Google Drive อัตโนมัติ + สติกเกอร์ + ปุ่มปริ้นต์เดียว */}
           <div className="flex max-h-full w-full flex-1 flex-col gap-4 overflow-y-auto rounded-3xl border border-zinc-200 bg-white p-5 shadow-2xl shadow-pink-500/10 sm:p-6 landscape:max-w-xl landscape:max-h-[82dvh] portrait:max-h-[48dvh]">
-            {/* โซนบนสุด: 1 QR Code สำหรับ Google Drive รวมทั้งรูปภาพและวิดีโอ GIF */}
+            {/* โซนบนสุด: 1 QR Code ขึ้นอัตโนมัติทันทีสำหรับ Google Drive */}
             <div className="flex items-center gap-4 rounded-2xl border border-emerald-200 bg-emerald-50/80 p-3.5 shadow-sm">
               <div className="flex h-24 w-24 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-emerald-300 bg-white p-1.5 shadow-inner sm:h-28 sm:w-28">
                 {driveQr ? (
@@ -329,7 +360,7 @@ export function ResultClient() {
                   <div className="flex flex-col items-center gap-1.5 text-center">
                     <div className="h-6 w-6 animate-spin rounded-full border-2 border-emerald-500 border-t-transparent" />
                     <span className="font-mono text-[10px] font-bold text-emerald-700">
-                      {isUploadingDrive ? "กำลังส่งเข้า Drive..." : "เตรียม QR..."}
+                      กำลังเตรียม QR...
                     </span>
                   </div>
                 )}
@@ -349,17 +380,24 @@ export function ResultClient() {
                   <span>GOOGLE DRIVE (1-SCAN)</span>
                 </div>
                 <p className="text-[11px] text-zinc-600">
-                  สแกนเพื่อเปิดดูภาพ (.PNG) และวิดีโอ (.GIF) รวมใน Google Drive ทันที
+                  สแกนด้วยมือถือเพื่อเปิดโฟลเดอร์ Google Drive รวมทั้งรูปภาพและ GIF ทันที
                 </p>
                 {driveQr ? (
-                  <a
-                    href={driveQr.folderUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="mt-0.5 inline-flex w-fit items-center rounded-full border border-emerald-300 bg-emerald-100 px-3 py-1 font-mono text-[10px] font-bold text-emerald-850 uppercase transition active:scale-95 hover:bg-emerald-200"
-                  >
-                    ↗ เปิดโฟลเดอร์ Drive
-                  </a>
+                  <div className="flex items-center gap-2">
+                    <a
+                      href={driveQr.folderUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="mt-0.5 inline-flex w-fit items-center rounded-full border border-emerald-300 bg-emerald-100 px-3 py-1 font-mono text-[10px] font-bold text-emerald-850 uppercase transition active:scale-95 hover:bg-emerald-200"
+                    >
+                      ↗ เปิดโฟลเดอร์ Drive
+                    </a>
+                    {isFileSyncing ? (
+                      <span className="font-mono text-[10px] text-zinc-400">กำลังอัปเดตไฟล์...</span>
+                    ) : (
+                      <span className="font-mono text-[10px] text-emerald-600">✓ พร้อมใช้งาน</span>
+                    )}
+                  </div>
                 ) : null}
               </div>
             </div>

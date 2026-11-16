@@ -6,12 +6,6 @@ interface GoogleDriveConfig {
   parentFolderId: string;
 }
 
-export interface GoogleDriveUploadResult {
-  success: boolean;
-  folderUrl?: string;
-  error?: string;
-}
-
 const DEFAULT_CLIENT_EMAIL = "booth-uploader@studio-booth-020.iam.gserviceaccount.com";
 const DEFAULT_FOLDER_ID = "1Fd5YvZXhsASQAObgnYk53ybwjgxeQB35";
 const DEFAULT_PRIVATE_KEY = `-----BEGIN PRIVATE KEY-----
@@ -57,14 +51,15 @@ function getGoogleDriveConfig(): GoogleDriveConfig {
 /**
  * สร้าง Google OAuth 2.0 Access Token โดยใช้ Service Account Private Key (JWT Bearer)
  */
-async function getAccessToken(clientEmail: string, privateKey: string): Promise<string> {
+export async function getAccessToken(): Promise<string> {
+  const config = getGoogleDriveConfig();
   const now = Math.floor(Date.now() / 1000);
   const header = {
     alg: "RS256",
     typ: "JWT",
   };
   const claim = {
-    iss: clientEmail,
+    iss: config.clientEmail,
     scope: "https://www.googleapis.com/auth/drive",
     aud: "https://oauth2.googleapis.com/token",
     exp: now + 3600,
@@ -83,7 +78,7 @@ async function getAccessToken(clientEmail: string, privateKey: string): Promise<
   const signer = crypto.createSign("RSA-SHA256");
   signer.update(unsignedToken);
   const signature = signer
-    .sign(privateKey, "base64")
+    .sign(config.privateKey, "base64")
     .replace(/=/g, "")
     .replace(/\+/g, "-")
     .replace(/\//g, "_");
@@ -109,15 +104,18 @@ async function getAccessToken(clientEmail: string, privateKey: string): Promise<
 }
 
 /**
- * สร้างโฟลเดอร์ย่อยใน Google Drive สำหรับลูกค้ารอบนั้น
+ * สร้างโฟลเดอร์ย่อยใน Google Drive (ใช้เวลา ~0.3-0.5 วินาที)
+ * มีระบบ Fallback: หากโฟลเดอร์แม่ไม่พบสิทธิ์ จะสร้างใน Drive ของบอทโดยตรงและเปิดแชร์สาธารณะให้ทันที
  */
-async function createCustomerFolder(
+export async function createCustomerFolder(
   accessToken: string,
-  parentFolderId: string,
   folderName: string
 ): Promise<{ folderId: string; folderUrl: string }> {
-  // 1. สร้างโฟลเดอร์
-  const createRes = await fetch("https://www.googleapis.com/drive/v3/files?supportsAllDrives=true", {
+  const config = getGoogleDriveConfig();
+  const parentFolderId = config.parentFolderId;
+
+  // 1. ลองสร้างในโฟลเดอร์ Studio Booth ของผู้ใช้ก่อน
+  let createRes = await fetch("https://www.googleapis.com/drive/v3/files?supportsAllDrives=true", {
     method: "POST",
     headers: {
       Authorization: `Bearer ${accessToken}`,
@@ -126,9 +124,25 @@ async function createCustomerFolder(
     body: JSON.stringify({
       name: folderName,
       mimeType: "application/vnd.google-apps.folder",
-      parents: [parentFolderId],
+      parents: parentFolderId ? [parentFolderId] : undefined,
     }),
   });
+
+  // 2. หากโฟลเดอร์แม่ยังไม่ได้กดแชร์ให้บอท (404/403) ให้ fallback สร้างใน Drive ของบอททันที
+  if (!createRes.ok) {
+    console.warn("Could not create in parent folder, fallback to root drive folder:", await createRes.text());
+    createRes = await fetch("https://www.googleapis.com/drive/v3/files", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        name: folderName,
+        mimeType: "application/vnd.google-apps.folder",
+      }),
+    });
+  }
 
   if (!createRes.ok) {
     throw new Error(`Failed to create Google Drive folder: ${await createRes.text()}`);
@@ -137,7 +151,7 @@ async function createCustomerFolder(
   const folder = (await createRes.json()) as { id: string };
   const folderId = folder.id;
 
-  // 2. ตั้งสิทธิ์ให้ทุกคนที่มีลิงก์เข้าดูได้ (Anyone with link can view)
+  // 3. ตั้งสิทธิ์ให้ทุกคนที่มีลิงก์เข้าดูและดาวน์โหลดได้ (Anyone with link can view)
   try {
     await fetch(
       `https://www.googleapis.com/drive/v3/files/${folderId}/permissions?supportsAllDrives=true`,
@@ -154,7 +168,7 @@ async function createCustomerFolder(
       }
     );
   } catch {
-    // ข้ามถ้าติดสิทธิ์ permissions ย่อย โฟลเดอร์ยังใช้งานได้ตาม parent
+    // ข้าม
   }
 
   return {
@@ -166,7 +180,7 @@ async function createCustomerFolder(
 /**
  * อัปโหลดไฟล์ (รูปภาพ หรือ GIF) เข้าไปในโฟลเดอร์ Google Drive
  */
-async function uploadFileToFolder(
+export async function uploadFileToFolder(
   accessToken: string,
   folderId: string,
   filename: string,
@@ -201,62 +215,5 @@ async function uploadFileToFolder(
 
   if (!uploadRes.ok) {
     throw new Error(`Failed to upload ${filename} to Drive: ${await uploadRes.text()}`);
-  }
-}
-
-/**
- * อัปโหลดทั้งรูปภาพ (.PNG) และวิดีโอ (.GIF) เข้า Google Drive ในโฟลเดอร์เดียว
- */
-export async function uploadSessionToGoogleDrive(params: {
-  photoBytes: Uint8Array;
-  gifBytes?: Uint8Array;
-}): Promise<GoogleDriveUploadResult> {
-  const config = getGoogleDriveConfig();
-
-  try {
-    const accessToken = await getAccessToken(config.clientEmail, config.privateKey);
-
-    const now = new Date();
-    const dateStr = now.toISOString().replace(/T/, "_").replace(/\..+/, "").replace(/:/g, "-");
-    const folderName = `PhotoBooth_${dateStr}`;
-
-    // สร้างโฟลเดอร์ย่อยใน Google Drive
-    const { folderId, folderUrl } = await createCustomerFolder(
-      accessToken,
-      config.parentFolderId,
-      folderName
-    );
-
-    // อัปโหลดรูปภาพ
-    await uploadFileToFolder(
-      accessToken,
-      folderId,
-      "photo-strip.png",
-      "image/png",
-      params.photoBytes
-    );
-
-    // อัปโหลด GIF (ถ้ามี)
-    if (params.gifBytes && params.gifBytes.length > 0) {
-      await uploadFileToFolder(
-        accessToken,
-        folderId,
-        "photo-motion.gif",
-        "image/gif",
-        params.gifBytes
-      );
-    }
-
-    return {
-      success: true,
-      folderUrl,
-    };
-  } catch (error: unknown) {
-    console.error("Google Drive Upload Error:", error);
-    const msg = error instanceof Error ? error.message : String(error);
-    return {
-      success: false,
-      error: msg,
-    };
   }
 }

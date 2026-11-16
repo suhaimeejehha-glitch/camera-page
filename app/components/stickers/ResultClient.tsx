@@ -422,21 +422,39 @@ export function ResultClient() {
                 </div>
               </div>
             ) : (
-              <div className="flex items-center justify-center rounded-3xl border border-zinc-800 bg-zinc-950/80 p-3.5 shadow-2xl backdrop-blur-md">
-                <StripPreview
-                  frame={frame}
-                  photos={photos}
-                  filterCss={activeTone.cssFilter}
-                >
-                  <StickerCanvas
-                    stickers={placedStickers}
-                    selectedStickerId={selectedStickerId}
-                    isHorizontal={true}
-                    onSelectSticker={setSelectedStickerId}
-                    onUpdateSticker={handleUpdateSticker}
-                    onRemoveSticker={handleRemoveSticker}
-                  />
-                </StripPreview>
+              <div className="flex flex-col items-center justify-center gap-2.5 rounded-3xl border border-zinc-800 bg-zinc-950/80 p-3 shadow-2xl backdrop-blur-md">
+                {/* แถบที่ 1 (แถบหลักสำหรับแปะสติกเกอร์) */}
+                <div className="relative">
+                  <StripPreview
+                    frame={frame}
+                    photos={photos}
+                    filterCss={activeTone.cssFilter}
+                  >
+                    <StickerCanvas
+                      stickers={placedStickers}
+                      selectedStickerId={selectedStickerId}
+                      isHorizontal={true}
+                      onSelectSticker={setSelectedStickerId}
+                      onUpdateSticker={handleUpdateSticker}
+                      onRemoveSticker={handleRemoveSticker}
+                    />
+                  </StripPreview>
+                </div>
+
+                {/* แถบที่ 2 (แถบคู่เหมือนชุดที่ 1 สำหรับพิมพ์ 2 ชุด) */}
+                <div className="relative">
+                  <StripPreview
+                    frame={frame}
+                    photos={photos}
+                    filterCss={activeTone.cssFilter}
+                  >
+                    <StickerCanvas
+                      stickers={placedStickers}
+                      isHorizontal={true}
+                      readOnly
+                    />
+                  </StripPreview>
+                </div>
               </div>
             )}
             <p className="text-center text-xs text-zinc-400">

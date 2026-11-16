@@ -326,7 +326,7 @@ export function BoothClient() {
             </span>
           </div>
 
-          {/* กรอบรูปสตริป (แสดง 2 แถบคู่สำหรับแนวตั้ง) */}
+          {/* กรอบรูปสตริป (แสดง 2 แถบคู่สำหรับทั้งแนวตั้งและแนวนอน) */}
           <div className="flex flex-1 items-center justify-center">
             {orientation === "vertical" ? (
               <div className="flex items-center justify-center gap-1.5 sm:gap-2">
@@ -348,19 +348,31 @@ export function BoothClient() {
                 </div>
               </div>
             ) : (
-              <div className="flex items-center justify-center">
-                <StripPreview
-                  frame={frame}
-                  photos={photos}
-                  filterCss={activeTone.cssFilter}
-                  compact
-                />
+              <div className="flex flex-col items-center justify-center gap-1.5 sm:gap-2">
+                <div className="relative">
+                  <StripPreview
+                    frame={frame}
+                    photos={photos}
+                    filterCss={activeTone.cssFilter}
+                    compact
+                  />
+                </div>
+                <div className="relative">
+                  <StripPreview
+                    frame={frame}
+                    photos={photos}
+                    filterCss={activeTone.cssFilter}
+                    compact
+                  />
+                </div>
               </div>
             )}
           </div>
 
           <span className="text-[10px] text-zinc-500 font-mono text-center">
-            {orientation === "vertical" ? "พิมพ์ 2 แถบคู่ (Dual Strip)" : "พิมพ์ 1 แผ่น (Single Sheet)"}
+            {orientation === "vertical"
+              ? "พิมพ์ 2 แถบคู่ (Dual Strip ซ้าย-ขวา)"
+              : "พิมพ์ 2 แถบคู่ (Dual Strip บน-ล่าง)"}
           </span>
         </div>
 

@@ -125,22 +125,51 @@ export async function renderPhotoboothStrip(
 
 /**
  * สร้างภาพสำหรับพิมพ์ลงกระดาษ 4x6 นิ้ว
- * - หากเป็นกรอบแนวตั้ง (Vertical / Photo Strip 2x6 นิ้ว): วางรูปคู่กัน 2 แถบ (Dual Strip / 2 ชุดเหมือนกัน) บนกระดาษ 4x6 นิ้ว เพื่อตัดแบ่ง 2 ชุด
- * - หากเป็นกรอบแนวนอน (Horizontal): พิมพ์เป็น 1 แผ่นเต็มใบ (Postcard 4x6 นิ้ว)
+ * - หากเป็นกรอบแนวตั้ง (Vertical / Photo Strip 2x6 นิ้ว): วางรูปคู่กัน 2 แถบซ้าย-ขวา บนกระดาษ 4x6 นิ้ว เพื่อตัดแบ่ง 2 ชุด
+ * - หากเป็นกรอบแนวนอน (Horizontal / Photo Strip 6x2 นิ้ว): วางรูปคู่กัน 2 แถบบน-ล่าง บนกระดาษ 6x4 นิ้ว เพื่อตัดแบ่ง 2 ชุด
  */
 export async function renderPrintSheet(
   stripDataUrl: string,
   orientation: LayoutOrientation
 ): Promise<string> {
-  if (orientation === "horizontal") {
-    return stripDataUrl;
-  }
-
   const stripImg = await loadImage(stripDataUrl);
   const singleW = stripImg.width;
   const singleH = stripImg.height;
 
-  // สร้างแคนวาสขนาด 4x6 นิ้ว (ความกว้าง 2 เท่าของ 1 แถบ)
+  if (orientation === "horizontal") {
+    // แนวนอน (6x2 นิ้ว): วางซ้อนบน-ล่าง 2 แถบคู่กันบนกระดาษ 6x4 นิ้ว เพื่อตัดแบ่ง 2 ชุด
+    const printCanvas = document.createElement("canvas");
+    printCanvas.width = singleW;
+    printCanvas.height = singleH * 2;
+
+    const ctx = printCanvas.getContext("2d");
+    if (!ctx) return stripDataUrl;
+
+    // พื้นหลังสีขาว
+    ctx.fillStyle = "#ffffff";
+    ctx.fillRect(0, 0, printCanvas.width, printCanvas.height);
+
+    // วาดแถบที่ 1 (บน)
+    ctx.drawImage(stripImg, 0, 0, singleW, singleH);
+
+    // วาดแถบที่ 2 (ล่าง)
+    ctx.drawImage(stripImg, 0, singleH, singleW, singleH);
+
+    // เส้นประแนวนอนกึ่งกลางสำหรับช่วยตัดแบ่ง 2 แถบ (Cutting Guide)
+    ctx.save();
+    ctx.strokeStyle = "#e4e4e7";
+    ctx.lineWidth = 2;
+    ctx.setLineDash([8, 8]);
+    ctx.beginPath();
+    ctx.moveTo(0, singleH);
+    ctx.lineTo(singleW, singleH);
+    ctx.stroke();
+    ctx.restore();
+
+    return printCanvas.toDataURL("image/png");
+  }
+
+  // แนวตั้ง (2x6 นิ้ว): สร้างแคนวาสขนาด 4x6 นิ้ว (ความกว้าง 2 เท่าของ 1 แถบ) เพื่อตัดแบ่ง 2 ชุด
   const printCanvas = document.createElement("canvas");
   printCanvas.width = singleW * 2;
   printCanvas.height = singleH;
@@ -161,7 +190,7 @@ export async function renderPrintSheet(
   // เส้นประบางๆ กึ่งกลางสำหรับช่วยตัดแบ่ง 2 แถบ (Cutting Guide)
   ctx.save();
   ctx.strokeStyle = "#e4e4e7";
-  ctx.lineWidth = 1;
+  ctx.lineWidth = 2;
   ctx.setLineDash([8, 8]);
   ctx.beginPath();
   ctx.moveTo(singleW, 0);

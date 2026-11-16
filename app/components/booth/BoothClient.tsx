@@ -19,7 +19,6 @@ import type { PhotoShot } from "@/types/photobooth";
 const STORAGE_KEY = "photobooth_photos";
 const ALL_PHOTOS_KEY = "photobooth_all_photos";
 const SELECTED_TONE_KEY = "photobooth_selected_tone";
-const MAX_BOOTH_SHOTS = 8;
 
 export function BoothClient() {
   const router = useRouter();
@@ -154,13 +153,13 @@ export function BoothClient() {
     setTimeout(() => setIsFlashing(false), 150);
 
     setPhotos((prev) => {
-      if (prev.length >= MAX_BOOTH_SHOTS) return prev;
+      if (prev.length >= frame.shotCount) return prev;
       return [...prev, { id: `shot-${Date.now()}`, dataUrl }];
     });
-  }, [isMirrored]);
+  }, [frame.shotCount, isMirrored]);
 
   const handleTakePhoto = () => {
-    if (!isCameraReady || countdown !== null || photos.length >= MAX_BOOTH_SHOTS) {
+    if (!isCameraReady || countdown !== null || photos.length >= frame.shotCount) {
       return;
     }
 
@@ -191,11 +190,11 @@ export function BoothClient() {
   };
 
   const canProceed = photos.length >= frame.shotCount;
-  const isFull = photos.length >= MAX_BOOTH_SHOTS;
+  const isFull = photos.length >= frame.shotCount;
 
   return (
     <div className="flex min-h-0 w-full flex-1 flex-col items-center">
-      {/* แถบด้านบน: โลโก้ + สถานะช็อต + สลับกล้อง + Mirror + Fullscreen */}
+      {/* แถบด้านบน: โลโก้ + Mirror + Fullscreen */}
       <header className="flex w-full max-w-7xl shrink-0 items-center justify-between gap-2 border-b border-zinc-800 pb-3">
         <div className="flex items-center gap-2.5 text-xs sm:text-sm font-black tracking-widest text-white uppercase">
           <span className="inline-flex h-8 w-8 items-center justify-center rounded-xl bg-pink-500 font-mono text-xs text-white shadow-md shadow-pink-500/30">
@@ -204,25 +203,11 @@ export function BoothClient() {
           <span className="hidden xs:inline sm:inline">STUDIO BOOTH</span>
         </div>
 
-        <div className="flex items-center gap-1.5 sm:gap-2.5">
-          <span className="inline-flex min-h-9 sm:min-h-11 items-center rounded-full border border-pink-400/50 bg-black/55 px-3 sm:px-4 font-mono text-xs font-bold tracking-wider text-pink-300 uppercase backdrop-blur-md">
-            SHOT {photos.length} / {MAX_BOOTH_SHOTS}
-          </span>
-
-          {/* ปุ่มสลับกล้องหน้า-หลัง สำหรับมือถือและไอแพด */}
-          <button
-            type="button"
-            onClick={handleToggleCamera}
-            title="สลับกล้องหน้า/หลัง"
-            className="inline-flex min-h-9 sm:min-h-11 items-center rounded-full border border-white/25 bg-black/50 px-2.5 sm:px-3 font-mono text-xs font-bold text-zinc-200 uppercase backdrop-blur-md transition active:scale-95 hover:border-pink-400"
-          >
-            🔄 <span className="hidden sm:inline sm:ml-1">Flip</span>
-          </button>
-
+        <div className="flex items-center gap-2 sm:gap-2.5">
           <button
             type="button"
             onClick={() => setIsMirrored((prev) => !prev)}
-            className={`inline-flex min-h-9 sm:min-h-11 items-center rounded-full border px-3 sm:px-4 font-mono text-xs font-bold uppercase backdrop-blur-md transition active:scale-95 ${
+            className={`inline-flex min-h-9 sm:min-h-11 items-center rounded-full border px-3.5 sm:px-4 font-mono text-xs font-bold uppercase backdrop-blur-md transition active:scale-95 ${
               isMirrored
                 ? "border-pink-400/70 bg-pink-500/20 text-pink-200"
                 : "border-white/25 bg-black/50 text-zinc-200"
@@ -342,10 +327,10 @@ export function BoothClient() {
           <div className="flex flex-col gap-1.5 pt-0.5 sm:pt-1">
             <div className="flex items-center justify-between">
               <span className="font-mono text-[11px] sm:text-xs font-bold tracking-wider text-zinc-400 uppercase">
-                📸 รูปที่ถ่ายแล้ว ({photos.length} / {MAX_BOOTH_SHOTS})
+                📸 รูปที่ถ่ายแล้ว ({photos.length} / {frame.shotCount})
               </span>
               <span className="text-[10px] sm:text-[11px] text-zinc-500">
-                ถ่ายได้สูงสุด {MAX_BOOTH_SHOTS} ช็อต
+                ถ่ายได้ {frame.shotCount} ช็อต
               </span>
             </div>
 

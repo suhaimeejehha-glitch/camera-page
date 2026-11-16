@@ -6,6 +6,12 @@ interface GoogleDriveConfig {
   parentFolderId: string;
 }
 
+export interface GoogleDriveUploadResult {
+  success: boolean;
+  folderUrl?: string;
+  error?: string;
+}
+
 const DEFAULT_CLIENT_EMAIL = "booth-uploader@studio-booth-020.iam.gserviceaccount.com";
 const DEFAULT_FOLDER_ID = "1Fd5YvZXhsASQAObgnYk53ybwjgxeQB35";
 const DEFAULT_PRIVATE_KEY = `-----BEGIN PRIVATE KEY-----
@@ -32,7 +38,7 @@ dalGa8BI4vR20pSEc3+p2DeMslEGRJo8zJDXWF4uy13tDKbstX0o5KvOfQKBgQC9
 WBEfZytGYBxMGGAGtT3l4dbg6rAvxfxpMV5iXfzKIPZwoYlpF9/zQq623mEt+rlq
 4zHOIKKgI2qPKS8Ndq1E/gToG+i2L7yqZVPCL+f1W1Rzv/rMK1rJiHO91LdAro/D
 3rb1pCSRI2WwZfW7Nu3c6ClmxHEbQTcwEmp92I6BzQKBgQDWmV1ppnjSdrY+lzAf
-nLcL024w9ILa1oxS/eh9c/I2vT/LzOG613uDDTjT4WiItNGAgrgeEuHrmnGDZGlf
+nnLcL024w9ILa1oxS/eh9c/I2vT/LzOG613uDDTjT4WiItNGAgrgeEuHrmnGDZGlf
 UN6qnlHFIGBwH/dUv3vchiIqSEp3+izTwBw5vBvKDKXceCTkdBkwbhvfUIJ4Kn8/
 /Rutvfk1R1sDccRTKSbZn7OeZQ==
 -----END PRIVATE KEY-----`;
@@ -50,7 +56,6 @@ function getGoogleDriveConfig(): GoogleDriveConfig {
 
 /**
  * สร้าง Google OAuth 2.0 Access Token โดยใช้ Service Account Private Key (JWT Bearer)
- * ไม่จำเป็นต้องติดตั้งไลบรารีภายนอก ใช้ Built-in crypto ของ Node.js โดยตรง
  */
 async function getAccessToken(clientEmail: string, privateKey: string): Promise<string> {
   const now = Math.floor(Date.now() / 1000);
@@ -105,7 +110,6 @@ async function getAccessToken(clientEmail: string, privateKey: string): Promise<
 
 /**
  * สร้างโฟลเดอร์ย่อยใน Google Drive สำหรับลูกค้ารอบนั้น
- * พร้อมเปิดสิทธิ์ให้ทุกคนที่มีลิงก์สามารถดูและดาวน์โหลดไฟล์ได้
  */
 async function createCustomerFolder(
   accessToken: string,
@@ -113,7 +117,7 @@ async function createCustomerFolder(
   folderName: string
 ): Promise<{ folderId: string; folderUrl: string }> {
   // 1. สร้างโฟลเดอร์
-  const createRes = await fetch("https://www.googleapis.com/drive/v3/files", {
+  const createRes = await fetch("https://www.googleapis.com/drive/v3/files?supportsAllDrives=true", {
     method: "POST",
     headers: {
       Authorization: `Bearer ${accessToken}`,
@@ -134,20 +138,24 @@ async function createCustomerFolder(
   const folderId = folder.id;
 
   // 2. ตั้งสิทธิ์ให้ทุกคนที่มีลิงก์เข้าดูได้ (Anyone with link can view)
-  await fetch(
-    `https://www.googleapis.com/drive/v3/files/${folderId}/permissions`,
-    {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        role: "reader",
-        type: "anyone",
-      }),
-    }
-  );
+  try {
+    await fetch(
+      `https://www.googleapis.com/drive/v3/files/${folderId}/permissions?supportsAllDrives=true`,
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          role: "reader",
+          type: "anyone",
+        }),
+      }
+    );
+  } catch {
+    // ข้ามถ้าติดสิทธิ์ permissions ย่อย โฟลเดอร์ยังใช้งานได้ตาม parent
+  }
 
   return {
     folderId,
@@ -180,7 +188,7 @@ async function uploadFileToFolder(
   ]);
 
   const uploadRes = await fetch(
-    "https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart",
+    "https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&supportsAllDrives=true",
     {
       method: "POST",
       headers: {
@@ -198,12 +206,11 @@ async function uploadFileToFolder(
 
 /**
  * อัปโหลดทั้งรูปภาพ (.PNG) และวิดีโอ (.GIF) เข้า Google Drive ในโฟลเดอร์เดียว
- * แล้วส่งคืนลิงก์ Google Drive ของโฟลเดอร์นั้นกลับมาเพื่อสร้าง 1 QR Code
  */
 export async function uploadSessionToGoogleDrive(params: {
   photoBytes: Uint8Array;
   gifBytes?: Uint8Array;
-}): Promise<string | null> {
+}): Promise<GoogleDriveUploadResult> {
   const config = getGoogleDriveConfig();
 
   try {
@@ -240,9 +247,16 @@ export async function uploadSessionToGoogleDrive(params: {
       );
     }
 
-    return folderUrl;
-  } catch (error) {
+    return {
+      success: true,
+      folderUrl,
+    };
+  } catch (error: unknown) {
     console.error("Google Drive Upload Error:", error);
-    return null;
+    const msg = error instanceof Error ? error.message : String(error);
+    return {
+      success: false,
+      error: msg,
+    };
   }
 }

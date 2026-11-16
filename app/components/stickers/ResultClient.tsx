@@ -178,7 +178,8 @@ export function ResultClient() {
       } catch (error) {
         console.error("Google Drive upload error:", error);
         if (!cancelled) {
-          setExportError("กำลังเตรียม Google Drive กรุณารอสักครู่...");
+          const msg = error instanceof Error ? error.message : "กำลังเตรียม Google Drive...";
+          setExportError(msg);
         }
       } finally {
         if (!cancelled) setIsUploadingDrive(false);

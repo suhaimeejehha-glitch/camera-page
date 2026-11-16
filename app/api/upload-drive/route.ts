@@ -1,6 +1,21 @@
 import { NextResponse } from "next/server";
 import { uploadSessionToGoogleDrive } from "@/lib/googleDrive";
 
+// GET สำหรับตรวจสอบสถานะการเชื่อมต่อ Google Drive
+export async function GET() {
+  try {
+    // ทดสอบสร้างโฟลเดอร์ทดสอบขนาดเล็ก
+    const testBytes = new Uint8Array([137, 80, 78, 71, 13, 10, 26, 10]); // minimal PNG header
+    const result = await uploadSessionToGoogleDrive({
+      photoBytes: testBytes,
+    });
+    return NextResponse.json(result);
+  } catch (err: unknown) {
+    const msg = err instanceof Error ? err.message : String(err);
+    return NextResponse.json({ success: false, error: msg }, { status: 500 });
+  }
+}
+
 export async function POST(request: Request) {
   try {
     const formData = await request.formData();
@@ -21,26 +36,27 @@ export async function POST(request: Request) {
       gifBytes = new Uint8Array(await gifFile.arrayBuffer());
     }
 
-    const folderUrl = await uploadSessionToGoogleDrive({
+    const result = await uploadSessionToGoogleDrive({
       photoBytes,
       gifBytes,
     });
 
-    if (!folderUrl) {
+    if (!result.success || !result.folderUrl) {
       return NextResponse.json(
-        { error: "อัปโหลดเข้า Google Drive ไม่สำเร็จ กรุณาตรวจสอบการตั้งค่า" },
+        { error: result.error || "อัปโหลดเข้า Google Drive ไม่สำเร็จ กรุณาตรวจสอบการตั้งค่า" },
         { status: 500 }
       );
     }
 
     return NextResponse.json({
       success: true,
-      folderUrl,
+      folderUrl: result.folderUrl,
     });
-  } catch (error) {
+  } catch (error: unknown) {
     console.error("Upload to Drive error:", error);
+    const msg = error instanceof Error ? error.message : String(error);
     return NextResponse.json(
-      { error: "เกิดข้อผิดพลาดในการเชื่อมต่อ Google Drive" },
+      { error: `เกิดข้อผิดพลาดในการเชื่อมต่อ Google Drive: ${msg}` },
       { status: 500 }
     );
   }

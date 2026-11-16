@@ -24,6 +24,7 @@ interface StripPreviewProps {
   activeSlotIndex?: number | null;
   onSlotClick?: (index: number) => void;
   compact?: boolean;
+  className?: string;
   children?: ReactNode;
 }
 
@@ -37,6 +38,7 @@ export function StripPreview({
   activeSlotIndex = null,
   onSlotClick,
   compact = false,
+  className = "",
   children,
 }: StripPreviewProps) {
   const isHorizontal = frame.orientation === "horizontal";
@@ -51,7 +53,7 @@ export function StripPreview({
 
   return (
     <div
-      className={`relative shrink-0 overflow-hidden rounded-2xl shadow-lg ${sizeClass}`}
+      className={`relative shrink-0 overflow-hidden rounded-2xl shadow-lg ${sizeClass} ${className}`}
       style={{
         backgroundColor: frame.overlayImage ? "#ffffff" : frame.backgroundColor,
         aspectRatio: `${frame.canvasWidth} / ${frame.canvasHeight}`,

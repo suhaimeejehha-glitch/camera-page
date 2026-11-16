@@ -240,7 +240,9 @@ export async function createCustomerFolder(
 }
 
 /**
- * อัปโหลดไฟล์ (รูปภาพ หรือ GIF) เข้าไปในโฟลเดอร์ Google Drive
+ * อัปโหลดหรืออัปเดตไฟล์ (รูปภาพ หรือ GIF) เข้าไปในโฟลเดอร์ Google Drive
+ * - หากมีไฟล์ชื่อเดิมอยู่แล้ว จะทำการอัปเดตเนื้อหาทับไฟล์เดิม (PATCH in-place) เพื่อไม่ให้เกิดไฟล์ซ้ำหลายไฟล์
+ * - หากยังไม่มี จะทำการสร้างไฟล์ใหม่
  */
 export async function uploadFileToFolder(
   accessToken: string,
@@ -249,6 +251,64 @@ export async function uploadFileToFolder(
   mimeType: string,
   bytes: Uint8Array
 ): Promise<void> {
+  // 1. ตรวจสอบว่าในโฟลเดอร์นี้มีไฟล์ชื่อนี้อยู่แล้วหรือไม่
+  let existingFileId: string | null = null;
+  try {
+    const query = `'${folderId}' in parents and name='${filename}' and trashed=false`;
+    const searchUrl = `https://www.googleapis.com/drive/v3/files?q=${encodeURIComponent(
+      query
+    )}&fields=files(id,name)&supportsAllDrives=true`;
+
+    const listRes = await fetch(searchUrl, {
+      headers: { Authorization: `Bearer ${accessToken}` },
+    });
+
+    if (listRes.ok) {
+      const listData = (await listRes.json()) as {
+        files?: Array<{ id: string; name: string }>;
+      };
+      if (listData.files && listData.files.length > 0) {
+        existingFileId = listData.files[0].id;
+
+        // หากมีไฟล์ชื่อซ้ำเกิน 1 ไฟล์ ลบทิ้งให้เหลือไฟล์เดียว
+        if (listData.files.length > 1) {
+          for (let i = 1; i < listData.files.length; i++) {
+            void fetch(
+              `https://www.googleapis.com/drive/v3/files/${listData.files[i].id}?supportsAllDrives=true`,
+              {
+                method: "DELETE",
+                headers: { Authorization: `Bearer ${accessToken}` },
+              }
+            ).catch(() => {});
+          }
+        }
+      }
+    }
+  } catch (err) {
+    console.warn("Search existing file failed, falling back to create:", err);
+  }
+
+  // 2. หากมีไฟล์เดิมอยู่แล้ว ให้อัปเดตข้อมูลทับไฟล์เดิมทันที (PATCH) ไม่สร้างไฟล์ใหม่ซ้ำซ้อน
+  if (existingFileId) {
+    const updateRes = await fetch(
+      `https://www.googleapis.com/upload/drive/v3/files/${existingFileId}?uploadType=media&supportsAllDrives=true`,
+      {
+        method: "PATCH",
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          "Content-Type": mimeType,
+        },
+        body: Buffer.from(bytes),
+      }
+    );
+
+    if (updateRes.ok) {
+      return;
+    }
+    console.warn("PATCH file failed, falling back to POST create:", await updateRes.text());
+  }
+
+  // 3. หากยังไม่มี ให้สร้างไฟล์ใหม่ด้วย POST multipart
   const boundary = `-------StudioBooth${Date.now()}`;
 
   const metadata = JSON.stringify({

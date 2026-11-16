@@ -70,6 +70,7 @@ export function ResultClient() {
 
   const printTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const folderIdRef = useRef<string | null>(null);
+  const gifUploadedRef = useRef<boolean>(false);
 
   const activeTone = useMemo<PhotoTone>(
     () => PHOTO_TONES.find((t) => t.id === selectedToneId) ?? PHOTO_TONES[0],
@@ -280,7 +281,10 @@ export function ResultClient() {
           formData.append("folderId", folderIdRef.current);
         }
         formData.append("photo", stripBlob, "photo-strip.png");
-        if (gifBlobCache) {
+
+        // ส่ง GIF เฉพาะครั้งแรกที่ยังไม่ได้อัปโหลด เพื่อประหยัดเน็ตและไม่เกิดการอัปโหลดซ้ำซ้อน
+        const shouldUploadGif = Boolean(gifBlobCache && !gifUploadedRef.current);
+        if (shouldUploadGif && gifBlobCache) {
           formData.append("gif", gifBlobCache, "photo-motion.gif");
         }
 
@@ -295,6 +299,10 @@ export function ResultClient() {
           } | null;
           throw new Error(errData?.error ?? "อัปโหลดไฟล์เข้า Drive ไม่สำเร็จ");
         }
+
+        if (shouldUploadGif) {
+          gifUploadedRef.current = true;
+        }
       } catch (error) {
         console.error("Background sync error:", error);
         if (!cancelled) {
@@ -307,7 +315,7 @@ export function ResultClient() {
       } finally {
         if (!cancelled) setIsFileSyncing(false);
       }
-    }, 400);
+    }, 1000);
 
     return () => {
       cancelled = true;
@@ -390,7 +398,9 @@ export function ResultClient() {
     try {
       sessionStorage.removeItem(STORAGE_KEY);
       sessionStorage.removeItem(ALL_PHOTOS_KEY);
+      sessionStorage.removeItem("photobooth_drive_qr");
     } catch {}
+    gifUploadedRef.current = false;
     void clearMotionFrames();
     router.replace("/thank-you");
   }, [router]);

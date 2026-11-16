@@ -11,6 +11,8 @@ export function WelcomeScreen() {
   useEffect(() => {
     try {
       sessionStorage.removeItem("photobooth_photos");
+      sessionStorage.removeItem("photobooth_all_photos");
+      sessionStorage.removeItem("photobooth_drive_qr");
       void clearMotionFrames();
     } catch {
       // ข้ามถ้าลบ storage ไม่ได้

@@ -26,7 +26,9 @@ export function ThankYouClient() {
   // ดึง QR Code จาก session ที่สร้างไว้ในหน้า Result
   useEffect(() => {
     try {
-      const rawPhoto = sessionStorage.getItem("photobooth_qr_photo");
+      const rawPhoto =
+        sessionStorage.getItem("photobooth_qr_photo") ||
+        sessionStorage.getItem("photobooth_qr_png");
       if (rawPhoto) {
         setPhotoQr(JSON.parse(rawPhoto) as QrMediaState);
       }

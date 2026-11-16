@@ -88,8 +88,8 @@ async function uploadMediaForQr(
     }
   }
 
-  // ชี้ไปที่หน้าดาวน์โหลดสวยงามบนมือถือ
-  const downloadViewerUrl = `${window.location.origin}/download?src=${encodeURIComponent(rawMediaUrl)}&type=${kind}`;
+  // ชี้ไปที่หน้าดาวน์โหลดสวยงามบนมือถือ พร้อมส่งชื่อไฟล์
+  const downloadViewerUrl = `${window.location.origin}/download?src=${encodeURIComponent(rawMediaUrl)}&type=${kind}&name=studio-booth.${kind}`;
 
   const qrDataUrl = await QRCode.toDataURL(downloadViewerUrl, {
     width: 240,
@@ -103,6 +103,9 @@ async function uploadMediaForQr(
   const state: QrMediaState = { qrDataUrl, mediaUrl: downloadViewerUrl };
   try {
     sessionStorage.setItem(`photobooth_qr_${kind}`, JSON.stringify(state));
+    if (kind === "png") {
+      sessionStorage.setItem("photobooth_qr_photo", JSON.stringify(state));
+    }
   } catch {
     // ข้ามถ้า storage เต็ม
   }

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useSearchParams } from "next/navigation";
 
 export function DownloadClient() {
@@ -13,20 +13,18 @@ export function DownloadClient() {
 
   const [isDownloading, setIsDownloading] = useState(false);
   const [downloadSuccess, setDownloadSuccess] = useState(false);
-  const [hasShare, setHasShare] = useState(false);
-
-  useEffect(() => {
-    if (typeof navigator !== "undefined" && typeof navigator.share === "function") {
-      setHasShare(true);
-    }
-  }, []);
+  const [downloadError, setDownloadError] = useState(false);
+  const [imageLoaded, setImageLoaded] = useState(false);
+  const [imageLoadError, setImageLoadError] = useState(false);
 
   const handleDownload = async () => {
     if (!src) return;
     setIsDownloading(true);
+    setDownloadError(false);
+
     try {
-      // ดึงข้อมูลเป็น Blob เพื่อให้การกดดาวน์โหลดบนมือถือบันทึกไฟล์ได้จริง
       const response = await fetch(src);
+      if (!response.ok) throw new Error("Fetch failed");
       const blob = await response.blob();
       const blobUrl = URL.createObjectURL(blob);
 
@@ -39,44 +37,26 @@ export function DownloadClient() {
       URL.revokeObjectURL(blobUrl);
 
       setDownloadSuccess(true);
-      setTimeout(() => setDownloadSuccess(false), 3000);
+      setTimeout(() => setDownloadSuccess(false), 4000);
     } catch {
-      // หาก fetch ติด CORS ให้เปิดลิงก์ตรงให้ดาวน์โหลด
-      window.open(src, "_blank");
+      // หาก fetch ไม่สำเร็จ (เช่น ติด CORS บนบางเบราว์เซอร์) ให้เปิดหน้าต่างตรงสำหรับบันทึกภาพ
+      setDownloadError(true);
+      const link = document.createElement("a");
+      link.href = src;
+      link.download = name;
+      link.target = "_blank";
+      link.rel = "noopener noreferrer";
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
     } finally {
       setIsDownloading(false);
     }
   };
 
-  const handleShare = async () => {
-    if (!src || !hasShare) return;
-    try {
-      const response = await fetch(src);
-      const blob = await response.blob();
-      const file = new File([blob], name, {
-        type: type === "gif" ? "image/gif" : "image/png",
-      });
-
-      if (navigator.canShare && navigator.canShare({ files: [file] })) {
-        await navigator.share({
-          files: [file],
-          title: "My Studio Booth Photo",
-          text: "รูปถ่ายจาก Studio Booth ของฉัน 📸✨",
-        });
-      } else {
-        await navigator.share({
-          title: "My Studio Booth Photo",
-          url: window.location.href,
-        });
-      }
-    } catch {
-      // ผู้ใช้กดยกเลิก share หรืออุปกรณ์ไม่รองรับ
-    }
-  };
-
   if (!src) {
     return (
-      <div className="flex h-dvh w-full flex-col items-center justify-center bg-[#0c0a0f] px-6 text-center text-white">
+      <div className="flex min-h-dvh w-full flex-col items-center justify-center bg-[#0c0a0f] px-6 text-center text-white">
         <div className="flex h-20 w-20 items-center justify-center rounded-full bg-zinc-800 text-3xl">
           ⚠️
         </div>
@@ -108,19 +88,44 @@ export function DownloadClient() {
       </header>
 
       {/* Main Content: Media Preview */}
-      <main className="relative z-10 my-auto flex w-full max-w-md flex-col items-center py-6">
-        <div className="group relative flex max-h-[65dvh] w-full items-center justify-center overflow-hidden rounded-2xl border border-zinc-800 bg-zinc-900/60 p-2 shadow-2xl backdrop-blur-md">
+      <main className="relative z-10 my-auto flex w-full max-w-md flex-col items-center py-5">
+        <div className="relative flex min-h-[300px] max-h-[62dvh] w-full items-center justify-center overflow-hidden rounded-2xl border border-zinc-800 bg-zinc-900/60 p-2 shadow-2xl backdrop-blur-md">
+          {!imageLoaded && !imageLoadError ? (
+            <div className="flex flex-col items-center gap-3 py-16">
+              <div className="h-9 w-9 animate-spin rounded-full border-4 border-pink-500 border-t-transparent" />
+              <p className="font-mono text-xs text-zinc-400">กำลังโหลด {type === "gif" ? "GIF" : "รูปภาพ"}...</p>
+            </div>
+          ) : null}
+
+          {imageLoadError ? (
+            <div className="flex flex-col items-center gap-2 py-12 text-center">
+              <span className="text-3xl">⚠️</span>
+              <p className="font-mono text-xs text-rose-400">โหลดภาพไม่สำเร็จ</p>
+              <button
+                type="button"
+                onClick={() => window.location.reload()}
+                className="mt-2 rounded-full border border-zinc-700 bg-zinc-800 px-4 py-1.5 text-xs font-bold text-zinc-300"
+              >
+                ลองใหม่อีกครั้ง ↻
+              </button>
+            </div>
+          ) : null}
+
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src={src}
-            alt="Photobooth Media"
-            className="max-h-[60dvh] w-auto max-w-full rounded-xl object-contain shadow-md"
+            alt={type === "gif" ? "Photobooth GIF Animation" : "Photobooth Photo"}
+            onLoad={() => setImageLoaded(true)}
+            onError={() => setImageLoadError(true)}
+            className={`max-h-[58dvh] w-auto max-w-full rounded-xl object-contain shadow-md transition-opacity duration-300 ${
+              imageLoaded ? "opacity-100" : "hidden opacity-0"
+            }`}
           />
         </div>
 
-        <p className="mt-3 text-center text-xs text-zinc-400">
-          💡 บนมือถือ: สามารถ<strong className="text-zinc-200">แตะค้างที่รูปภาพ</strong>แล้วเลือก &quot;บันทึกรูปภาพ&quot; ได้เช่นกัน
-        </p>
+        <div className="mt-3 rounded-xl border border-zinc-800 bg-zinc-900/80 px-4 py-2 text-center text-xs text-zinc-300">
+          💡 <strong>วิธีบันทึกบนมือถือ:</strong> แตะค้างที่รูปภาพด้านบน แล้วเลือก <strong>&quot;บันทึกรูปภาพ (Save to Photos)&quot;</strong> เข้าเครื่องได้ทันที
+        </div>
       </main>
 
       {/* Actions Footer */}
@@ -134,23 +139,19 @@ export function DownloadClient() {
           {isDownloading ? (
             <span>กำลังบันทึกภาพ...</span>
           ) : downloadSuccess ? (
-            <span>✓ บันทึกภาพสำเร็จแล้ว!</span>
+            <span>✓ บันทึกภาพเรียบร้อยแล้ว!</span>
           ) : (
             <span>⬇ ดาวน์โหลด {type === "gif" ? "GIF" : "รูปภาพ"}</span>
           )}
         </button>
 
-        {hasShare ? (
-          <button
-            type="button"
-            onClick={handleShare}
-            className="flex min-h-12 w-full items-center justify-center gap-2 rounded-full border border-zinc-700 bg-zinc-800/80 px-6 font-mono text-sm font-bold text-zinc-200 transition active:scale-95 hover:bg-zinc-700"
-          >
-            <span>↗ แชร์ไปยัง Instagram / LINE</span>
-          </button>
+        {downloadError ? (
+          <p className="text-center text-xs text-amber-400">
+            หากปุ่มไม่ดาวน์โหลดอัตโนมัติ ให้แตะค้างที่รูปภาพด้านบนแล้วเลือก &quot;บันทึกรูปภาพ&quot; ได้เลยครับ
+          </p>
         ) : null}
 
-        <p className="mt-1 text-center font-mono text-[10px] tracking-wider text-zinc-500 uppercase">
+        <p className="text-center font-mono text-[10px] tracking-wider text-zinc-500 uppercase">
           STUDIO BOOTH • FILES WILL EXPIRE AFTER 24 HOURS
         </p>
       </footer>

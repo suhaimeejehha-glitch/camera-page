@@ -56,9 +56,37 @@ async function uploadMediaForQr(
   }
 
   const data = (await response.json()) as { urlPath: string };
-  const rawMediaUrl = data.urlPath.startsWith("http")
-    ? data.urlPath
-    : `${window.location.origin}${data.urlPath}`;
+  let rawMediaUrl = data.urlPath;
+
+  // หากเซิร์ฟเวอร์อัปโหลดขึ้น Cloud ไม่สำเร็จ ให้เบราว์เซอร์ของตู้ช่วยอัปโหลดตรงไปยัง FreeImage ทันที
+  if (!rawMediaUrl.startsWith("http")) {
+    try {
+      const fd = new FormData();
+      fd.append("key", "6d207e02198a847aaa93d42226e7e40e");
+      fd.append("action", "upload");
+      fd.append("source", blob, `studio-booth.${kind}`);
+      fd.append("format", "json");
+
+      const clientRes = await fetch("https://freeimage.host/api/1/upload", {
+        method: "POST",
+        body: fd,
+      });
+      if (clientRes.ok) {
+        const clientData = (await clientRes.json()) as {
+          image?: { url?: string };
+        };
+        if (clientData?.image?.url) {
+          rawMediaUrl = clientData.image.url;
+        }
+      }
+    } catch {
+      // fallback
+    }
+
+    if (!rawMediaUrl.startsWith("http")) {
+      rawMediaUrl = `${window.location.origin}${data.urlPath}`;
+    }
+  }
 
   // ชี้ไปที่หน้าดาวน์โหลดสวยงามบนมือถือ
   const downloadViewerUrl = `${window.location.origin}/download?src=${encodeURIComponent(rawMediaUrl)}&type=${kind}`;

@@ -463,11 +463,11 @@ export function ResultClient() {
           </div>
 
           {/* ฝั่งขวา: QR Code + สติกเกอร์ + สั่งปริ้นต์ ในดีไซน์ Dark Studio Kiosk */}
-          <div className="flex max-h-full w-full flex-1 flex-col gap-4 overflow-y-auto rounded-3xl border border-zinc-800 bg-zinc-900/90 p-5 shadow-2xl backdrop-blur-md sm:p-6 landscape:max-w-xl landscape:max-h-[82dvh] portrait:max-h-[48dvh]">
+          <div className="flex max-h-full w-full flex-1 flex-col gap-3.5 overflow-y-auto rounded-3xl border border-zinc-800 bg-zinc-900/90 p-4 shadow-xl backdrop-blur-md sm:p-5 landscape:max-w-xl landscape:max-h-[82dvh] portrait:max-h-[48dvh]">
             
-            {/* โซนบน: QR Code ตรงกลาง ขนาดใหญ่ขึ้น และคำอธิบายอยู่ใต้คิวอาร์ */}
-            <div className="flex flex-col items-center justify-center gap-3 rounded-2xl border border-zinc-800 bg-zinc-950/80 p-4 text-center">
-              <div className="flex h-36 w-36 items-center justify-center overflow-hidden rounded-2xl border border-zinc-800 bg-white p-2 shadow-sm sm:h-40 sm:w-40">
+            {/* โซนบน: QR Code ตรงกลาง */}
+            <div className="flex flex-col items-center justify-center gap-2 rounded-2xl border border-zinc-800 bg-zinc-950/80 p-3 text-center">
+              <div className="flex h-32 w-32 items-center justify-center overflow-hidden rounded-xl border border-zinc-800 bg-white p-1.5 shadow-sm sm:h-36 sm:w-36">
                 {driveQr ? (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img
@@ -477,7 +477,7 @@ export function ResultClient() {
                   />
                 ) : (
                   <div className="flex flex-col items-center gap-1.5 text-center">
-                    <div className="h-7 w-7 animate-spin rounded-full border-2 border-pink-500 border-t-transparent" />
+                    <div className="h-6 w-6 animate-spin rounded-full border-2 border-pink-500 border-t-transparent" />
                     <span className="font-mono text-xs text-zinc-400">
                       กำลังเตรียม QR...
                     </span>
@@ -485,13 +485,13 @@ export function ResultClient() {
                 )}
               </div>
 
-              <p className="text-xs font-medium text-zinc-400 sm:text-sm">
-                สแกนด้วยมือถือเพื่อเปิดโฟลเดอร์ Google Drive รวมทั้งรูปภาพและ GIF ทันที
+              <p className="text-xs font-medium text-zinc-400">
+                สแกนด้วยมือถือเพื่อดาวน์โหลดภาพและ GIF จาก Google Drive
               </p>
             </div>
 
             {/* โซนสติกเกอร์ */}
-            <div className="flex flex-col gap-2">
+            <div className="flex flex-col gap-1.5">
               <div className="flex items-center justify-between">
                 <span className="font-mono text-xs font-bold tracking-wider text-zinc-400 uppercase">
                   STICKERS
@@ -517,23 +517,23 @@ export function ResultClient() {
             </div>
 
             {selectedSticker ? (
-              <div className="flex flex-col gap-3 rounded-2xl border border-zinc-700 bg-zinc-950/70 p-4">
+              <div className="flex flex-col gap-2 rounded-2xl border border-zinc-700 bg-zinc-950/70 p-3">
                 <div className="flex items-center justify-between">
-                  <span className="font-mono text-sm font-black tracking-wider text-pink-400 uppercase">
+                  <span className="font-mono text-xs font-black tracking-wider text-pink-400 uppercase">
                     Selected: {selectedSticker.stickerId}
                   </span>
                   <button
                     type="button"
                     onClick={() => handleRemoveSticker(selectedSticker.instanceId)}
-                    className="min-h-11 rounded-full border border-rose-500/40 bg-rose-500/25 px-5 text-sm font-black text-rose-300 transition active:scale-95 hover:bg-rose-500/35 touch-manipulation cursor-pointer"
+                    className="h-8 rounded-full border border-rose-500/40 bg-rose-500/25 px-3 text-xs font-black text-rose-300 transition active:scale-95 hover:bg-rose-500/35 touch-manipulation cursor-pointer"
                   >
-                    ✕ ลบชิ้นนี้
+                    ✕ ลบ
                   </button>
                 </div>
 
-                <div className="flex flex-wrap items-center gap-4">
-                  <div className="flex items-center gap-2.5">
-                    <span className="font-mono text-xs sm:text-sm font-bold text-zinc-400">Size</span>
+                <div className="flex flex-wrap items-center gap-3">
+                  <div className="flex items-center gap-2">
+                    <span className="font-mono text-xs font-bold text-zinc-400">Size</span>
                     <button
                       type="button"
                       onClick={() =>
@@ -541,11 +541,11 @@ export function ResultClient() {
                           scale: clamp(Number((selectedSticker.scale - 0.15).toFixed(2)), 0.5, 2.2),
                         })
                       }
-                      className="flex h-12 w-12 sm:h-14 sm:w-14 items-center justify-center rounded-2xl border border-zinc-700 bg-zinc-800 text-2xl font-black text-white shadow-md transition active:scale-95 hover:bg-zinc-700 touch-manipulation cursor-pointer"
+                      className="flex h-9 w-9 items-center justify-center rounded-xl border border-zinc-700 bg-zinc-800 text-lg font-black text-white shadow-sm transition active:scale-95 hover:bg-zinc-700 touch-manipulation cursor-pointer"
                     >
                       −
                     </button>
-                    <span className="w-14 text-center font-mono text-sm sm:text-base font-black text-zinc-200">
+                    <span className="w-10 text-center font-mono text-xs font-black text-zinc-200">
                       {Math.round(selectedSticker.scale * 100)}%
                     </span>
                     <button
@@ -555,14 +555,14 @@ export function ResultClient() {
                           scale: clamp(Number((selectedSticker.scale + 0.15).toFixed(2)), 0.5, 2.2),
                         })
                       }
-                      className="flex h-12 w-12 sm:h-14 sm:w-14 items-center justify-center rounded-2xl border border-zinc-700 bg-zinc-800 text-2xl font-black text-white shadow-md transition active:scale-95 hover:bg-zinc-700 touch-manipulation cursor-pointer"
+                      className="flex h-9 w-9 items-center justify-center rounded-xl border border-zinc-700 bg-zinc-800 text-lg font-black text-white shadow-sm transition active:scale-95 hover:bg-zinc-700 touch-manipulation cursor-pointer"
                     >
                       +
                     </button>
                   </div>
 
-                  <div className="flex items-center gap-2">
-                    <span className="font-mono text-xs sm:text-sm font-bold text-zinc-400">Rotate</span>
+                  <div className="flex items-center gap-1.5">
+                    <span className="font-mono text-xs font-bold text-zinc-400">Rotate</span>
                     <button
                       type="button"
                       onClick={() =>
@@ -570,7 +570,7 @@ export function ResultClient() {
                           rotation: selectedSticker.rotation - 15,
                         })
                       }
-                      className="h-12 sm:h-14 rounded-2xl border border-zinc-700 bg-zinc-800 px-4 font-mono text-sm font-black text-zinc-200 shadow-sm transition active:scale-95 hover:bg-zinc-700 touch-manipulation cursor-pointer"
+                      className="h-9 rounded-xl border border-zinc-700 bg-zinc-800 px-2.5 font-mono text-xs font-black text-zinc-200 shadow-xs transition active:scale-95 hover:bg-zinc-700 touch-manipulation cursor-pointer"
                     >
                       ↺ -15°
                     </button>
@@ -581,7 +581,7 @@ export function ResultClient() {
                           rotation: 0,
                         })
                       }
-                      className="h-12 sm:h-14 rounded-2xl border border-zinc-700 bg-zinc-800 px-4 font-mono text-sm font-black text-zinc-400 shadow-sm transition active:scale-95 hover:bg-zinc-700 touch-manipulation cursor-pointer"
+                      className="h-9 rounded-xl border border-zinc-700 bg-zinc-800 px-2.5 font-mono text-xs font-black text-zinc-400 shadow-xs transition active:scale-95 hover:bg-zinc-700 touch-manipulation cursor-pointer"
                     >
                       0°
                     </button>
@@ -592,7 +592,7 @@ export function ResultClient() {
                           rotation: selectedSticker.rotation + 15,
                         })
                       }
-                      className="h-12 sm:h-14 rounded-2xl border border-zinc-700 bg-zinc-800 px-4 font-mono text-sm font-black text-zinc-200 shadow-sm transition active:scale-95 hover:bg-zinc-700 touch-manipulation cursor-pointer"
+                      className="h-9 rounded-xl border border-zinc-700 bg-zinc-800 px-2.5 font-mono text-xs font-black text-zinc-200 shadow-xs transition active:scale-95 hover:bg-zinc-700 touch-manipulation cursor-pointer"
                     >
                       ↻ +15°
                     </button>
@@ -607,21 +607,21 @@ export function ResultClient() {
           </div>
         </div>
 
-        {/* แถบปุ่ม Back (ซ้ายล่าง) และ Print / Next (ขวาล่าง) ปุ่มใหญ่พิเศษสำหรับ Touchscreen */}
-        <div className="flex w-full max-w-6xl shrink-0 items-center justify-between gap-4 pt-3">
+        {/* แถบปุ่ม Back (ซ้ายล่าง) และ Print / Next (ขวาล่าง) */}
+        <div className="flex w-full max-w-6xl shrink-0 items-center justify-between gap-3 pt-2">
           <Link
             href={`/booth?frame=${frame.id}&shots=${shots}&orientation=${orientation}`}
-            className="inline-flex min-h-16 sm:min-h-18 items-center justify-center rounded-full border-2 border-zinc-700 bg-zinc-900 px-8 sm:px-10 text-base sm:text-lg font-black text-zinc-200 shadow-xl transition active:scale-95 hover:bg-zinc-800 hover:text-white touch-manipulation cursor-pointer"
+            className="inline-flex h-13 sm:h-14 items-center justify-center rounded-full border-2 border-zinc-700 bg-zinc-900 px-6 sm:px-8 text-sm sm:text-base font-black text-zinc-200 shadow-md transition active:scale-95 hover:bg-zinc-800 hover:text-white touch-manipulation cursor-pointer"
           >
             ← ย้อนกลับไปถ่ายใหม่ (Back)
           </Link>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2.5">
             <button
               type="button"
               onClick={handlePrint}
               disabled={isPrinting || photos.length === 0}
-              className="inline-flex min-h-16 sm:min-h-18 items-center justify-center rounded-full bg-white px-10 sm:px-14 text-xl sm:text-2xl font-black text-zinc-950 shadow-2xl shadow-white/40 transition active:scale-95 hover:bg-zinc-100 disabled:cursor-not-allowed disabled:opacity-50 touch-manipulation cursor-pointer"
+              className="inline-flex h-13 sm:h-14 items-center justify-center rounded-full bg-white px-8 sm:px-10 text-base sm:text-lg font-black text-zinc-950 shadow-xl transition active:scale-95 hover:bg-zinc-100 disabled:cursor-not-allowed disabled:opacity-50 touch-manipulation cursor-pointer"
             >
               {isPrinting ? "กำลังเตรียมการพิมพ์..." : "🖨️ สั่งพิมพ์รูป (PRINT)"}
             </button>
@@ -630,7 +630,7 @@ export function ResultClient() {
               <button
                 type="button"
                 onClick={handleFinishSession}
-                className="inline-flex min-h-16 sm:min-h-18 items-center justify-center rounded-full bg-gradient-to-r from-pink-500 via-rose-500 to-pink-500 px-10 sm:px-12 text-lg sm:text-xl font-black text-white shadow-xl shadow-pink-500/40 transition active:scale-95 hover:from-pink-400 hover:to-rose-400 border-2 border-white/20 touch-manipulation cursor-pointer"
+                className="inline-flex h-13 sm:h-14 items-center justify-center rounded-full bg-gradient-to-r from-pink-500 via-rose-500 to-pink-500 px-7 sm:px-9 text-base sm:text-lg font-black text-white shadow-xl shadow-pink-500/40 transition active:scale-95 hover:from-pink-400 hover:to-rose-400 border-2 border-white/20 touch-manipulation cursor-pointer"
               >
                 เสร็จสิ้น ({postPrintSeconds}s) →
               </button>

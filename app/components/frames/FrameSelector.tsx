@@ -150,15 +150,15 @@ export function FrameSelector({
               key={cat.id}
               type="button"
               onClick={() => handleSelectCategory(cat.id)}
-              className={`min-h-13 sm:min-h-15 rounded-full border-2 px-6 sm:px-8 py-2.5 text-sm sm:text-base font-black tracking-wide transition active:scale-95 touch-manipulation cursor-pointer shadow-md ${
+              className={`h-10 sm:h-11 rounded-full border-2 px-4 sm:px-6 text-xs sm:text-sm font-black tracking-wide transition active:scale-95 touch-manipulation cursor-pointer shadow-sm ${
                 isActive
-                  ? "border-pink-500 bg-pink-500 text-white shadow-xl shadow-pink-500/35 ring-4 ring-pink-500/20"
-                  : "border-zinc-300 bg-white text-zinc-700 shadow-sm hover:border-pink-300 hover:text-pink-600"
+                  ? "border-pink-500 bg-pink-500 text-white shadow-md shadow-pink-500/30 ring-2 ring-pink-500/20"
+                  : "border-zinc-300 bg-white text-zinc-700 hover:border-pink-300 hover:text-pink-600"
               }`}
             >
               {cat.label}{" "}
               <span
-                className={`ml-1.5 font-mono text-xs sm:text-sm ${
+                className={`ml-1 font-mono text-xs ${
                   isActive ? "text-pink-100 font-black" : "text-zinc-500 font-bold"
                 }`}
               >
@@ -170,13 +170,13 @@ export function FrameSelector({
       </div>
 
       {/* แถบเลื่อนกรอบแนวนอนพร้อมปุ่ม ◀ / ▶ */}
-      <div className="relative flex w-full items-center gap-3 sm:gap-5">
+      <div className="relative flex w-full items-center gap-2 sm:gap-3">
         <button
           type="button"
           onClick={() => scrollByAmount(-1)}
           disabled={!canScrollLeft}
           aria-label="Scroll left"
-          className="flex min-h-24 min-w-14 sm:min-h-28 sm:min-w-18 shrink-0 items-center justify-center rounded-3xl border-2 border-zinc-300 bg-white text-2xl sm:text-3xl font-black text-zinc-800 shadow-lg transition active:scale-95 hover:border-pink-400 hover:text-pink-500 disabled:cursor-not-allowed disabled:opacity-20 touch-manipulation cursor-pointer"
+          className="flex h-16 w-11 sm:h-20 sm:w-14 shrink-0 items-center justify-center rounded-2xl border-2 border-zinc-300 bg-white text-xl sm:text-2xl font-black text-zinc-800 shadow-md transition active:scale-95 hover:border-pink-400 hover:text-pink-500 disabled:cursor-not-allowed disabled:opacity-20 touch-manipulation cursor-pointer"
         >
           ◀
         </button>
@@ -188,7 +188,7 @@ export function FrameSelector({
           onPointerMove={handlePointerMove}
           onPointerUp={handlePointerUp}
           onPointerLeave={handlePointerUp}
-          className="flex flex-1 cursor-grab items-center gap-6 overflow-x-auto scroll-smooth px-3 py-4 touch-pan-x snap-x snap-mandatory active:cursor-grabbing [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
+          className="flex flex-1 cursor-grab items-center gap-4 sm:gap-5 overflow-x-auto scroll-smooth px-2 py-2 touch-pan-x snap-x snap-mandatory active:cursor-grabbing [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
         >
           {filteredFrames.map((frame) => {
             const isSelected = frame.id === activeFrameId;
@@ -198,19 +198,19 @@ export function FrameSelector({
                 type="button"
                 onClick={() => handleSelectFrame(frame.id)}
                 draggable={false}
-                className={`group relative flex shrink-0 snap-start flex-col items-center gap-3.5 rounded-3xl border-3 bg-white p-5 transition duration-200 hover:-translate-y-1.5 active:scale-95 touch-manipulation cursor-pointer ${
+                className={`group relative flex shrink-0 snap-start flex-col items-center gap-2.5 rounded-2xl border-2 bg-white p-3.5 sm:p-4 transition duration-200 hover:-translate-y-1 active:scale-95 touch-manipulation cursor-pointer ${
                   isSelected
-                    ? "border-pink-500 shadow-2xl shadow-pink-500/25 ring-4 ring-pink-500/15"
-                    : "border-zinc-200 shadow-lg shadow-pink-500/5 hover:border-pink-300"
+                    ? "border-pink-500 shadow-xl shadow-pink-500/20 ring-4 ring-pink-500/15"
+                    : "border-zinc-200 shadow-sm hover:border-pink-300"
                 }`}
               >
                 {isSelected ? (
-                  <span className="absolute -top-3 -right-3 z-30 flex h-10 w-10 items-center justify-center rounded-full bg-pink-500 text-base font-black text-white shadow-lg">
+                  <span className="absolute -top-2.5 -right-2.5 z-30 flex h-8 w-8 items-center justify-center rounded-full bg-pink-500 text-sm font-black text-white shadow-md">
                     ✓
                   </span>
                 ) : frame.badge ? (
                   <span
-                    className={`absolute top-3.5 right-3.5 z-30 rounded-full px-3.5 py-1.5 font-mono text-xs font-black tracking-wider shadow-md ${
+                    className={`absolute top-2.5 right-2.5 z-30 rounded-full px-2.5 py-0.5 font-mono text-[10px] font-black tracking-wider shadow-sm ${
                       frame.badge === "HOT"
                         ? "bg-rose-500 text-white"
                         : "bg-pink-500 text-white"
@@ -223,7 +223,7 @@ export function FrameSelector({
                 <StripPreview frame={frame} compact />
 
                 <span
-                  className={`rounded-full border-2 px-6 py-2 font-mono text-sm sm:text-base font-black tracking-wider uppercase transition shadow-sm ${
+                  className={`rounded-full border px-4 py-1 font-mono text-xs sm:text-sm font-black tracking-wider uppercase transition ${
                     isSelected
                       ? "border-pink-400 bg-pink-50 text-pink-600"
                       : "border-zinc-200 bg-zinc-50 text-zinc-800 group-hover:border-pink-300 group-hover:text-pink-600"
@@ -241,24 +241,24 @@ export function FrameSelector({
           onClick={() => scrollByAmount(1)}
           disabled={!canScrollRight}
           aria-label="Scroll right"
-          className="flex min-h-24 min-w-14 sm:min-h-28 sm:min-w-18 shrink-0 items-center justify-center rounded-3xl border-2 border-zinc-300 bg-white text-2xl sm:text-3xl font-black text-zinc-800 shadow-lg transition active:scale-95 hover:border-pink-400 hover:text-pink-500 disabled:cursor-not-allowed disabled:opacity-20 touch-manipulation cursor-pointer"
+          className="flex h-16 w-11 sm:h-20 sm:w-14 shrink-0 items-center justify-center rounded-2xl border-2 border-zinc-300 bg-white text-xl sm:text-2xl font-black text-zinc-800 shadow-md transition active:scale-95 hover:border-pink-400 hover:text-pink-500 disabled:cursor-not-allowed disabled:opacity-20 touch-manipulation cursor-pointer"
         >
           ▶
         </button>
       </div>
 
-      {/* ปุ่ม Back / Next ด้านล่างสำหรับ Touchscreen */}
-      <div className="flex w-full items-center justify-between gap-4 pt-2">
+      {/* ปุ่ม Back / Next ด้านล่าง */}
+      <div className="flex w-full items-center justify-between gap-3 pt-1">
         <Link
           href="/setup"
-          className="inline-flex min-h-16 sm:min-h-18 items-center justify-center rounded-full border-2 border-zinc-300 bg-white px-10 sm:px-12 text-lg sm:text-xl font-black tracking-wider text-zinc-700 uppercase shadow-md transition active:scale-95 hover:border-pink-400 hover:text-pink-600 touch-manipulation cursor-pointer"
+          className="inline-flex h-13 sm:h-14 items-center justify-center rounded-full border-2 border-zinc-300 bg-white px-7 sm:px-9 text-base sm:text-lg font-black tracking-wider text-zinc-700 uppercase shadow-md transition active:scale-95 hover:border-pink-400 hover:text-pink-600 touch-manipulation cursor-pointer"
         >
           ← Back
         </Link>
 
         <Link
           href={`/booth?frame=${activeFrameId}&shots=${shots}&orientation=${orientation}`}
-          className="inline-flex min-h-16 sm:min-h-18 items-center justify-center rounded-full bg-gradient-to-r from-pink-500 via-rose-500 to-pink-500 px-14 sm:px-18 text-xl sm:text-2xl font-black tracking-wider text-white uppercase shadow-2xl shadow-pink-500/35 transition active:scale-95 hover:from-pink-400 hover:to-rose-400 border-2 border-white/20 touch-manipulation cursor-pointer"
+          className="inline-flex h-13 sm:h-14 items-center justify-center rounded-full bg-gradient-to-r from-pink-500 via-rose-500 to-pink-500 px-10 sm:px-14 text-lg sm:text-xl font-black tracking-wider text-white uppercase shadow-xl shadow-pink-500/30 transition active:scale-95 hover:from-pink-400 hover:to-rose-400 border-2 border-white/20 touch-manipulation cursor-pointer"
         >
           Next →
         </Link>

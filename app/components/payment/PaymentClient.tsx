@@ -1,15 +1,30 @@
+// ไฟล์: app/components/payment/PaymentClient.tsx
 "use client";
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { TouchNumpad } from "./TouchNumpad";
+import { StampCardView } from "./StampCardView";
+import {
+  addMemberPoint,
+  redeemMemberPoints,
+  setTestMemberPoints,
+  type MemberPointsData,
+} from "@/lib/pointsStore";
 
 const SESSION_PRICE = 190;
 const PAYMENT_TIMEOUT_SECONDS = 300; // 5 นาที
 /** เปลี่ยนเป็นพาธไฟล์รูป QR PromptPay จริงใน /public ได้ที่นี่ */
 const PROMPTPAY_QR_SRC = "/images/promptpay-qr.jpg";
 
-type PaymentStep = "summary" | "qr" | "success";
+type PaymentStep =
+  | "summary"
+  | "qr"
+  | "points_prompt"
+  | "stamp_card"
+  | "redeem_numpad"
+  | "redeem_success";
 
 function formatTime(totalSeconds: number): string {
   const mins = Math.floor(totalSeconds / 60);
@@ -18,10 +33,11 @@ function formatTime(totalSeconds: number): string {
 }
 
 /**
- * หน้าชำระเงินด้วย PromptPay:
- * 1) แสดงราคา 190 และยอดรวมทั้งหมด + ปุ่ม "ชำระเงิน"
- * 2) กดชำระเงินแล้วแสดง QR Code + เวลานับถอยหลัง + เช็กยอดชำระ
- * 3) ชำระสำเร็จแล้วเด้งไปหน้าเลือกแนวตั้ง/แนวนอน (/setup) อัตโนมัติ
+ * หน้าชำระเงินด้วย PromptPay + ระบบสะสมแต้มสมาชิก (10 ครั้ง ฟรี 1 ครั้ง):
+ * 1) สรุปราคา 190 + ปุ่มชำระเงิน + ปุ่ม "มีสิทธิ์ถ่ายฟรี? แตะใช้แต้ม"
+ * 2) สแกนจ่าย PromptPay + นับถอยหลัง 5 นาที
+ * 3) หลังชำระสำเร็จ: เด้งหน้าแป้นกดเบอร์ 10 หลัก เพื่อสะสมแต้ม (มีปุ่มข้าม)
+ * 4) แสดงการ์ดสแตมป์ 10 ดวง อนิเมชั่นปั๊มแต้มใหม่ แล้วพาไปหน้าเลือกกรอบ (/setup)
  */
 export function PaymentClient() {
   const router = useRouter();
@@ -30,7 +46,12 @@ export function PaymentClient() {
   const [isChecking, setIsChecking] = useState(false);
   const [statusMessage, setStatusMessage] = useState<string | null>(null);
 
-  const redirectTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  // ข้อมูลสมาชิกที่กำลังสะสมหรือแลกแต้ม
+  const [phoneInput, setPhoneInput] = useState("");
+  const [redeemPhoneInput, setRedeemPhoneInput] = useState("");
+  const [memberData, setMemberData] = useState<MemberPointsData | null>(null);
+  const [redeemError, setRedeemError] = useState<string | null>(null);
+
   const checkTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
@@ -45,7 +66,6 @@ export function PaymentClient() {
 
   useEffect(() => {
     return () => {
-      if (redirectTimerRef.current) clearTimeout(redirectTimerRef.current);
       if (checkTimerRef.current) clearTimeout(checkTimerRef.current);
     };
   }, []);
@@ -57,42 +77,163 @@ export function PaymentClient() {
     setStep("qr");
   };
 
+  // จำลองการตรวจสอบยอดเงิน PromptPay
   const handleCheckPayment = () => {
     if (isChecking || secondsLeft === 0) return;
     setIsChecking(true);
     setStatusMessage("กำลังตรวจสอบยอดเงิน PromptPay...");
 
-    // TODO: เชื่อม API ตรวจสอบสถานะการชำระเงินจริง (Webhook / Slip API) ที่นี่
     checkTimerRef.current = setTimeout(() => {
       setIsChecking(false);
-      setStep("success");
-      redirectTimerRef.current = setTimeout(() => {
-        router.replace("/setup");
-      }, 1200);
-    }, 900);
+      // เมื่อชำระสำเร็จ -> เด้งไปหน้ากดเบอร์สะสมแต้มทันที!
+      setPhoneInput("");
+      setStep("points_prompt");
+    }, 800);
   };
 
-  if (step === "success") {
+  // กดยืนยันเบอร์เพื่อสะสมแต้ม
+  const handleEarnPoints = () => {
+    if (phoneInput.length !== 10) return;
+    const result = addMemberPoint(phoneInput);
+    setMemberData(result.data);
+    setStep("stamp_card");
+  };
+
+  // แตะข้ามการสะสมแต้ม -> ไปหน้าเลือกกรอบทันที
+  const handleSkipPoints = () => {
+    router.replace("/setup");
+  };
+
+  // ทดสอบปรับแต้มเป็น 10 หรือ 1 ในโหมดทดสอบ
+  const handleSetTestPoints = (points: number) => {
+    if (!memberData) return;
+    const updated = setTestMemberPoints(memberData.phone, points);
+    setMemberData({ ...updated });
+  };
+
+  // ตรวจสอบและแลกสิทธิ์ถ่ายฟรี
+  const handleRedeemCheck = () => {
+    if (redeemPhoneInput.length !== 10) return;
+    setRedeemError(null);
+
+    const result = redeemMemberPoints(redeemPhoneInput);
+    if (result.success) {
+      setMemberData(result.data);
+      setStep("redeem_success");
+    } else {
+      setRedeemError(result.message);
+    }
+  };
+
+  // ==========================================
+  // STEP: แลกสิทธิ์ถ่ายฟรีสำเร็จ (ไม่ต้องจ่ายเงิน)
+  // ==========================================
+  if (step === "redeem_success" && memberData) {
     return (
-      <div className="flex w-full max-w-lg flex-col items-center gap-6 rounded-3xl border border-emerald-200 bg-white p-10 text-center shadow-2xl shadow-pink-500/10">
-        <div className="flex h-24 w-24 items-center justify-center rounded-full border-2 border-emerald-400 bg-emerald-50 text-5xl font-black text-emerald-500">
-          ✓
+      <div className="flex w-full max-w-lg flex-col items-center gap-6 rounded-3xl border-2 border-emerald-300 bg-white p-8 sm:p-10 text-center shadow-2xl">
+        <div className="flex h-24 w-24 items-center justify-center rounded-full border-4 border-emerald-400 bg-emerald-50 text-5xl font-black text-emerald-500 shadow-lg">
+          👑
         </div>
         <div className="flex flex-col gap-2">
-          <h2 className="text-3xl font-black tracking-wide text-zinc-900 uppercase">
-            ชำระเงินสำเร็จ!
+          <span className="rounded-full bg-emerald-100 px-5 py-1 text-sm font-black text-emerald-700">
+            เบอร์: {memberData.phone}
+          </span>
+          <h2 className="text-3xl sm:text-4xl font-black text-emerald-600">
+            แลกสิทธิ์ถ่ายฟรีสำเร็จ! 🎉
           </h2>
-          <p className="font-mono text-base font-bold text-emerald-600">
-            ยอดชำระ ฿{SESSION_PRICE}
+          <p className="text-base sm:text-lg font-bold text-zinc-700">
+            หัก 10 แต้มเรียบร้อย • คุณได้รับสิทธิ์ถ่ายฟรีรอบนี้ 1 ครั้ง โดยไม่ต้องชำระเงิน
+          </p>
+          <p className="font-mono text-sm font-bold text-zinc-500">
+            แต้มคงเหลือ: {memberData.points} แต้ม
           </p>
         </div>
-        <p className="text-base text-zinc-500">
-          กำลังพาไปหน้าเลือกแนวตั้ง / แนวนอน...
-        </p>
+
+        <button
+          type="button"
+          onClick={() => router.replace("/setup")}
+          className="inline-flex min-h-16 w-full items-center justify-center rounded-full bg-gradient-to-r from-emerald-500 to-teal-500 px-8 text-xl font-black text-white uppercase shadow-xl shadow-emerald-500/35 transition active:scale-95 hover:from-emerald-400 hover:to-teal-400 border-2 border-white/20 touch-manipulation cursor-pointer"
+        >
+          ไปเลือกกรอบรูปเลย (ฟรี) →
+        </button>
       </div>
     );
   }
 
+  // ==========================================
+  // STEP: แป้นกดเบอร์เพื่อแลกสิทธิ์ถ่ายฟรี
+  // ==========================================
+  if (step === "redeem_numpad") {
+    return (
+      <div className="flex w-full flex-col items-center gap-4">
+        <TouchNumpad
+          value={redeemPhoneInput}
+          onChange={setRedeemPhoneInput}
+          onSubmit={handleRedeemCheck}
+          onCancel={() => {
+            setRedeemError(null);
+            setStep("summary");
+          }}
+          title="🎁 แลกสิทธิ์ถ่ายฟรี 1 ครั้ง"
+          subtitle="กรอกเบอร์โทรศัพท์ที่สะสมแต้มครบ 10 ครั้ง เพื่อแลกถ่ายฟรีรอบนี้"
+          submitLabel="แลกสิทธิ์ถ่ายฟรีทันที ✨"
+          cancelLabel="← กลับไปหน้าชำระเงินปกติ"
+          submitColor="emerald"
+        />
+
+        {redeemError ? (
+          <div className="rounded-2xl border-2 border-rose-300 bg-rose-50 px-6 py-3 text-center text-base font-black text-rose-600 shadow-md">
+            ⚠️ {redeemError}
+          </div>
+        ) : null}
+      </div>
+    );
+  }
+
+  // ==========================================
+  // STEP: แสดงการ์ดสแตมป์ 10 ดวงหลังสะสมแต้ม
+  // ==========================================
+  if (step === "stamp_card" && memberData) {
+    return (
+      <StampCardView
+        memberData={memberData}
+        newlyAdded={true}
+        onProceed={() => router.replace("/setup")}
+        onSetTestPoints={handleSetTestPoints}
+      />
+    );
+  }
+
+  // ==========================================
+  // STEP: แป้นกดเบอร์สะสมแต้ม (หลังสแกนจ่ายเงินสำเร็จ)
+  // ==========================================
+  if (step === "points_prompt") {
+    return (
+      <div className="flex w-full flex-col items-center gap-4">
+        {/* ป้ายแจ้งเตือนว่าชำระเงินเรียบร้อยแล้ว */}
+        <div className="inline-flex items-center gap-2 rounded-full border-2 border-emerald-400 bg-emerald-50 px-6 py-2 text-sm sm:text-base font-black text-emerald-700 shadow-sm">
+          <span>✓</span>
+          <span>ชำระเงินสำเร็จ ฿{SESSION_PRICE}.00 เรียบร้อยแล้ว</span>
+        </div>
+
+        <TouchNumpad
+          value={phoneInput}
+          onChange={setPhoneInput}
+          onSubmit={handleEarnPoints}
+          onCancel={handleSkipPoints}
+          title="🎁 สะสมแต้มรับสิทธิ์ถ่ายฟรี"
+          subtitle="กดเบอร์โทรศัพท์เพื่อรับ 1 แต้ม (สะสมครบ 10 ครั้ง แลกถ่ายฟรี 1 ครั้ง!)"
+          submitLabel="สะสมแต้มรับ 1 ดวง ✨"
+          cancelLabel="ข้ามไปหน้าเลือกกรอบรูปเลย (ไม่สะสมแต้ม) →"
+          submitColor="pink"
+        />
+      </div>
+    );
+  }
+
+  // ==========================================
+  // STEP: สรุปรายการชำระเงิน (Summary)
+  // ==========================================
   if (step === "summary") {
     return (
       <div className="flex w-full max-w-5xl flex-col items-center gap-6">
@@ -131,6 +272,35 @@ export function PaymentClient() {
               </span>
             </div>
           </div>
+
+          {/* แถบกดใช้สิทธิ์ถ่ายฟรีสำหรับลูกค้าสมาชิกที่สะสมครบ 10 แต้ม */}
+          <div className="flex items-center justify-between rounded-2xl border-2 border-dashed border-pink-300 bg-pink-50/60 p-4">
+            <div className="flex items-center gap-3">
+              <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-pink-500 text-lg font-black text-white shadow">
+                🎁
+              </span>
+              <div className="flex flex-col text-left">
+                <span className="text-sm sm:text-base font-black text-zinc-900">
+                  สะสมครบ 10 แต้มแล้ว?
+                </span>
+                <span className="text-xs sm:text-sm text-zinc-600 font-semibold">
+                  แตะเพื่อแลกสิทธิ์ถ่ายฟรีรอบนี้ทันที
+                </span>
+              </div>
+            </div>
+
+            <button
+              type="button"
+              onClick={() => {
+                setRedeemPhoneInput("");
+                setRedeemError(null);
+                setStep("redeem_numpad");
+              }}
+              className="inline-flex min-h-12 items-center justify-center rounded-full bg-pink-500 px-5 text-sm sm:text-base font-black text-white shadow-md transition active:scale-95 hover:bg-pink-400 touch-manipulation cursor-pointer"
+            >
+              ใช้สิทธิ์แลกฟรี ✨
+            </button>
+          </div>
         </div>
 
         <div className="flex w-full max-w-2xl items-center justify-between gap-4">
@@ -153,6 +323,9 @@ export function PaymentClient() {
     );
   }
 
+  // ==========================================
+  // STEP: หน้าสแกน QR Code PromptPay (QR Step)
+  // ==========================================
   const isExpired = secondsLeft === 0;
 
   return (

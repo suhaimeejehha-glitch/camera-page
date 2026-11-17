@@ -28,7 +28,7 @@ body {
 }
 
 * {
-  font-family: 'Kanit', inherit;
+  font-family: var(--font-kanit), 'Kanit', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 }
 
 button,

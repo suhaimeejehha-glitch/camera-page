@@ -1,7 +1,8 @@
 // ไฟล์: lib/pointsStore.ts
 /**
- * Mock Store สำหรับจัดการแต้มสมาชิก (Points / Stamps) บน LocalStorage
- * เมื่อเชื่อมต่อ Supabase จริง จะเปลี่ยนฟังก์ชันเหล่านี้ให้เรียก API แทนได้ทันที
+ * Points Store สำหรับจัดการแต้มสมาชิก (Points / Stamps)
+ * เชื่อมต่อ Neon Database (PostgreSQL) ผ่าน /api/points
+ * พร้อม Fallback สู่ LocalStorage อัตโนมัติหากออฟไลน์หรือเน็ตมีปัญหา
  */
 
 export interface MemberPointsData {
@@ -14,7 +15,8 @@ export interface MemberPointsData {
 
 const STORAGE_PREFIX = "photobooth_points_";
 
-export function getMemberPoints(phone: string): MemberPointsData {
+/** อ่านจาก LocalStorage โดยตรง (Sync Fallback / Local Cache) */
+export function getLocalMemberPoints(phone: string): MemberPointsData {
   if (typeof window === "undefined") {
     return {
       phone,
@@ -31,7 +33,7 @@ export function getMemberPoints(phone: string): MemberPointsData {
       return JSON.parse(raw) as MemberPointsData;
     }
   } catch {
-    // ข้ามถ้าอ่าน storage ไม่ได้
+    // ข้าม
   }
 
   return {
@@ -43,15 +45,65 @@ export function getMemberPoints(phone: string): MemberPointsData {
   };
 }
 
-export function addMemberPoint(phone: string): {
+/** บันทึกลง LocalStorage (Local Cache) */
+export function saveLocalMemberPoints(data: MemberPointsData) {
+  if (typeof window === "undefined") return;
+  try {
+    localStorage.setItem(`${STORAGE_PREFIX}${data.phone}`, JSON.stringify(data));
+  } catch {
+    // ข้าม
+  }
+}
+
+/** ดึงข้อมูลสมาชิก (เรียก Neon API -> Fallback LocalStorage) */
+export async function getMemberPoints(phone: string): Promise<MemberPointsData> {
+  try {
+    const res = await fetch(`/api/points?phone=${encodeURIComponent(phone)}`);
+    if (res.ok) {
+      const json = await res.json();
+      if (json.success && json.member) {
+        saveLocalMemberPoints(json.member);
+        return json.member;
+      }
+    }
+  } catch (err) {
+    console.warn("Neon API unreachable, using local points data:", err);
+  }
+
+  return getLocalMemberPoints(phone);
+}
+
+/** สะสมแต้มสมาชิก (+1 แต้ม) ผ่าน Neon API */
+export async function addMemberPoint(phone: string): Promise<{
   data: MemberPointsData;
   isRedeemable: boolean;
   isFirstTime: boolean;
-} {
-  const current = getMemberPoints(phone);
-  const isFirstTime = current.totalVisits === 0;
+}> {
+  try {
+    const res = await fetch("/api/points", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ action: "earn", phone }),
+    });
 
-  // เพิ่มแต้ม (+1)
+    if (res.ok) {
+      const json = await res.json();
+      if (json.success && json.data) {
+        saveLocalMemberPoints(json.data);
+        return {
+          data: json.data,
+          isRedeemable: json.isRedeemable,
+          isFirstTime: json.isFirstTime,
+        };
+      }
+    }
+  } catch (err) {
+    console.warn("Neon API earn failed, falling back to local:", err);
+  }
+
+  // Fallback: LocalStorage
+  const current = getLocalMemberPoints(phone);
+  const isFirstTime = current.totalVisits === 0;
   const nextPoints = current.points + 1;
   const nextVisits = current.totalVisits + 1;
 
@@ -63,11 +115,7 @@ export function addMemberPoint(phone: string): {
     lastVisit: new Date().toISOString(),
   };
 
-  try {
-    localStorage.setItem(`${STORAGE_PREFIX}${phone}`, JSON.stringify(updated));
-  } catch {
-    // ข้ามถ้าบันทึกไม่ได้
-  }
+  saveLocalMemberPoints(updated);
 
   return {
     data: updated,
@@ -76,13 +124,45 @@ export function addMemberPoint(phone: string): {
   };
 }
 
-export function redeemMemberPoints(phone: string): {
+/** แลกสิทธิ์ถ่ายฟรี 1 ครั้ง (หัก 10 แต้ม) ผ่าน Neon API */
+export async function redeemMemberPoints(phone: string): Promise<{
   success: boolean;
   data: MemberPointsData;
   message: string;
-} {
-  const current = getMemberPoints(phone);
+}> {
+  try {
+    const res = await fetch("/api/points", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ action: "redeem", phone }),
+    });
 
+    if (res.ok) {
+      const json = await res.json();
+      if (json.data) {
+        saveLocalMemberPoints(json.data);
+      }
+      return {
+        success: !!json.success,
+        data: json.data || getLocalMemberPoints(phone),
+        message: json.message || (json.success ? "ใช้สิทธิ์ถ่ายฟรีสำเร็จ!" : "แต้มไม่เพียงพอ"),
+      };
+    } else {
+      const errJson = await res.json().catch(() => null);
+      if (errJson?.message) {
+        return {
+          success: false,
+          data: getLocalMemberPoints(phone),
+          message: errJson.message,
+        };
+      }
+    }
+  } catch (err) {
+    console.warn("Neon API redeem failed, falling back to local:", err);
+  }
+
+  // Fallback: LocalStorage
+  const current = getLocalMemberPoints(phone);
   if (current.points < 10) {
     return {
       success: false,
@@ -91,7 +171,6 @@ export function redeemMemberPoints(phone: string): {
     };
   }
 
-  // หักออก 10 แต้ม
   const updated: MemberPointsData = {
     ...current,
     points: current.points - 10,
@@ -99,11 +178,7 @@ export function redeemMemberPoints(phone: string): {
     lastVisit: new Date().toISOString(),
   };
 
-  try {
-    localStorage.setItem(`${STORAGE_PREFIX}${phone}`, JSON.stringify(updated));
-  } catch {
-    // ข้าม
-  }
+  saveLocalMemberPoints(updated);
 
   return {
     success: true,
@@ -113,8 +188,29 @@ export function redeemMemberPoints(phone: string): {
 }
 
 /** ฟังก์ชันพิเศษสำหรับทดสอบ: ตั้งแต้มเป็น 10 ทันที เพื่อทดสอบการแลกฟรี */
-export function setTestMemberPoints(phone: string, points: number = 10): MemberPointsData {
-  const current = getMemberPoints(phone);
+export async function setTestMemberPoints(
+  phone: string,
+  points: number = 10
+): Promise<MemberPointsData> {
+  try {
+    const res = await fetch("/api/points", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ action: "set_test", phone, points }),
+    });
+
+    if (res.ok) {
+      const json = await res.json();
+      if (json.success && json.data) {
+        saveLocalMemberPoints(json.data);
+        return json.data;
+      }
+    }
+  } catch (err) {
+    console.warn("Neon API set_test failed, falling back to local:", err);
+  }
+
+  const current = getLocalMemberPoints(phone);
   const updated: MemberPointsData = {
     ...current,
     phone,
@@ -123,9 +219,6 @@ export function setTestMemberPoints(phone: string, points: number = 10): MemberP
     lastVisit: new Date().toISOString(),
   };
 
-  try {
-    localStorage.setItem(`${STORAGE_PREFIX}${phone}`, JSON.stringify(updated));
-  } catch {}
-
+  saveLocalMemberPoints(updated);
   return updated;
 }

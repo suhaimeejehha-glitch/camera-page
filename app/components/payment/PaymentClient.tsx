@@ -51,6 +51,7 @@ export function PaymentClient() {
   const [redeemPhoneInput, setRedeemPhoneInput] = useState("");
   const [memberData, setMemberData] = useState<MemberPointsData | null>(null);
   const [redeemError, setRedeemError] = useState<string | null>(null);
+  const [isSubmittingPoints, setIsSubmittingPoints] = useState(false);
 
   const checkTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -92,11 +93,16 @@ export function PaymentClient() {
   };
 
   // กดยืนยันเบอร์เพื่อสะสมแต้ม
-  const handleEarnPoints = () => {
-    if (phoneInput.length !== 10) return;
-    const result = addMemberPoint(phoneInput);
-    setMemberData(result.data);
-    setStep("stamp_card");
+  const handleEarnPoints = async () => {
+    if (phoneInput.length !== 10 || isSubmittingPoints) return;
+    setIsSubmittingPoints(true);
+    try {
+      const result = await addMemberPoint(phoneInput);
+      setMemberData(result.data);
+      setStep("stamp_card");
+    } finally {
+      setIsSubmittingPoints(false);
+    }
   };
 
   // แตะข้ามการสะสมแต้ม -> ไปหน้าเลือกกรอบทันที
@@ -105,23 +111,27 @@ export function PaymentClient() {
   };
 
   // ทดสอบปรับแต้มเป็น 10 หรือ 1 ในโหมดทดสอบ
-  const handleSetTestPoints = (points: number) => {
+  const handleSetTestPoints = async (points: number) => {
     if (!memberData) return;
-    const updated = setTestMemberPoints(memberData.phone, points);
+    const updated = await setTestMemberPoints(memberData.phone, points);
     setMemberData({ ...updated });
   };
 
   // ตรวจสอบและแลกสิทธิ์ถ่ายฟรี
-  const handleRedeemCheck = () => {
-    if (redeemPhoneInput.length !== 10) return;
+  const handleRedeemCheck = async () => {
+    if (redeemPhoneInput.length !== 10 || isSubmittingPoints) return;
+    setIsSubmittingPoints(true);
     setRedeemError(null);
-
-    const result = redeemMemberPoints(redeemPhoneInput);
-    if (result.success) {
-      setMemberData(result.data);
-      setStep("redeem_success");
-    } else {
-      setRedeemError(result.message);
+    try {
+      const result = await redeemMemberPoints(redeemPhoneInput);
+      if (result.success) {
+        setMemberData(result.data);
+        setStep("redeem_success");
+      } else {
+        setRedeemError(result.message);
+      }
+    } finally {
+      setIsSubmittingPoints(false);
     }
   };
 
@@ -179,6 +189,7 @@ export function PaymentClient() {
           submitLabel="แลกสิทธิ์ถ่ายฟรีทันที ✨"
           cancelLabel="← กลับไปหน้าชำระเงินปกติ"
           submitColor="emerald"
+          isLoading={isSubmittingPoints}
         />
 
         {redeemError ? (
@@ -226,6 +237,7 @@ export function PaymentClient() {
           submitLabel="สะสมแต้มรับ 1 ดวง ✨"
           cancelLabel="ข้ามไปหน้าเลือกกรอบรูปเลย (ไม่สะสมแต้ม) →"
           submitColor="pink"
+          isLoading={isSubmittingPoints}
         />
       </div>
     );

@@ -366,20 +366,20 @@ export function LayoutSetupStep() {
 
   if (step === "orientation") {
     return (
-      <div className="flex max-h-full w-full max-w-5xl flex-col items-center justify-center gap-6 portrait:gap-8">
-        <div className="flex flex-col items-center gap-2 text-center">
-          <span className="rounded-full border border-pink-200 bg-pink-50 px-4 py-1 font-mono text-xs font-bold tracking-widest text-pink-600 uppercase">
+      <div className="flex max-h-full w-full max-w-5xl flex-col items-center justify-center gap-7 portrait:gap-9">
+        <div className="flex flex-col items-center gap-3 text-center">
+          <span className="rounded-full border-2 border-pink-200 bg-pink-50 px-6 py-1.5 font-mono text-sm font-black tracking-widest text-pink-600 uppercase shadow-sm">
             Step 1 of 2
           </span>
-          <h2 className="text-2xl font-black text-zinc-900 sm:text-4xl">
+          <h2 className="text-3xl font-black text-zinc-900 sm:text-5xl">
             เลือกแนวกรอบที่ต้องการ
           </h2>
-          <p className="text-sm font-medium text-zinc-600 sm:text-base">
+          <p className="text-base font-bold text-zinc-600 sm:text-xl">
             แตะเลือก แนวตั้ง หรือ แนวนอน แล้วกด Next เพื่อเลือกรูปแบบจำนวนรูป
           </p>
         </div>
 
-        <div className="grid w-full grid-cols-1 gap-5 sm:grid-cols-2 sm:gap-8">
+        <div className="grid w-full grid-cols-1 gap-6 sm:grid-cols-2 sm:gap-8">
           {ORIENTATION_OPTIONS.map((opt) => {
             const isVertical = opt.value === "vertical";
             const isSelected = orientation === opt.value;
@@ -388,26 +388,26 @@ export function LayoutSetupStep() {
                 key={opt.value}
                 type="button"
                 onClick={() => handleSelectOrientation(opt.value)}
-                className={`group relative flex min-h-56 flex-col items-center justify-center gap-5 rounded-3xl border-2 bg-white p-8 text-center shadow-xl transition active:scale-95 portrait:min-h-64 ${
+                className={`group relative flex min-h-64 flex-col items-center justify-center gap-6 rounded-3xl border-3 bg-white p-8 text-center shadow-2xl transition active:scale-95 portrait:min-h-72 touch-manipulation cursor-pointer ${
                   isSelected
-                    ? "border-pink-500 shadow-pink-500/15 ring-4 ring-pink-500/10"
-                    : "border-zinc-200 shadow-pink-500/5 hover:border-pink-300"
+                    ? "border-pink-500 shadow-pink-500/25 ring-4 ring-pink-500/20"
+                    : "border-zinc-200/90 shadow-pink-500/5 hover:border-pink-300"
                 }`}
               >
                 {isSelected ? (
-                  <span className="absolute -top-3 -right-3 flex h-8 w-8 items-center justify-center rounded-full bg-pink-500 text-sm font-black text-white shadow-md">
+                  <span className="absolute -top-3.5 -right-3.5 flex h-10 w-10 items-center justify-center rounded-full bg-pink-500 text-lg font-black text-white shadow-lg">
                     ✓
                   </span>
                 ) : null}
 
                 {/* ไอคอนพรีวิวแนวตั้ง vs แนวนอน พร้อมรูปคนตัวอย่าง */}
-                <div className="flex h-36 items-center justify-center">
+                <div className="flex h-38 items-center justify-center">
                   <OrientationSampleIcon isVertical={isVertical} />
                 </div>
 
-                <div className="flex flex-col gap-1">
+                <div className="flex flex-col gap-1.5">
                   <span
-                    className={`text-2xl font-black transition sm:text-3xl ${
+                    className={`text-3xl font-black transition sm:text-4xl ${
                       isSelected
                         ? "text-pink-600"
                         : "text-zinc-900 group-hover:text-pink-600"
@@ -415,10 +415,10 @@ export function LayoutSetupStep() {
                   >
                     {opt.label}
                   </span>
-                  <span className="font-mono text-xs font-bold tracking-wider text-pink-500 uppercase">
+                  <span className="font-mono text-sm font-black tracking-wider text-pink-500 uppercase">
                     {opt.sub}
                   </span>
-                  <span className="mt-0.5 text-sm text-zinc-600">
+                  <span className="mt-1 text-base text-zinc-600 font-semibold">
                     {opt.desc}
                   </span>
                 </div>
@@ -428,11 +428,11 @@ export function LayoutSetupStep() {
         </div>
 
         {/* ขั้นตอนแรกหลังจ่ายเงิน: ไม่มีปุ่ม Back เพื่อกันกดย้อนกลับไปหน้าแรก/จ่ายเงินซ้ำ */}
-        <div className="flex w-full items-center justify-end gap-4 pt-1">
+        <div className="flex w-full items-center justify-end gap-4 pt-2">
           <button
             type="button"
             onClick={() => setStep("shots")}
-            className="inline-flex min-h-14 items-center justify-center rounded-full bg-pink-500 px-10 text-base font-black tracking-wider text-white uppercase shadow-lg shadow-pink-500/25 transition active:scale-95 hover:bg-pink-400"
+            className="inline-flex min-h-16 sm:min-h-18 items-center justify-center rounded-full bg-gradient-to-r from-pink-500 via-rose-500 to-pink-500 px-14 sm:px-18 text-xl sm:text-2xl font-black tracking-wider text-white uppercase shadow-2xl shadow-pink-500/35 transition active:scale-95 hover:from-pink-400 hover:to-rose-400 border-2 border-white/20 touch-manipulation cursor-pointer"
           >
             Next →
           </button>
@@ -442,20 +442,20 @@ export function LayoutSetupStep() {
   }
 
   return (
-    <div className="flex max-h-full w-full max-w-6xl flex-col items-center justify-center gap-5">
-      <div className="flex flex-col items-center gap-1.5 text-center">
-        <span className="rounded-full border border-pink-200 bg-pink-50 px-4 py-1 font-mono text-xs font-bold tracking-widest text-pink-600 uppercase">
+    <div className="flex max-h-full w-full max-w-6xl flex-col items-center justify-center gap-6">
+      <div className="flex flex-col items-center gap-2 text-center">
+        <span className="rounded-full border-2 border-pink-200 bg-pink-50 px-6 py-1.5 font-mono text-sm font-black tracking-widest text-pink-600 uppercase shadow-sm">
           Step 2 of 2 • {orientation === "vertical" ? "แนวตั้ง" : "แนวนอน"}
         </span>
-        <h2 className="text-2xl font-black text-zinc-900 sm:text-3xl">
-          เลือกรูปแบบจำนวนรูป ({orientation === "vertical" ? "แนวตั้ง" : "แนวนอน"})
+        <h2 className="text-3xl font-black text-zinc-900 sm:text-5xl">
+          เลือกจำนวนรูป ({orientation === "vertical" ? "แนวตั้ง" : "แนวนอน"})
         </h2>
       </div>
 
       {/* ตัวเลือกจำนวนรูป 1-4 เด้งปรับตามแนวตั้ง/แนวนอนอัตโนมัติ + พรีวิว */}
-      <div className="grid w-full grid-cols-1 gap-5 landscape:grid-cols-12 landscape:gap-6 portrait:gap-6">
-        <div className="flex flex-col justify-center gap-4 rounded-3xl border border-zinc-200 bg-white p-6 shadow-xl shadow-pink-500/5 sm:p-7 landscape:col-span-7">
-          <div className="grid grid-cols-2 gap-3.5 sm:grid-cols-4">
+      <div className="grid w-full grid-cols-1 gap-6 landscape:grid-cols-12 landscape:gap-6 portrait:gap-6">
+        <div className="flex flex-col justify-center gap-5 rounded-3xl border border-zinc-200 bg-white p-6 shadow-2xl shadow-pink-500/5 sm:p-8 landscape:col-span-7">
+          <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
             {SHOT_OPTIONS.map((opt) => {
               const active = shots === opt.count;
               return (
@@ -463,14 +463,14 @@ export function LayoutSetupStep() {
                   key={opt.count}
                   type="button"
                   onClick={() => setShots(opt.count)}
-                  className={`relative flex min-h-40 flex-col items-center justify-center gap-2.5 rounded-2xl border-2 p-4 transition active:scale-95 portrait:min-h-44 ${
+                  className={`relative flex min-h-48 flex-col items-center justify-center gap-3 rounded-3xl border-3 p-5 transition active:scale-95 portrait:min-h-52 touch-manipulation cursor-pointer ${
                     active
-                      ? "border-pink-500 bg-pink-50/70 text-pink-600 shadow-lg shadow-pink-500/15"
-                      : "border-zinc-200 bg-zinc-50/70 text-zinc-700 hover:border-pink-300 hover:bg-white"
+                      ? "border-pink-500 bg-pink-50/80 text-pink-600 shadow-xl shadow-pink-500/20 ring-4 ring-pink-500/15"
+                      : "border-zinc-200 bg-zinc-50/80 text-zinc-700 hover:border-pink-300 hover:bg-white"
                   }`}
                 >
                   {active ? (
-                    <span className="absolute -top-2.5 -right-2.5 flex h-7 w-7 items-center justify-center rounded-full bg-pink-500 text-xs font-black text-white shadow">
+                    <span className="absolute -top-3 -right-3 flex h-9 w-9 items-center justify-center rounded-full bg-pink-500 text-sm font-black text-white shadow-lg">
                       ✓
                     </span>
                   ) : null}
@@ -481,10 +481,10 @@ export function LayoutSetupStep() {
                     active={active}
                   />
                   <div className="flex flex-col items-center">
-                    <span className="text-base font-black sm:text-lg">
+                    <span className="text-xl font-black sm:text-2xl">
                       {opt.label}
                     </span>
-                    <span className="text-[11px] text-zinc-600">
+                    <span className="text-xs sm:text-sm text-zinc-600 font-semibold">
                       {opt.desc}
                     </span>
                   </div>
@@ -495,12 +495,12 @@ export function LayoutSetupStep() {
         </div>
 
         {/* ฝั่งตัวอย่างโครงกรอบ (ขยายใหญ่ขึ้น + มีรูปคนตัวอย่างทุกช่อง) */}
-        <div className="flex flex-col items-center justify-center gap-4 rounded-3xl border border-zinc-200 bg-white p-6 shadow-xl shadow-pink-500/5 sm:p-7 landscape:col-span-5">
+        <div className="flex flex-col items-center justify-center gap-4 rounded-3xl border border-zinc-200 bg-white p-6 shadow-2xl shadow-pink-500/5 sm:p-8 landscape:col-span-5">
           <div className="text-center">
-            <p className="font-mono text-xs font-bold tracking-widest text-zinc-500 uppercase">
+            <p className="font-mono text-xs sm:text-sm font-black tracking-widest text-zinc-500 uppercase">
               Layout Preview
             </p>
-            <p className="mt-1 text-lg font-black text-zinc-900 sm:text-2xl">
+            <p className="mt-1 text-xl font-black text-zinc-900 sm:text-3xl">
               {shots} รูป • {orientation === "vertical" ? "แนวตั้ง" : "แนวนอน"}
             </p>
           </div>
@@ -537,25 +537,25 @@ export function LayoutSetupStep() {
             </div>
           </div>
 
-          <p className="text-xs text-zinc-400 font-medium">
+          <p className="text-sm text-zinc-500 font-bold">
             ตัวอย่างการจัดวางภาพ {shots} ช็อตในกรอบจริง
           </p>
         </div>
       </div>
 
       {/* ปุ่ม Back / Next ด้านล่างเหมือนภาพตัวอย่าง */}
-      <div className="flex w-full items-center justify-between gap-4 pt-1">
+      <div className="flex w-full items-center justify-between gap-4 pt-2">
         <button
           type="button"
           onClick={() => setStep("orientation")}
-          className="inline-flex min-h-14 items-center justify-center rounded-full border border-zinc-200 bg-white px-8 text-sm font-bold tracking-wider text-zinc-700 uppercase shadow-sm transition active:scale-95 hover:border-pink-400 hover:text-pink-600"
+          className="inline-flex min-h-16 sm:min-h-18 items-center justify-center rounded-full border-2 border-zinc-300 bg-white px-10 sm:px-12 text-lg sm:text-xl font-black tracking-wider text-zinc-700 uppercase shadow-md transition active:scale-95 hover:border-pink-400 hover:text-pink-600 touch-manipulation cursor-pointer"
         >
           ← Back
         </button>
 
         <Link
           href={`/frames?shots=${shots}&orientation=${orientation}`}
-          className="inline-flex min-h-14 items-center justify-center rounded-full bg-pink-500 px-10 text-base font-black tracking-wider text-white uppercase shadow-lg shadow-pink-500/25 transition active:scale-95 hover:bg-pink-400"
+          className="inline-flex min-h-16 sm:min-h-18 items-center justify-center rounded-full bg-gradient-to-r from-pink-500 via-rose-500 to-pink-500 px-14 sm:px-18 text-xl sm:text-2xl font-black tracking-wider text-white uppercase shadow-2xl shadow-pink-500/35 transition active:scale-95 hover:from-pink-400 hover:to-rose-400 border-2 border-white/20 touch-manipulation cursor-pointer"
         >
           Next →
         </Link>

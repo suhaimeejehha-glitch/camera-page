@@ -519,21 +519,21 @@ export function ResultClient() {
             {selectedSticker ? (
               <div className="flex flex-col gap-3 rounded-2xl border border-zinc-700 bg-zinc-950/70 p-4">
                 <div className="flex items-center justify-between">
-                  <span className="font-mono text-xs font-bold tracking-wider text-pink-400 uppercase">
+                  <span className="font-mono text-sm font-black tracking-wider text-pink-400 uppercase">
                     Selected: {selectedSticker.stickerId}
                   </span>
                   <button
                     type="button"
                     onClick={() => handleRemoveSticker(selectedSticker.instanceId)}
-                    className="min-h-9 rounded-full border border-rose-500/30 bg-rose-500/20 px-3.5 text-xs font-bold text-rose-300 transition active:scale-95 hover:bg-rose-500/30"
+                    className="min-h-11 rounded-full border border-rose-500/40 bg-rose-500/25 px-5 text-sm font-black text-rose-300 transition active:scale-95 hover:bg-rose-500/35 touch-manipulation cursor-pointer"
                   >
-                    ลบชิ้นนี้
+                    ✕ ลบชิ้นนี้
                   </button>
                 </div>
 
-                <div className="flex flex-wrap items-center gap-3">
-                  <div className="flex items-center gap-2">
-                    <span className="font-mono text-xs text-zinc-400">Size</span>
+                <div className="flex flex-wrap items-center gap-4">
+                  <div className="flex items-center gap-2.5">
+                    <span className="font-mono text-xs sm:text-sm font-bold text-zinc-400">Size</span>
                     <button
                       type="button"
                       onClick={() =>
@@ -541,11 +541,11 @@ export function ResultClient() {
                           scale: clamp(Number((selectedSticker.scale - 0.15).toFixed(2)), 0.5, 2.2),
                         })
                       }
-                      className="flex h-10 w-10 items-center justify-center rounded-xl border border-zinc-700 bg-zinc-800 text-lg font-bold text-white shadow-sm transition active:scale-95 hover:bg-zinc-700"
+                      className="flex h-12 w-12 sm:h-14 sm:w-14 items-center justify-center rounded-2xl border border-zinc-700 bg-zinc-800 text-2xl font-black text-white shadow-md transition active:scale-95 hover:bg-zinc-700 touch-manipulation cursor-pointer"
                     >
                       −
                     </button>
-                    <span className="w-12 text-center font-mono text-xs font-bold text-zinc-200">
+                    <span className="w-14 text-center font-mono text-sm sm:text-base font-black text-zinc-200">
                       {Math.round(selectedSticker.scale * 100)}%
                     </span>
                     <button
@@ -555,14 +555,14 @@ export function ResultClient() {
                           scale: clamp(Number((selectedSticker.scale + 0.15).toFixed(2)), 0.5, 2.2),
                         })
                       }
-                      className="flex h-10 w-10 items-center justify-center rounded-xl border border-zinc-700 bg-zinc-800 text-lg font-bold text-white shadow-sm transition active:scale-95 hover:bg-zinc-700"
+                      className="flex h-12 w-12 sm:h-14 sm:w-14 items-center justify-center rounded-2xl border border-zinc-700 bg-zinc-800 text-2xl font-black text-white shadow-md transition active:scale-95 hover:bg-zinc-700 touch-manipulation cursor-pointer"
                     >
                       +
                     </button>
                   </div>
 
                   <div className="flex items-center gap-2">
-                    <span className="font-mono text-xs text-zinc-400">Rotate</span>
+                    <span className="font-mono text-xs sm:text-sm font-bold text-zinc-400">Rotate</span>
                     <button
                       type="button"
                       onClick={() =>
@@ -570,7 +570,7 @@ export function ResultClient() {
                           rotation: selectedSticker.rotation - 15,
                         })
                       }
-                      className="h-10 rounded-xl border border-zinc-700 bg-zinc-800 px-3 font-mono text-xs font-bold text-zinc-200 shadow-sm transition active:scale-95 hover:bg-zinc-700"
+                      className="h-12 sm:h-14 rounded-2xl border border-zinc-700 bg-zinc-800 px-4 font-mono text-sm font-black text-zinc-200 shadow-sm transition active:scale-95 hover:bg-zinc-700 touch-manipulation cursor-pointer"
                     >
                       ↺ -15°
                     </button>
@@ -581,7 +581,7 @@ export function ResultClient() {
                           rotation: 0,
                         })
                       }
-                      className="h-10 rounded-xl border border-zinc-700 bg-zinc-800 px-3 font-mono text-xs font-bold text-zinc-400 shadow-sm transition active:scale-95 hover:bg-zinc-700"
+                      className="h-12 sm:h-14 rounded-2xl border border-zinc-700 bg-zinc-800 px-4 font-mono text-sm font-black text-zinc-400 shadow-sm transition active:scale-95 hover:bg-zinc-700 touch-manipulation cursor-pointer"
                     >
                       0°
                     </button>
@@ -592,7 +592,7 @@ export function ResultClient() {
                           rotation: selectedSticker.rotation + 15,
                         })
                       }
-                      className="h-10 rounded-xl border border-zinc-700 bg-zinc-800 px-3 font-mono text-xs font-bold text-zinc-200 shadow-sm transition active:scale-95 hover:bg-zinc-700"
+                      className="h-12 sm:h-14 rounded-2xl border border-zinc-700 bg-zinc-800 px-4 font-mono text-sm font-black text-zinc-200 shadow-sm transition active:scale-95 hover:bg-zinc-700 touch-manipulation cursor-pointer"
                     >
                       ↻ +15°
                     </button>
@@ -611,7 +611,7 @@ export function ResultClient() {
         <div className="flex w-full max-w-6xl shrink-0 items-center justify-between gap-4 pt-3">
           <Link
             href={`/booth?frame=${frame.id}&shots=${shots}&orientation=${orientation}`}
-            className="inline-flex min-h-13 sm:min-h-15 items-center justify-center rounded-2xl border-2 border-zinc-700 bg-zinc-900 px-7 sm:px-8 text-sm sm:text-base font-bold text-zinc-200 shadow-xl transition active:scale-95 hover:bg-zinc-800 hover:text-white touch-manipulation cursor-pointer"
+            className="inline-flex min-h-16 sm:min-h-18 items-center justify-center rounded-full border-2 border-zinc-700 bg-zinc-900 px-8 sm:px-10 text-base sm:text-lg font-black text-zinc-200 shadow-xl transition active:scale-95 hover:bg-zinc-800 hover:text-white touch-manipulation cursor-pointer"
           >
             ← ย้อนกลับไปถ่ายใหม่ (Back)
           </Link>
@@ -621,7 +621,7 @@ export function ResultClient() {
               type="button"
               onClick={handlePrint}
               disabled={isPrinting || photos.length === 0}
-              className="inline-flex min-h-13 sm:min-h-15 items-center justify-center rounded-2xl bg-white px-8 sm:px-11 text-base sm:text-lg font-black text-zinc-950 shadow-2xl shadow-white/30 transition active:scale-95 hover:bg-zinc-100 disabled:cursor-not-allowed disabled:opacity-50 touch-manipulation cursor-pointer"
+              className="inline-flex min-h-16 sm:min-h-18 items-center justify-center rounded-full bg-white px-10 sm:px-14 text-xl sm:text-2xl font-black text-zinc-950 shadow-2xl shadow-white/40 transition active:scale-95 hover:bg-zinc-100 disabled:cursor-not-allowed disabled:opacity-50 touch-manipulation cursor-pointer"
             >
               {isPrinting ? "กำลังเตรียมการพิมพ์..." : "🖨️ สั่งพิมพ์รูป (PRINT)"}
             </button>
@@ -630,7 +630,7 @@ export function ResultClient() {
               <button
                 type="button"
                 onClick={handleFinishSession}
-                className="inline-flex min-h-13 sm:min-h-15 items-center justify-center rounded-2xl bg-pink-500 px-8 text-base font-black text-white shadow-lg shadow-pink-500/30 transition active:scale-95 hover:bg-pink-400 touch-manipulation cursor-pointer"
+                className="inline-flex min-h-16 sm:min-h-18 items-center justify-center rounded-full bg-gradient-to-r from-pink-500 via-rose-500 to-pink-500 px-10 sm:px-12 text-lg sm:text-xl font-black text-white shadow-xl shadow-pink-500/40 transition active:scale-95 hover:from-pink-400 hover:to-rose-400 border-2 border-white/20 touch-manipulation cursor-pointer"
               >
                 เสร็จสิ้น ({postPrintSeconds}s) →
               </button>

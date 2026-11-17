@@ -27,25 +27,25 @@ export function StickerPicker({
   const isDark = theme === "dark";
 
   return (
-    <div className="grid grid-cols-4 gap-2.5 sm:gap-3">
+    <div className="grid grid-cols-4 gap-3 sm:gap-3.5">
       {stickers.map((sticker) => (
         <button
           key={sticker.id}
           type="button"
           onClick={() => onAddSticker(sticker)}
-          className={`flex min-h-16 flex-col items-center justify-center gap-1 rounded-2xl border p-2 transition active:scale-95 sm:min-h-20 sm:p-3 ${
+          className={`flex min-h-20 sm:min-h-24 flex-col items-center justify-center gap-1.5 rounded-2xl border-2 p-2.5 transition active:scale-95 sm:p-3 touch-manipulation cursor-pointer shadow-md ${
             isDark
-              ? "border-zinc-800/90 bg-zinc-900/90 text-zinc-300 hover:border-pink-500/80 hover:bg-zinc-800/90"
-              : "border-zinc-200 bg-zinc-50/80 text-zinc-700 hover:border-pink-400 hover:bg-pink-50/50"
+              ? "border-zinc-800 bg-zinc-900/90 text-zinc-200 hover:border-pink-500 hover:bg-zinc-800"
+              : "border-zinc-300 bg-zinc-50/90 text-zinc-800 hover:border-pink-400 hover:bg-pink-50"
           }`}
         >
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src={sticker.src}
             alt={sticker.name}
-            className="h-9 w-9 object-contain sm:h-11 sm:w-11"
+            className="h-11 w-11 sm:h-13 sm:w-13 object-contain"
           />
-          <span className="font-mono text-[10px] font-bold tracking-wider uppercase sm:text-xs">
+          <span className="font-mono text-xs sm:text-sm font-black tracking-wider uppercase">
             {sticker.name}
           </span>
         </button>

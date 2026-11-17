@@ -64,32 +64,32 @@ export function ThankYouClient() {
         <FullscreenButton />
       </div>
 
-      {/* โซนกลาง: ข้อความ THANK YOU เฉยๆ เรียบหรู สะอาดตา */}
-      <div className="relative z-10 my-auto flex w-full max-w-2xl flex-col items-center justify-center gap-8 py-8 text-center">
-        <div className="flex flex-col items-center gap-4">
-          <span className="rounded-full border border-pink-400/40 bg-pink-500/15 px-6 py-2 font-mono text-xs font-bold tracking-widest text-pink-300 uppercase sm:text-sm">
+      {/* โซนกลาง: ข้อความ THANK YOU เรียบหรู สะอาดตา */}
+      <div className="relative z-10 my-auto flex w-full max-w-2xl flex-col items-center justify-center gap-9 py-8 text-center">
+        <div className="flex flex-col items-center gap-5">
+          <span className="rounded-full border border-pink-400/50 bg-pink-500/20 px-8 py-2.5 font-mono text-sm sm:text-base font-black tracking-widest text-pink-300 uppercase shadow-lg">
             SESSION COMPLETE • กรุณารับภาพที่ช่องรับรูป
           </span>
 
-          <h1 className="text-5xl font-black tracking-tight text-white uppercase sm:text-7xl">
+          <h1 className="text-6xl font-black tracking-tight text-white uppercase sm:text-8xl drop-shadow-md">
             THANK <span className="text-pink-500">YOU!</span>
           </h1>
 
-          <p className="text-base text-zinc-400 sm:text-lg">
+          <p className="text-lg text-zinc-300 sm:text-2xl font-bold">
             ขอบคุณที่มาใช้บริการ STUDIO BOOTH
           </p>
         </div>
 
         {/* แถบนับถอยหลัง + ปุ่มกลับหน้าแรก */}
-        <div className="flex w-full max-w-md flex-col gap-3 rounded-2xl border border-zinc-800 bg-zinc-900/80 p-5 shadow-2xl">
-          <div className="flex items-center justify-between font-mono text-xs font-bold tracking-wider uppercase">
-            <span className="text-zinc-400">พร้อมรับลูกค้าท่านถัดไปใน</span>
-            <span className="text-pink-400">{secondsLeft} วินาที</span>
+        <div className="flex w-full max-w-md flex-col gap-4 rounded-3xl border border-zinc-800 bg-zinc-900/90 p-6 shadow-2xl">
+          <div className="flex items-center justify-between font-mono text-sm sm:text-base font-black tracking-wider uppercase">
+            <span className="text-zinc-300">พร้อมรับลูกค้าท่านถัดไปใน</span>
+            <span className="text-pink-400 font-mono text-lg">{secondsLeft} วินาที</span>
           </div>
 
-          <div className="h-2 w-full overflow-hidden rounded-full bg-zinc-800">
+          <div className="h-3 w-full overflow-hidden rounded-full bg-zinc-800">
             <div
-              className="h-full rounded-full bg-pink-500 transition-all duration-700 ease-linear"
+              className="h-full rounded-full bg-gradient-to-r from-pink-500 to-rose-400 transition-all duration-700 ease-linear"
               style={{ width: `${progressPercent}%` }}
             />
           </div>
@@ -97,7 +97,7 @@ export function ThankYouClient() {
           <button
             type="button"
             onClick={handleFinish}
-            className="mt-1 flex w-full items-center justify-center gap-2 rounded-xl bg-pink-500 py-3 text-sm font-bold text-white shadow-lg shadow-pink-500/30 transition hover:bg-pink-600 active:scale-98"
+            className="mt-2 inline-flex min-h-16 w-full items-center justify-center gap-2 rounded-full bg-gradient-to-r from-pink-500 via-rose-500 to-pink-500 py-3.5 text-lg sm:text-xl font-black text-white shadow-xl shadow-pink-500/35 transition hover:from-pink-400 hover:to-rose-400 active:scale-95 border-2 border-white/20 touch-manipulation cursor-pointer"
           >
             เสร็จสิ้น / กลับหน้าแรกทันที →
           </button>

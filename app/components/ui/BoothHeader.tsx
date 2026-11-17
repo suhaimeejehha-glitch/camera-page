@@ -39,7 +39,7 @@ export function BoothHeader({
           {backHref ? (
             <Link
               href={backHref}
-              className={`hidden min-h-11 items-center justify-center rounded-full border px-5 text-xs font-bold tracking-wider uppercase transition active:scale-95 landscape:inline-flex ${backBtnClass}`}
+              className={`hidden min-h-14 items-center justify-center rounded-full border-2 px-6 text-sm font-black tracking-wider uppercase transition active:scale-95 landscape:inline-flex touch-manipulation cursor-pointer ${backBtnClass}`}
             >
               ← Back
             </Link>
@@ -47,9 +47,9 @@ export function BoothHeader({
 
           {currentStep && currentStep >= 2 ? (
             <div
-              className={`inline-flex min-h-11 items-center gap-2.5 text-sm font-black tracking-widest uppercase sm:text-base ${brandTextClass}`}
+              className={`inline-flex min-h-14 items-center gap-3 text-base font-black tracking-widest uppercase sm:text-lg ${brandTextClass}`}
             >
-              <span className="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-pink-500 font-mono text-sm font-black text-white shadow-md shadow-pink-500/25">
+              <span className="inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-pink-500 font-mono text-base font-black text-white shadow-md shadow-pink-500/30">
                 ◉
               </span>
               <span>{brandName}</span>
@@ -57,9 +57,9 @@ export function BoothHeader({
           ) : (
             <Link
               href="/"
-              className={`inline-flex min-h-11 items-center gap-2.5 text-sm font-black tracking-widest uppercase sm:text-base ${brandTextClass}`}
+              className={`inline-flex min-h-14 items-center gap-3 text-base font-black tracking-widest uppercase sm:text-lg ${brandTextClass}`}
             >
-              <span className="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-pink-500 font-mono text-sm font-black text-white shadow-md shadow-pink-500/25">
+              <span className="inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-pink-500 font-mono text-base font-black text-white shadow-md shadow-pink-500/30">
                 ◉
               </span>
               <span>{brandName}</span>
@@ -69,21 +69,21 @@ export function BoothHeader({
 
         {/* ตัวบอกขั้นตอน 1 - 6 แบบสะอาดตา (หรือแสดง Title ถ้าไม่ส่ง currentStep) */}
         {currentStep ? (
-          <div className="hidden items-center gap-1.5 sm:flex">
+          <div className="hidden items-center gap-2 sm:flex">
             {Array.from({ length: totalSteps }).map((_, index) => {
               const stepNum = index + 1;
               const isCurrent = stepNum === currentStep;
               const isDone = stepNum < currentStep;
               return (
-                <div key={stepNum} className="flex items-center gap-1.5">
+                <div key={stepNum} className="flex items-center gap-2">
                   <span
-                    className={`flex h-7 w-7 items-center justify-center rounded-full font-mono text-xs font-bold transition ${
+                    className={`flex h-9 w-9 items-center justify-center rounded-full font-mono text-sm font-black transition ${
                       isCurrent
-                        ? "bg-pink-500 text-white shadow-md shadow-pink-500/30"
+                        ? "bg-pink-500 text-white shadow-lg shadow-pink-500/40 scale-110"
                         : isDone
                         ? isLight
-                          ? "border border-pink-300 bg-pink-50 text-pink-600"
-                          : "border border-pink-400/50 bg-pink-500/20 text-pink-300"
+                          ? "border-2 border-pink-300 bg-pink-50 text-pink-600"
+                          : "border-2 border-pink-400/50 bg-pink-500/20 text-pink-300"
                         : isLight
                         ? "border border-zinc-200 bg-white text-zinc-400"
                         : "border border-zinc-700 bg-zinc-900 text-zinc-500"
@@ -93,7 +93,7 @@ export function BoothHeader({
                   </span>
                   {stepNum < totalSteps ? (
                     <span
-                      className={`h-0.5 w-4 rounded-full ${
+                      className={`h-1 w-5 rounded-full ${
                         isDone
                           ? "bg-pink-400"
                           : isLight
@@ -108,7 +108,7 @@ export function BoothHeader({
           </div>
         ) : (
           <p
-            className={`hidden truncate px-2 text-center font-mono text-sm font-bold tracking-[0.2em] uppercase landscape:block lg:text-base ${titleClass}`}
+            className={`hidden truncate px-2 text-center font-mono text-sm sm:text-base font-black tracking-[0.2em] uppercase landscape:block ${titleClass}`}
           >
             {title}
           </p>
@@ -122,7 +122,7 @@ export function BoothHeader({
         {backHref ? (
           <Link
             href={backHref}
-            className={`inline-flex min-h-11 items-center justify-center rounded-full border px-5 text-xs font-bold tracking-wider uppercase transition active:scale-95 ${backBtnClass}`}
+            className={`inline-flex min-h-13 items-center justify-center rounded-full border-2 px-6 text-sm font-black tracking-wider uppercase transition active:scale-95 touch-manipulation cursor-pointer ${backBtnClass}`}
           >
             ← Back
           </Link>

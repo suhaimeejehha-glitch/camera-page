@@ -12,7 +12,12 @@ import {
   parseOrientation,
   parseShotCount,
 } from "@/lib/frames";
-import { clearMotionFrames, saveMotionFrames } from "@/lib/mediaStore";
+import {
+  clearMotionFrames,
+  saveMotionFrames,
+  saveSessionPhotos,
+  loadSessionPhotos,
+} from "@/lib/mediaStore";
 import { PHOTO_TONES, type PhotoTone } from "@/lib/filters";
 import type { PhotoShot } from "@/types/photobooth";
 
@@ -67,19 +72,38 @@ export function BoothClient() {
       const savedTone = sessionStorage.getItem(SELECTED_TONE_KEY);
       if (savedTone) setSelectedToneId(savedTone);
     } catch {}
+
+    // ลองโหลดรูปเดิมจาก IndexedDB ก่อน ถ้ามี
+    loadSessionPhotos().then((stored) => {
+      if (stored && stored.length > 0) {
+        setPhotos(stored);
+      } else {
+        try {
+          const raw = sessionStorage.getItem(STORAGE_KEY);
+          if (raw) {
+            const parsed = JSON.parse(raw) as PhotoShot[];
+            if (Array.isArray(parsed) && parsed.length > 0) {
+              setPhotos(parsed);
+            }
+          }
+        } catch {}
+      }
+    });
   }, []);
 
-  // บันทึกรูปที่ถ่าย และโทนสีที่เลือกลง sessionStorage
+  // บันทึกรูปที่ถ่ายลงทั้ง IndexedDB (ไม่จำกัดโควต้า 5MB) และ sessionStorage เป็น backup
   useEffect(() => {
+    if (photos.length > 0) {
+      void saveSessionPhotos(photos);
+    }
     try {
-      sessionStorage.setItem(ALL_PHOTOS_KEY, JSON.stringify(photos));
       sessionStorage.setItem(
         STORAGE_KEY,
         JSON.stringify(photos.slice(0, frame.shotCount))
       );
       sessionStorage.setItem(SELECTED_TONE_KEY, selectedToneId);
     } catch {
-      // ข้ามถ้า storage เต็ม
+      // ข้ามถ้า sessionStorage เต็ม (IndexedDB จะเป็นตัวเก็บหลักที่ปลอดภัย 100%)
     }
   }, [photos, frame.shotCount, selectedToneId]);
 
@@ -136,9 +160,25 @@ export function BoothClient() {
     const video = videoRef.current;
     if (!video || video.videoWidth === 0 || video.videoHeight === 0) return;
 
+    // จำกัดความกว้าง/สูงสูงสุดที่ 1440px เพื่อให้ภาพคมชัดระดับการพิมพ์ 300 DPI
+    // แต่ขนาดไฟล์กระทัดรัด (~180-250KB) ไม่ทำให้เกิด Memory/Storage Quota Overflow บนมือถือ
+    const maxDimension = 1440;
+    let targetWidth = video.videoWidth;
+    let targetHeight = video.videoHeight;
+
+    if (targetWidth > maxDimension || targetHeight > maxDimension) {
+      if (targetWidth > targetHeight) {
+        targetHeight = Math.round((targetHeight * maxDimension) / targetWidth);
+        targetWidth = maxDimension;
+      } else {
+        targetWidth = Math.round((targetWidth * maxDimension) / targetHeight);
+        targetHeight = maxDimension;
+      }
+    }
+
     const canvas = document.createElement("canvas");
-    canvas.width = video.videoWidth;
-    canvas.height = video.videoHeight;
+    canvas.width = targetWidth;
+    canvas.height = targetHeight;
 
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
@@ -149,7 +189,7 @@ export function BoothClient() {
     }
     ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
 
-    const dataUrl = canvas.toDataURL("image/jpeg", 0.92);
+    const dataUrl = canvas.toDataURL("image/jpeg", 0.85);
     setIsFlashing(true);
     setTimeout(() => setIsFlashing(false), 150);
 

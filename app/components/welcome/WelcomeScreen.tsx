@@ -4,7 +4,7 @@
 import { useEffect } from "react";
 import Link from "next/link";
 import { FullscreenButton } from "@/app/components/ui/FullscreenButton";
-import { clearMotionFrames } from "@/lib/mediaStore";
+import { clearMotionFrames, clearSessionPhotos } from "@/lib/mediaStore";
 
 export function WelcomeScreen() {
   // ล้างรูปเก่าทุกครั้งที่กลับมาหน้า Welcome เพื่อพร้อมรับลูกค้าคนถัดไป
@@ -14,6 +14,7 @@ export function WelcomeScreen() {
       sessionStorage.removeItem("photobooth_all_photos");
       sessionStorage.removeItem("photobooth_drive_qr");
       void clearMotionFrames();
+      void clearSessionPhotos();
     } catch {
       // ข้ามถ้าลบ storage ไม่ได้
     }

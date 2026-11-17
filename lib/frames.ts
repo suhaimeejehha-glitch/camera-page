@@ -553,7 +553,6 @@ function getClapperboardLayoutSpec(
         ],
       };
     case 3:
-    default:
       return {
         canvasWidth: 600,
         canvasHeight: 1380,
@@ -561,6 +560,18 @@ function getClapperboardLayoutSpec(
           { x: 64, y: 340, width: 472, height: 310, shape: "rect" },
           { x: 64, y: 676, width: 472, height: 310, shape: "rect" },
           { x: 64, y: 1012, width: 472, height: 310, shape: "rect" },
+        ],
+      };
+    case 4:
+    default:
+      return {
+        canvasWidth: 600,
+        canvasHeight: 1600,
+        slots: [
+          { x: 64, y: 340, width: 472, height: 280, shape: "rect" },
+          { x: 64, y: 644, width: 472, height: 280, shape: "rect" },
+          { x: 64, y: 948, width: 472, height: 280, shape: "rect" },
+          { x: 64, y: 1252, width: 472, height: 280, shape: "rect" },
         ],
       };
   }

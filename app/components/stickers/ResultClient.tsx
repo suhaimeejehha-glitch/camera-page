@@ -15,7 +15,7 @@ import {
 } from "@/lib/frames";
 import { STICKERS } from "@/lib/stickers";
 import { renderPhotoboothStrip, renderPrintSheet } from "@/lib/canvasRenderer";
-import { clearMotionFrames, loadMotionFrames } from "@/lib/mediaStore";
+import { clearMotionFrames, clearSessionPhotos, loadMotionFrames, loadSessionPhotos } from "@/lib/mediaStore";
 import { createAnimatedGifBlob } from "@/lib/gifBuilder";
 import { PHOTO_TONES, type PhotoTone } from "@/lib/filters";
 import type { PhotoShot, PlacedSticker, StickerItem } from "@/types/photobooth";
@@ -76,17 +76,25 @@ export function ResultClient() {
     [selectedToneId]
   );
 
-  // โหลดรูปภาพและโทนสีที่เลือกมาจากหน้ากล้อง (/booth)
+  // โหลดรูปภาพและโทนสีที่เลือกมาจาก IndexedDB (หลัก) หรือ sessionStorage (สำรอง)
   useEffect(() => {
-    try {
-      const rawSelected = sessionStorage.getItem(STORAGE_KEY);
-      if (rawSelected) {
-        const parsed = JSON.parse(rawSelected) as PhotoShot[];
-        if (Array.isArray(parsed) && parsed.length > 0) {
-          setPhotos(parsed);
-        }
+    loadSessionPhotos().then((stored) => {
+      if (stored && stored.length > 0) {
+        setPhotos(stored);
+      } else {
+        try {
+          const rawSelected = sessionStorage.getItem(STORAGE_KEY);
+          if (rawSelected) {
+            const parsed = JSON.parse(rawSelected) as PhotoShot[];
+            if (Array.isArray(parsed) && parsed.length > 0) {
+              setPhotos(parsed);
+            }
+          }
+        } catch {}
       }
+    });
 
+    try {
       const savedTone = sessionStorage.getItem(SELECTED_TONE_KEY);
       if (savedTone) {
         setSelectedToneId(savedTone);
@@ -352,6 +360,7 @@ export function ResultClient() {
     } catch {}
     gifUploadedRef.current = false;
     void clearMotionFrames();
+    void clearSessionPhotos();
     router.replace("/thank-you");
   }, [router]);
 

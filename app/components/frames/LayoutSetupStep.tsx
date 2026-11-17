@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { clearMotionFrames } from "@/lib/mediaStore";
+import { clearMotionFrames, clearSessionPhotos } from "@/lib/mediaStore";
 import type { LayoutOrientation, ShotCount } from "@/types/photobooth";
 
 const SHOT_OPTIONS: { count: ShotCount; label: string; desc: string }[] = [
@@ -358,6 +358,7 @@ export function LayoutSetupStep() {
       // ข้ามถ้าลบ storage ไม่ได้
     }
     void clearMotionFrames();
+    void clearSessionPhotos();
   }, []);
 
   const handleSelectOrientation = (nextOrientation: LayoutOrientation) => {

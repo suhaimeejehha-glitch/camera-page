@@ -4,7 +4,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { FullscreenButton } from "@/app/components/ui/FullscreenButton";
-import { clearMotionFrames } from "@/lib/mediaStore";
+import { clearMotionFrames, clearSessionPhotos } from "@/lib/mediaStore";
 
 const AUTO_RETURN_SECONDS = 30;
 
@@ -24,6 +24,7 @@ export function ThankYouClient() {
       // ข้ามถ้าลบ storage ไม่ได้
     }
     void clearMotionFrames();
+    void clearSessionPhotos();
     router.replace("/");
   };
 

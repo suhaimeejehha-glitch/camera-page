@@ -443,19 +443,10 @@ export function BoothClient() {
 
       </div>
 
-      {/* 3. แถบเลือกโทนสี (COLOR TONES) ขนาดใหญ่พอดีกับจอทัชสกรีน */}
-      <div className="flex shrink-0 flex-col sm:flex-row items-start sm:items-center justify-between gap-2.5 sm:gap-4 rounded-2xl sm:rounded-3xl border-2 border-zinc-800/90 bg-zinc-950/90 px-4 py-2.5 sm:px-5 sm:py-3 shadow-2xl backdrop-blur-md">
-        <div className="flex items-center gap-2 sm:gap-3 shrink-0">
-          <span className="text-sm sm:text-base lg:text-lg font-black tracking-wide text-zinc-100 whitespace-nowrap">
-            🎨 โทนสี:
-          </span>
-          <span className="rounded-full border border-pink-500/50 bg-pink-500/20 px-3 py-0.5 text-xs sm:text-sm font-black text-pink-300 whitespace-nowrap shadow-xs">
-            {activeTone.name} ({activeTone.labelEn})
-          </span>
-        </div>
-
+      {/* 3. แถบเลือกโทนสี (COLOR TONES) สำหรับ Touchscreen */}
+      <div className="flex shrink-0 items-center justify-center w-full rounded-2xl sm:rounded-3xl border-2 border-zinc-800/90 bg-zinc-950/90 px-3 py-2 sm:px-4 sm:py-2.5 shadow-2xl backdrop-blur-md">
         {/* แถบชิปโทนสี แตะเลื่อนได้สำหรับ Touchscreen */}
-        <div className="flex w-full sm:w-auto items-center gap-2 sm:gap-2.5 overflow-x-auto pb-0.5 sm:pb-0 no-scrollbar touch-pan-x">
+        <div className="flex w-full items-center justify-start sm:justify-center gap-2 sm:gap-2.5 overflow-x-auto pb-0.5 sm:pb-0 no-scrollbar touch-pan-x">
           {PHOTO_TONES.map((tone) => {
             const isSelected = tone.id === selectedToneId;
             return (

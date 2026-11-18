@@ -496,7 +496,7 @@ export function BoothClient() {
             </span>
           </div>
 
-          {/* แสดงช็อต 1 ถึง shotCount */}
+          {/* แสดงช็อต 1 ถึง shotCount (สะอาดตา ไม่มีปุ่มลบ) */}
           <div className="flex items-center gap-3 sm:gap-4 overflow-x-auto rounded-2xl border border-zinc-800/90 bg-zinc-900/80 p-2.5 sm:p-3 no-scrollbar touch-pan-x">
             {Array.from({ length: frame.shotCount }).map((_, idx) => {
               const shot = photos[idx];
@@ -504,7 +504,7 @@ export function BoothClient() {
               return (
                 <div
                   key={`slot-${idx}`}
-                  className={`relative h-14 w-20 sm:h-18 sm:w-26 lg:h-20 lg:w-28 shrink-0 overflow-visible rounded-xl border-2 transition ${
+                  className={`relative h-14 w-20 sm:h-18 sm:w-26 lg:h-20 lg:w-28 shrink-0 overflow-hidden rounded-xl border-2 transition ${
                     shot
                       ? "border-zinc-600 bg-black shadow-md"
                       : isCurrent
@@ -513,7 +513,7 @@ export function BoothClient() {
                   }`}
                 >
                   {shot ? (
-                    <div className="relative h-full w-full overflow-hidden rounded-lg">
+                    <div className="relative h-full w-full">
                       {/* eslint-disable-next-line @next/next/no-img-element */}
                       <img
                         src={shot.dataUrl}
@@ -521,7 +521,7 @@ export function BoothClient() {
                         className="h-full w-full object-cover"
                         style={{ filter: activeTone.cssFilter }}
                       />
-                      <span className="absolute top-1 left-1 rounded bg-black/80 px-1.5 font-mono text-[9px] sm:text-[10px] font-black text-white pointer-events-none">
+                      <span className="absolute top-1 left-1 rounded bg-black/80 px-2 py-0.5 font-mono text-xs font-black text-white pointer-events-none shadow-sm">
                         #{idx + 1}
                       </span>
                     </div>
@@ -535,23 +535,6 @@ export function BoothClient() {
                       </span>
                     </div>
                   )}
-
-                  {/* ปุ่มลบขนาดใหญ่พิเศษ แตะง่ายบนจอทัชสกรีน */}
-                  {shot ? (
-                    <button
-                      type="button"
-                      onClick={(e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        handleDeleteShot(idx);
-                      }}
-                      onPointerDown={(e) => e.stopPropagation()}
-                      title="แตะเพื่อลบและถ่ายช็อตนี้ใหม่"
-                      className="absolute -top-2.5 -right-2.5 z-30 flex h-8 w-8 sm:h-9 sm:w-9 items-center justify-center rounded-full bg-rose-600 text-sm font-black text-white shadow-xl transition active:scale-90 hover:bg-rose-500 touch-manipulation cursor-pointer border-2 border-white ring-2 ring-black/40"
-                    >
-                      ✕
-                    </button>
-                  ) : null}
                 </div>
               );
             })}

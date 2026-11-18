@@ -410,96 +410,104 @@ export function PaymentClient() {
 
   // ==========================================
   // STEP: หน้าสแกน QR Code PromptPay (QR Step)
-  // ดีไซน์การ์ดขนาดใหญ่พิเศษ พอดีจอทัชสกรีน 15.6" ตัวอักษรใหญ่ ปุ่มใหญ่มาก
+  // ดีไซน์แนวตั้ง (Vertical Card) สไตล์เดียวกับหน้าสรุปรายการ
+  // ตัวอักษรใหญ่ รูป QR ใหญ่ คมชัด ปุ่มใหญ่พอดีจอทัชสกรีน 15.6"
   // ==========================================
   const isExpired = secondsLeft === 0;
 
   return (
-    <div className="flex w-full max-w-4xl lg:max-w-5xl flex-col items-center justify-center gap-7 sm:gap-9 lg:gap-10 rounded-[32px] sm:rounded-[36px] border-2 border-pink-100 bg-white p-7 sm:p-9 lg:p-10 shadow-[0_20px_70px_-15px_rgba(244,63,94,0.18)] sm:flex-row my-auto select-none">
-      {/* ฝั่ง QR Code พร้อมเพย์ ขนาดใหญ่ คมชัด สแกนง่ายจากระยะยืน */}
-      <div className="flex shrink-0 flex-col items-center gap-3 rounded-3xl border-2 border-zinc-200/90 bg-zinc-50 p-5 sm:p-6 lg:p-7 text-zinc-900 shadow-sm">
-        <div className="flex w-full items-center justify-between border-b-2 border-zinc-200 pb-2.5">
-          <span className="text-xs sm:text-sm lg:text-base font-black tracking-wider text-pink-600 uppercase">
+    <div className="flex w-full max-w-xl sm:max-w-2xl flex-col items-center gap-4 sm:gap-5 rounded-[32px] sm:rounded-[36px] border-2 border-pink-100 bg-white p-6 sm:p-7 lg:p-8 shadow-[0_20px_70px_-15px_rgba(244,63,94,0.18)] my-auto select-none">
+      {/* ส่วนหัวการ์ด (แนวตั้ง) */}
+      <div className="flex w-full items-center justify-between border-b-2 border-zinc-100 pb-3 sm:pb-4">
+        <div>
+          <p className="font-mono text-xs sm:text-sm font-black tracking-widest text-pink-500 uppercase">
             Thai QR PromptPay
-          </span>
-          <span className="font-mono text-base sm:text-lg lg:text-xl font-black text-zinc-900">
-            ฿{SESSION_PRICE}.00
-          </span>
+          </p>
+          <h2 className="mt-0.5 text-2xl sm:text-3xl lg:text-4xl font-black text-zinc-900 tracking-tight">
+            สแกน QR เพื่อชำระเงิน
+          </h2>
         </div>
+        <span className="rounded-full border-2 border-pink-200 bg-pink-50 px-4 py-1.5 font-mono text-xs sm:text-sm lg:text-base font-black text-pink-600 uppercase shadow-xs">
+          ฿{SESSION_PRICE}.00
+        </span>
+      </div>
 
+      {/* รูปภาพ QR Code ขนาดยักษ์ คมชัดตรงกลาง สแกนง่ายจากระยะยืน */}
+      <div className="flex flex-col items-center justify-center gap-2 rounded-2xl sm:rounded-3xl border-2 border-zinc-200/90 bg-zinc-50 p-3.5 sm:p-4 text-center shadow-inner w-full">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src={PROMPTPAY_QR_SRC}
           alt="PromptPay QR Code"
-          className="h-56 w-56 sm:h-64 sm:w-64 lg:h-72 lg:w-72 rounded-2xl object-contain shadow-inner bg-white p-2.5 border-2 border-zinc-100"
+          className="h-56 w-56 sm:h-64 sm:w-64 lg:h-72 lg:w-72 rounded-2xl object-contain shadow-xs bg-white p-2 border-2 border-zinc-100"
         />
 
-        <p className="font-mono text-xs sm:text-sm font-bold text-zinc-500">
+        <p className="font-mono text-xs sm:text-sm font-bold text-zinc-500 pt-0.5">
           สแกนจ่ายผ่านแอปธนาคารใดก็ได้
         </p>
       </div>
 
-      {/* ฝั่งสถานะ เวลาที่เหลือ และปุ่มตรวจสอบยอดชำระขนาดใหญ่พิเศษ */}
-      <div className="flex w-full flex-1 flex-col items-center gap-5 sm:gap-6 text-center sm:items-start sm:text-left">
-        <div className="w-full rounded-3xl border-2 border-pink-100 bg-gradient-to-b from-pink-50/60 to-white p-5 sm:p-6 lg:p-7">
-          <p className="font-mono text-xs sm:text-sm lg:text-base font-black tracking-wider text-zinc-500 uppercase">
+      {/* แถบสรุปยอดชำระ และเวลานับถอยหลัง */}
+      <div className="flex w-full items-center justify-between rounded-2xl border-2 border-pink-100 bg-gradient-to-r from-pink-50/80 via-white to-pink-50/80 p-3.5 sm:p-4">
+        <div className="flex flex-col text-left">
+          <span className="text-xs sm:text-sm font-bold text-zinc-500 uppercase">
             รวมยอดชำระทั้งหมด
-          </p>
-          <p className="mt-1 font-mono text-4xl sm:text-5xl lg:text-6xl font-black text-pink-500">
+          </span>
+          <span className="font-mono text-3xl sm:text-4xl font-black text-pink-500">
             ฿{SESSION_PRICE}.00
-          </p>
-
-          <div className="mt-3 inline-flex items-center gap-2.5 rounded-full bg-white px-5 py-2 border border-zinc-200 shadow-xs">
-            <span
-              className={`h-3.5 w-3.5 rounded-full ${
-                isExpired
-                  ? "bg-rose-500"
-                  : isChecking
-                  ? "animate-ping bg-amber-400"
-                  : "animate-pulse bg-pink-500"
-              }`}
-            />
-            <span className="font-mono text-xs sm:text-sm lg:text-base font-bold text-zinc-700">
-              {isExpired
-                ? "QR Code หมดอายุ กรุณาสร้างใหม่"
-                : statusMessage ?? "รอสแกนชำระเงิน • เหลือเวลา "}
-              {!isExpired && !statusMessage ? (
-                <span className="text-pink-600 font-black">{formatTime(secondsLeft)}</span>
-              ) : null}
-            </span>
-          </div>
+          </span>
         </div>
 
-        <div className="flex w-full items-center justify-between gap-4 sm:gap-5 pt-1 sm:pt-2">
+        <div className="inline-flex items-center gap-2 rounded-full bg-white px-4 py-2 border border-zinc-200 shadow-xs">
+          <span
+            className={`h-3 w-3 rounded-full ${
+              isExpired
+                ? "bg-rose-500"
+                : isChecking
+                ? "animate-ping bg-amber-400"
+                : "animate-pulse bg-pink-500"
+            }`}
+          />
+          <span className="font-mono text-xs sm:text-sm font-bold text-zinc-700">
+            {isExpired
+              ? "QR Code หมดอายุ"
+              : statusMessage ?? "เหลือเวลา "}
+            {!isExpired && !statusMessage ? (
+              <span className="text-pink-600 font-black">{formatTime(secondsLeft)}</span>
+            ) : null}
+          </span>
+        </div>
+      </div>
+
+      {/* ปุ่ม Back และ ปุ่มยืนยันขนาดใหญ่พิเศษสำหรับจอทัชสกรีน */}
+      <div className="flex w-full items-center gap-3 sm:gap-4 pt-1">
+        <button
+          type="button"
+          onClick={() => setStep("summary")}
+          disabled={isChecking}
+          className="inline-flex h-15 sm:h-17 w-32 sm:w-40 shrink-0 items-center justify-center rounded-2xl sm:rounded-3xl border-2 border-zinc-200 bg-zinc-50 text-base sm:text-lg font-black tracking-wider text-zinc-700 uppercase shadow-xs transition active:scale-95 hover:border-pink-300 hover:text-pink-600 hover:bg-white disabled:opacity-50 touch-manipulation cursor-pointer"
+        >
+          ← Back
+        </button>
+
+        {isExpired ? (
           <button
             type="button"
-            onClick={() => setStep("summary")}
-            disabled={isChecking}
-            className="inline-flex h-16 sm:h-18 lg:h-20 w-36 sm:w-44 lg:w-48 shrink-0 items-center justify-center rounded-2xl sm:rounded-3xl border-2 border-zinc-200 bg-zinc-50 text-lg sm:text-xl lg:text-2xl font-black tracking-wider text-zinc-700 uppercase shadow-xs transition active:scale-95 hover:border-pink-300 hover:text-pink-600 hover:bg-white disabled:opacity-50 touch-manipulation cursor-pointer"
+            onClick={handleOpenQr}
+            className="inline-flex h-15 sm:h-17 flex-1 items-center justify-center rounded-2xl sm:rounded-3xl bg-pink-500 px-6 text-lg sm:text-xl font-black tracking-wider text-white uppercase shadow-xl shadow-pink-500/30 transition active:scale-95 hover:bg-pink-400 touch-manipulation cursor-pointer"
           >
-            ← Back
+            สร้าง QR Code ใหม่
           </button>
-
-          {isExpired ? (
-            <button
-              type="button"
-              onClick={handleOpenQr}
-              className="inline-flex h-16 sm:h-18 lg:h-20 flex-1 items-center justify-center rounded-2xl sm:rounded-3xl bg-pink-500 px-8 text-xl sm:text-2xl lg:text-3xl font-black tracking-wider text-white uppercase shadow-xl shadow-pink-500/30 transition active:scale-95 hover:bg-pink-400 touch-manipulation cursor-pointer"
-            >
-              สร้าง QR Code ใหม่
-            </button>
-          ) : (
-            <button
-              type="button"
-              onClick={handleCheckPayment}
-              disabled={isChecking}
-              className="inline-flex h-16 sm:h-18 lg:h-20 flex-1 items-center justify-center gap-3 rounded-2xl sm:rounded-3xl bg-gradient-to-r from-emerald-500 via-teal-500 to-emerald-500 px-6 sm:px-8 text-xl sm:text-2xl lg:text-3xl font-black tracking-wider text-white uppercase shadow-xl shadow-emerald-500/35 transition active:scale-95 hover:from-emerald-400 hover:to-teal-400 disabled:cursor-not-allowed disabled:opacity-60 border border-white/20 touch-manipulation cursor-pointer whitespace-nowrap"
-            >
-              <span>{isChecking ? "กำลังตรวจสอบ..." : "สแกนจ่ายแล้ว • Next"}</span>
-              <span className="text-2xl sm:text-3xl">→</span>
-            </button>
-          )}
-        </div>
+        ) : (
+          <button
+            type="button"
+            onClick={handleCheckPayment}
+            disabled={isChecking}
+            className="inline-flex h-15 sm:h-17 flex-1 items-center justify-center gap-2.5 rounded-2xl sm:rounded-3xl bg-gradient-to-r from-emerald-500 via-teal-500 to-emerald-500 px-6 text-lg sm:text-xl lg:text-2xl font-black tracking-wider text-white uppercase shadow-xl shadow-emerald-500/35 transition active:scale-95 hover:from-emerald-400 hover:to-teal-400 disabled:cursor-not-allowed disabled:opacity-60 border border-white/20 touch-manipulation cursor-pointer whitespace-nowrap"
+          >
+            <span>{isChecking ? "กำลังตรวจสอบ..." : "สแกนจ่ายแล้ว • Next"}</span>
+            <span className="text-xl sm:text-2xl">→</span>
+          </button>
+        )}
       </div>
     </div>
   );

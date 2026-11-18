@@ -135,9 +135,9 @@ export function FrameSelector({
     : filteredFrames[0]?.id ?? frames[0]?.id ?? "";
 
   return (
-    <div className="flex w-full max-w-6xl flex-col items-center gap-4 portrait:gap-6">
+    <div className="flex h-full max-h-full w-full max-w-6xl lg:max-w-7xl flex-col items-center justify-between gap-2.5 sm:gap-3.5 py-1 select-none overflow-hidden">
       {/* แถบปุ่มหมวดหมู่ด้านบน (Chunky Touch Pills) */}
-      <div className="flex flex-wrap items-center justify-center gap-3 sm:gap-3.5">
+      <div className="flex flex-wrap items-center justify-center gap-2.5 sm:gap-3 shrink-0">
         {FRAME_CATEGORIES.map((cat) => {
           const count =
             cat.id === "all"
@@ -150,15 +150,15 @@ export function FrameSelector({
               key={cat.id}
               type="button"
               onClick={() => handleSelectCategory(cat.id)}
-              className={`h-10 sm:h-11 rounded-full border-2 px-4 sm:px-6 text-xs sm:text-sm font-black tracking-wide transition active:scale-95 touch-manipulation cursor-pointer shadow-sm ${
+              className={`h-11 sm:h-13 lg:h-14 rounded-full border-2 px-5 sm:px-7 text-sm sm:text-base font-black tracking-wide transition active:scale-95 touch-manipulation cursor-pointer shadow-md ${
                 isActive
-                  ? "border-pink-500 bg-pink-500 text-white shadow-md shadow-pink-500/30 ring-2 ring-pink-500/20"
+                  ? "border-pink-500 bg-pink-500 text-white shadow-lg shadow-pink-500/30 ring-3 ring-pink-500/20"
                   : "border-zinc-300 bg-white text-zinc-700 hover:border-pink-300 hover:text-pink-600"
               }`}
             >
               {cat.label}{" "}
               <span
-                className={`ml-1 font-mono text-xs ${
+                className={`ml-1 font-mono text-xs sm:text-sm ${
                   isActive ? "text-pink-100 font-black" : "text-zinc-500 font-bold"
                 }`}
               >
@@ -169,14 +169,14 @@ export function FrameSelector({
         })}
       </div>
 
-      {/* แถบเลื่อนกรอบแนวนอนพร้อมปุ่ม ◀ / ▶ */}
-      <div className="relative flex w-full items-center gap-2 sm:gap-3">
+      {/* แถบเลื่อนกรอบแนวนอนพร้อมปุ่มลูกศรทัชสกรีน ◀ / ▶ */}
+      <div className="relative flex w-full items-center gap-3 sm:gap-4 my-auto">
         <button
           type="button"
           onClick={() => scrollByAmount(-1)}
           disabled={!canScrollLeft}
           aria-label="Scroll left"
-          className="flex h-16 w-11 sm:h-20 sm:w-14 shrink-0 items-center justify-center rounded-2xl border-2 border-zinc-300 bg-white text-xl sm:text-2xl font-black text-zinc-800 shadow-md transition active:scale-95 hover:border-pink-400 hover:text-pink-500 disabled:cursor-not-allowed disabled:opacity-20 touch-manipulation cursor-pointer"
+          className="flex h-28 sm:h-36 lg:h-44 w-12 sm:w-15 lg:w-18 shrink-0 items-center justify-center rounded-2xl sm:rounded-3xl border-3 border-zinc-300 bg-white text-2xl sm:text-3xl lg:text-4xl font-black text-zinc-800 shadow-xl transition active:scale-95 hover:border-pink-400 hover:text-pink-500 disabled:cursor-not-allowed disabled:opacity-20 touch-manipulation cursor-pointer"
         >
           ◀
         </button>
@@ -188,7 +188,7 @@ export function FrameSelector({
           onPointerMove={handlePointerMove}
           onPointerUp={handlePointerUp}
           onPointerLeave={handlePointerUp}
-          className="flex flex-1 cursor-grab items-center gap-4 sm:gap-5 overflow-x-auto scroll-smooth px-2 py-2 touch-pan-x snap-x snap-mandatory active:cursor-grabbing [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
+          className="flex flex-1 cursor-grab items-center gap-4 sm:gap-6 overflow-x-auto scroll-smooth px-2 py-3 touch-pan-x snap-x snap-mandatory active:cursor-grabbing [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
         >
           {filteredFrames.map((frame) => {
             const isSelected = frame.id === activeFrameId;
@@ -198,19 +198,19 @@ export function FrameSelector({
                 type="button"
                 onClick={() => handleSelectFrame(frame.id)}
                 draggable={false}
-                className={`group relative flex shrink-0 snap-start flex-col items-center gap-2.5 rounded-2xl border-2 bg-white p-3.5 sm:p-4 transition duration-200 hover:-translate-y-1 active:scale-95 touch-manipulation cursor-pointer ${
+                className={`group relative flex shrink-0 snap-start flex-col items-center gap-3 rounded-[28px] sm:rounded-3xl border-3 bg-white p-4 sm:p-5 transition duration-200 hover:-translate-y-1 active:scale-95 touch-manipulation cursor-pointer ${
                   isSelected
-                    ? "border-pink-500 shadow-xl shadow-pink-500/20 ring-4 ring-pink-500/15"
-                    : "border-zinc-200 shadow-sm hover:border-pink-300"
+                    ? "border-pink-500 shadow-2xl shadow-pink-500/25 ring-4 ring-pink-500/20 bg-gradient-to-b from-pink-50/40 to-white"
+                    : "border-zinc-200 shadow-md hover:border-pink-300"
                 }`}
               >
                 {isSelected ? (
-                  <span className="absolute -top-2.5 -right-2.5 z-30 flex h-8 w-8 items-center justify-center rounded-full bg-pink-500 text-sm font-black text-white shadow-md">
+                  <span className="absolute -top-3.5 -right-3.5 z-30 flex h-10 w-10 sm:h-11 sm:w-11 items-center justify-center rounded-full bg-pink-500 text-base sm:text-lg font-black text-white shadow-lg ring-3 ring-white">
                     ✓
                   </span>
                 ) : frame.badge ? (
                   <span
-                    className={`absolute top-2.5 right-2.5 z-30 rounded-full px-2.5 py-0.5 font-mono text-[10px] font-black tracking-wider shadow-sm ${
+                    className={`absolute top-3 right-3 z-30 rounded-full px-3 py-1 font-mono text-xs font-black tracking-wider shadow-sm ${
                       frame.badge === "HOT"
                         ? "bg-rose-500 text-white"
                         : "bg-pink-500 text-white"
@@ -223,9 +223,9 @@ export function FrameSelector({
                 <StripPreview frame={frame} compact />
 
                 <span
-                  className={`rounded-full border px-4 py-1 font-mono text-xs sm:text-sm font-black tracking-wider uppercase transition ${
+                  className={`rounded-full border-2 px-5 py-1.5 font-mono text-sm sm:text-base font-black tracking-wider uppercase transition ${
                     isSelected
-                      ? "border-pink-400 bg-pink-50 text-pink-600"
+                      ? "border-pink-400 bg-pink-50 text-pink-600 shadow-xs"
                       : "border-zinc-200 bg-zinc-50 text-zinc-800 group-hover:border-pink-300 group-hover:text-pink-600"
                   }`}
                 >
@@ -241,26 +241,31 @@ export function FrameSelector({
           onClick={() => scrollByAmount(1)}
           disabled={!canScrollRight}
           aria-label="Scroll right"
-          className="flex h-16 w-11 sm:h-20 sm:w-14 shrink-0 items-center justify-center rounded-2xl border-2 border-zinc-300 bg-white text-xl sm:text-2xl font-black text-zinc-800 shadow-md transition active:scale-95 hover:border-pink-400 hover:text-pink-500 disabled:cursor-not-allowed disabled:opacity-20 touch-manipulation cursor-pointer"
+          className="flex h-28 sm:h-36 lg:h-44 w-12 sm:w-15 lg:w-18 shrink-0 items-center justify-center rounded-2xl sm:rounded-3xl border-3 border-zinc-300 bg-white text-2xl sm:text-3xl lg:text-4xl font-black text-zinc-800 shadow-xl transition active:scale-95 hover:border-pink-400 hover:text-pink-500 disabled:cursor-not-allowed disabled:opacity-20 touch-manipulation cursor-pointer"
         >
           ▶
         </button>
       </div>
 
-      {/* ปุ่ม Back / Next ด้านล่าง */}
-      <div className="flex w-full items-center justify-between gap-3 pt-1">
+      {/* คำแนะนำ */}
+      <p className="text-center text-sm sm:text-base font-bold text-zinc-500 shrink-0">
+        แตะเลือกกรอบที่ชอบ แล้วกดปุ่มถัดไปเพื่อเริ่มถ่ายรูป
+      </p>
+
+      {/* ปุ่ม Back / Next ด้านล่าง ขนาดใหญ่พอดีกับจอทัชสกรีน */}
+      <div className="flex w-full items-center justify-between gap-4 max-w-5xl shrink-0 pt-1">
         <Link
           href="/setup"
-          className="inline-flex h-13 sm:h-14 items-center justify-center rounded-full border-2 border-zinc-300 bg-white px-7 sm:px-9 text-base sm:text-lg font-black tracking-wider text-zinc-700 uppercase shadow-md transition active:scale-95 hover:border-pink-400 hover:text-pink-600 touch-manipulation cursor-pointer"
+          className="inline-flex h-16 sm:h-18 lg:h-20 w-40 sm:w-48 lg:w-52 items-center justify-center rounded-2xl sm:rounded-3xl border-2 border-zinc-300 bg-white px-6 text-lg sm:text-xl lg:text-2xl font-black tracking-wider text-zinc-700 uppercase shadow-md transition active:scale-95 hover:border-pink-400 hover:text-pink-600 touch-manipulation cursor-pointer"
         >
-          ← Back
+          ← BACK
         </Link>
 
         <Link
           href={`/booth?frame=${activeFrameId}&shots=${shots}&orientation=${orientation}`}
-          className="inline-flex h-13 sm:h-14 items-center justify-center rounded-full bg-gradient-to-r from-pink-500 via-rose-500 to-pink-500 px-10 sm:px-14 text-lg sm:text-xl font-black tracking-wider text-white uppercase shadow-xl shadow-pink-500/30 transition active:scale-95 hover:from-pink-400 hover:to-rose-400 border-2 border-white/20 touch-manipulation cursor-pointer"
+          className="inline-flex h-16 sm:h-18 lg:h-20 flex-1 items-center justify-center rounded-2xl sm:rounded-3xl bg-gradient-to-r from-pink-500 via-rose-500 to-pink-500 px-8 text-xl sm:text-2xl lg:text-3xl font-black tracking-wider text-white uppercase shadow-xl shadow-pink-500/30 transition active:scale-95 hover:from-pink-400 hover:to-rose-400 border-2 border-white/20 touch-manipulation cursor-pointer"
         >
-          Next →
+          ไปถ่ายรูป • NEXT →
         </Link>
       </div>
     </div>

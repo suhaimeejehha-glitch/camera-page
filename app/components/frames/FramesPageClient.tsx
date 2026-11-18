@@ -15,13 +15,8 @@ export function FramesPageClient() {
   const frames = getFramesForLayout(shots, orientation);
 
   return (
-    <div className="flex max-h-full w-full max-w-6xl flex-col items-center justify-center gap-4 portrait:gap-6">
-
+    <div className="flex h-full w-full max-w-6xl lg:max-w-7xl flex-col items-center justify-center">
       <FrameSelector frames={frames} shots={shots} orientation={orientation} />
-
-      <p className="text-center font-mono text-xs font-medium tracking-widest text-zinc-600 uppercase">
-        แตะเลือกกรอบที่ชอบ แล้วกด Next เพื่อเริ่มถ่ายรูป
-      </p>
     </div>
   );
 }

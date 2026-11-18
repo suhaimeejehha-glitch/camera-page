@@ -27,13 +27,13 @@ export function StickerPicker({
   const isDark = theme === "dark";
 
   return (
-    <div className="grid grid-cols-4 gap-3 sm:gap-3.5">
+    <div className="grid grid-cols-4 gap-2.5 sm:gap-3.5">
       {stickers.map((sticker) => (
         <button
           key={sticker.id}
           type="button"
           onClick={() => onAddSticker(sticker)}
-          className={`flex min-h-20 sm:min-h-24 flex-col items-center justify-center gap-1.5 rounded-2xl border-2 p-2.5 transition active:scale-95 sm:p-3 touch-manipulation cursor-pointer shadow-md ${
+          className={`flex min-h-22 sm:min-h-26 flex-col items-center justify-center gap-1.5 rounded-2xl border-2 p-2 sm:p-3 transition-all hover:scale-105 active:scale-95 touch-manipulation cursor-pointer shadow-md ${
             isDark
               ? "border-zinc-800 bg-zinc-900/90 text-zinc-200 hover:border-pink-500 hover:bg-zinc-800"
               : "border-zinc-300 bg-zinc-50/90 text-zinc-800 hover:border-pink-400 hover:bg-pink-50"
@@ -43,9 +43,9 @@ export function StickerPicker({
           <img
             src={sticker.src}
             alt={sticker.name}
-            className="h-11 w-11 sm:h-13 sm:w-13 object-contain"
+            className="h-10 w-10 sm:h-12 sm:w-12 object-contain drop-shadow-sm"
           />
-          <span className="font-mono text-xs sm:text-sm font-black tracking-wider uppercase">
+          <span className="font-mono text-xs sm:text-sm font-black tracking-wider uppercase text-center">
             {sticker.name}
           </span>
         </button>

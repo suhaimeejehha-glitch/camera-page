@@ -443,104 +443,41 @@ export function BoothClient() {
 
       </div>
 
-      {/* 3. แถบควบคุมจอทัชสกรีนด้านล่าง: โทนสี + ช่องเลือกรูปช็อต กะทัดรัดพอดีจอ */}
-      <div className="flex shrink-0 flex-col gap-1.5 sm:gap-2 rounded-2xl border border-zinc-800/90 bg-zinc-950/90 p-2 sm:p-2.5 shadow-xl backdrop-blur-md">
-        
-        {/* แถวที่ 1: โทนสีรูปภาพ */}
-        <div className="flex flex-col gap-1.5">
-          <div className="flex items-center justify-between px-1">
-            <span className="text-xs sm:text-sm lg:text-base font-black tracking-wide text-zinc-200">
-              🎨 โทนสี (COLOR TONES)
-            </span>
-            <span className="text-xs sm:text-sm lg:text-base text-pink-400 font-black">
-              {activeTone.name} ({activeTone.labelEn})
-            </span>
-          </div>
-
-          {/* แถบชิปโทนสี แตะเลื่อนได้สำหรับ Touchscreen */}
-          <div className="flex items-center gap-2 sm:gap-2.5 overflow-x-auto pb-1 no-scrollbar touch-pan-x">
-            {PHOTO_TONES.map((tone) => {
-              const isSelected = tone.id === selectedToneId;
-              return (
-                <button
-                  key={tone.id}
-                  type="button"
-                  onClick={() => setSelectedToneId(tone.id)}
-                  className={`flex shrink-0 items-center gap-2 rounded-full border-2 px-3.5 py-1.5 sm:px-4.5 sm:py-2 text-xs sm:text-sm font-black transition active:scale-90 touch-manipulation cursor-pointer ${
-                    isSelected
-                      ? "border-pink-500 bg-pink-500/30 text-white shadow-lg ring-2 ring-pink-500/50"
-                      : "border-zinc-800 bg-zinc-900 text-zinc-300 hover:border-zinc-700 hover:text-white"
-                  }`}
-                >
-                  <span
-                    className="h-3.5 w-3.5 sm:h-4 sm:w-4 rounded-full border border-white/60 shrink-0 shadow-xs"
-                    style={{ backgroundColor: tone.previewColor }}
-                  />
-                  <span>{tone.name}</span>
-                </button>
-              );
-            })}
-          </div>
+      {/* 3. แถบเลือกโทนสี (COLOR TONES) ขนาดใหญ่พอดีกับจอทัชสกรีน */}
+      <div className="flex shrink-0 flex-col sm:flex-row items-start sm:items-center justify-between gap-2.5 sm:gap-4 rounded-2xl sm:rounded-3xl border-2 border-zinc-800/90 bg-zinc-950/90 px-4 py-2.5 sm:px-5 sm:py-3 shadow-2xl backdrop-blur-md">
+        <div className="flex items-center gap-2 sm:gap-3 shrink-0">
+          <span className="text-sm sm:text-base lg:text-lg font-black tracking-wide text-zinc-100 whitespace-nowrap">
+            🎨 โทนสี:
+          </span>
+          <span className="rounded-full border border-pink-500/50 bg-pink-500/20 px-3 py-0.5 text-xs sm:text-sm font-black text-pink-300 whitespace-nowrap shadow-xs">
+            {activeTone.name} ({activeTone.labelEn})
+          </span>
         </div>
 
-        {/* แถวที่ 2: ภาพแต่ละช็อต (TOUCH FILMSTRIP) */}
-        <div className="flex flex-col gap-1.5 pt-1.5 border-t border-zinc-800/80">
-          <div className="flex items-center justify-between px-1">
-            <span className="text-xs sm:text-sm lg:text-base font-black tracking-wide text-zinc-200">
-              📸 ภาพแต่ละช็อต ({photos.length} / {frame.shotCount})
-            </span>
-            <span className="text-xs sm:text-sm font-bold text-zinc-400">
-              {photos.length >= frame.shotCount
-                ? "ถ่ายครบแล้ว แตะปุ่ม 'ไปแต่งรูป & ปริ้นต์' ด้านล่าง"
-                : "แตะชัตเตอร์เพื่อถ่ายภาพ"}
-            </span>
-          </div>
-
-          {/* แสดงช็อต 1 ถึง shotCount (สะอาดตา ไม่มีปุ่มลบ) */}
-          <div className="flex items-center gap-3 sm:gap-4 overflow-x-auto rounded-2xl border border-zinc-800/90 bg-zinc-900/80 p-2.5 sm:p-3 no-scrollbar touch-pan-x">
-            {Array.from({ length: frame.shotCount }).map((_, idx) => {
-              const shot = photos[idx];
-              const isCurrent = idx === photos.length;
-              return (
-                <div
-                  key={`slot-${idx}`}
-                  className={`relative h-14 w-20 sm:h-18 sm:w-26 lg:h-20 lg:w-28 shrink-0 overflow-hidden rounded-xl border-2 transition ${
-                    shot
-                      ? "border-zinc-600 bg-black shadow-md"
-                      : isCurrent
-                      ? "border-dashed border-pink-500 bg-pink-500/20 animate-pulse ring-2 ring-pink-500/40"
-                      : "border-dashed border-zinc-800 bg-zinc-900/50 opacity-60"
-                  }`}
-                >
-                  {shot ? (
-                    <div className="relative h-full w-full">
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img
-                        src={shot.dataUrl}
-                        alt={`Shot ${idx + 1}`}
-                        className="h-full w-full object-cover"
-                        style={{ filter: activeTone.cssFilter }}
-                      />
-                      <span className="absolute top-1 left-1 rounded bg-black/80 px-2 py-0.5 font-mono text-xs font-black text-white pointer-events-none shadow-sm">
-                        #{idx + 1}
-                      </span>
-                    </div>
-                  ) : (
-                    <div className="flex h-full w-full flex-col items-center justify-center p-0.5 text-center pointer-events-none">
-                      <span className="text-xs sm:text-sm font-black text-zinc-300">
-                        #{idx + 1}
-                      </span>
-                      <span className={`text-[10px] sm:text-xs font-bold ${isCurrent ? "text-pink-400" : "text-zinc-500"}`}>
-                        {isCurrent ? "รอถ่าย" : "ว่าง"}
-                      </span>
-                    </div>
-                  )}
-                </div>
-              );
-            })}
-          </div>
+        {/* แถบชิปโทนสี แตะเลื่อนได้สำหรับ Touchscreen */}
+        <div className="flex w-full sm:w-auto items-center gap-2 sm:gap-2.5 overflow-x-auto pb-0.5 sm:pb-0 no-scrollbar touch-pan-x">
+          {PHOTO_TONES.map((tone) => {
+            const isSelected = tone.id === selectedToneId;
+            return (
+              <button
+                key={tone.id}
+                type="button"
+                onClick={() => setSelectedToneId(tone.id)}
+                className={`flex shrink-0 items-center gap-2 rounded-full border-2 px-3.5 py-1.5 sm:px-4.5 sm:py-2 text-xs sm:text-sm lg:text-base font-black transition active:scale-95 touch-manipulation cursor-pointer ${
+                  isSelected
+                    ? "border-pink-500 bg-pink-500/35 text-white shadow-lg ring-3 ring-pink-500/40"
+                    : "border-zinc-800 bg-zinc-900/90 text-zinc-300 hover:border-zinc-700 hover:text-white"
+                }`}
+              >
+                <span
+                  className="h-3.5 w-3.5 sm:h-4 sm:w-4 rounded-full border border-white/60 shrink-0 shadow-xs"
+                  style={{ backgroundColor: tone.previewColor }}
+                />
+                <span>{tone.name}</span>
+              </button>
+            );
+          })}
         </div>
-
       </div>
 
       {/* 4. Bottom Footer: Back Button ซ้ายล่าง • Next Button ขวาล่าง ขนาดใหญ่ทัชง่าย */}

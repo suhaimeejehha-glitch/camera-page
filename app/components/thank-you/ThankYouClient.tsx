@@ -20,6 +20,7 @@ export function ThankYouClient() {
     try {
       sessionStorage.removeItem("photobooth_photos");
       sessionStorage.removeItem("photobooth_drive_qr");
+      sessionStorage.removeItem("photobooth_pending_redeem");
     } catch {
       // ข้ามถ้าลบ storage ไม่ได้
     }

@@ -18,6 +18,7 @@ import { renderPhotoboothStrip, renderPrintSheet } from "@/lib/canvasRenderer";
 import { clearMotionFrames, clearSessionPhotos, loadMotionFrames, loadSessionPhotos } from "@/lib/mediaStore";
 import { createAnimatedGifBlob } from "@/lib/gifBuilder";
 import { PHOTO_TONES, type PhotoTone } from "@/lib/filters";
+import { redeemMemberPoints } from "@/lib/pointsStore";
 import type { PhotoShot, PlacedSticker, StickerItem } from "@/types/photobooth";
 
 const STORAGE_KEY = "photobooth_photos";
@@ -327,6 +328,19 @@ export function ResultClient() {
     setExportError(null);
     setSelectedStickerId(null);
     try {
+      // หัก 10 แต้มจริงเฉพาะเมื่อมาถึงขั้นตอนสั่งพิมพ์รูปเท่านั้น ป้องกันแต้มสูญหายหากระบบมีปัญหาก่อนหน้านี้
+      try {
+        const pendingRedeemPhone = sessionStorage.getItem("photobooth_pending_redeem");
+        if (pendingRedeemPhone) {
+          const res = await redeemMemberPoints(pendingRedeemPhone);
+          if (res.success) {
+            sessionStorage.removeItem("photobooth_pending_redeem");
+          }
+        }
+      } catch (err) {
+        console.warn("Deduct pending points error:", err);
+      }
+
       const stripDataUrl = await renderPhotoboothStrip({
         frame,
         photos,
@@ -357,6 +371,7 @@ export function ResultClient() {
       sessionStorage.removeItem(STORAGE_KEY);
       sessionStorage.removeItem(ALL_PHOTOS_KEY);
       sessionStorage.removeItem("photobooth_drive_qr");
+      sessionStorage.removeItem("photobooth_pending_redeem");
     } catch {}
     gifUploadedRef.current = false;
     void clearMotionFrames();

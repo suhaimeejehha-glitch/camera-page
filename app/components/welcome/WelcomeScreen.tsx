@@ -13,6 +13,7 @@ export function WelcomeScreen() {
       sessionStorage.removeItem("photobooth_photos");
       sessionStorage.removeItem("photobooth_all_photos");
       sessionStorage.removeItem("photobooth_drive_qr");
+      sessionStorage.removeItem("photobooth_pending_redeem");
       void clearMotionFrames();
       void clearSessionPhotos();
     } catch {

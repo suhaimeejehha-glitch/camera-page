@@ -8,6 +8,7 @@ import { TouchNumpad } from "./TouchNumpad";
 import { StampCardView } from "./StampCardView";
 import {
   addMemberPoint,
+  getMemberPoints,
   redeemMemberPoints,
   setTestMemberPoints,
   type MemberPointsData,
@@ -110,18 +111,22 @@ export function PaymentClient() {
     setMemberData({ ...updated });
   };
 
-  // ตรวจสอบและแลกสิทธิ์ถ่ายฟรี
+  // ตรวจสอบและใช้สิทธิ์ถ่ายฟรี (Hold สิทธิ์ไว้ก่อน ยังไม่ตัดแต้มจริงจนกว่าจะสั่งพิมพ์สำเร็จ)
   const handleRedeemCheck = async () => {
     if (redeemPhoneInput.length !== 10 || isSubmittingPoints) return;
     setIsSubmittingPoints(true);
     setRedeemError(null);
     try {
-      const result = await redeemMemberPoints(redeemPhoneInput);
-      if (result.success) {
-        setMemberData(result.data);
+      const member = await getMemberPoints(redeemPhoneInput);
+      if (member.points >= 10) {
+        // บันทึกเบอร์ที่ขอใช้สิทธิ์ไว้ใน sessionStorage (จะหักแต้มจริงเมื่อถึงขั้นตอนสั่งพิมพ์)
+        try {
+          sessionStorage.setItem("photobooth_pending_redeem", redeemPhoneInput);
+        } catch {}
+        setMemberData(member);
         setStep("redeem_success");
       } else {
-        setRedeemError(result.message);
+        setRedeemError(`เบอร์นี้มี ${member.points}/10 แต้ม (ยังไม่ครบ 10 แต้มสำหรับการแลกถ่ายฟรี)`);
       }
     } finally {
       setIsSubmittingPoints(false);
@@ -137,18 +142,21 @@ export function PaymentClient() {
         <div className="flex h-20 w-20 items-center justify-center rounded-full border-4 border-emerald-400 bg-emerald-50 text-4xl font-black text-emerald-500 shadow-md">
           👑
         </div>
-        <div className="flex flex-col gap-1.5">
+        <div className="flex flex-col gap-2">
           <span className="rounded-full bg-emerald-100 px-4 py-1 text-xs font-black text-emerald-700">
             เบอร์: {memberData.phone}
           </span>
           <h2 className="text-2xl sm:text-3xl font-black text-emerald-600">
-            แลกสิทธิ์ถ่ายฟรีสำเร็จ! 🎉
+            สิทธิ์ของคุณพร้อมใช้งาน! 🎉
           </h2>
           <p className="text-sm sm:text-base font-bold text-zinc-700">
-            หัก 10 แต้มเรียบร้อย • คุณได้รับสิทธิ์ถ่ายฟรีรอบนี้ 1 ครั้ง โดยไม่ต้องชำระเงิน
+            ตรวจพบ 10 แต้มสะสม • รับสิทธิ์ถ่ายฟรีรอบนี้ 1 ครั้ง โดยไม่ต้องชำระเงิน
           </p>
+          <div className="rounded-xl border border-emerald-200 bg-emerald-50/80 p-2.5 text-xs font-bold text-emerald-800">
+            🛡️ ระบบจะตัด 10 แต้มเมื่อขั้นตอนสั่งพิมพ์รูปสำเร็จเท่านั้น หากมีเหตุขัดข้องแต้มจะไม่หาย
+          </div>
           <p className="font-mono text-xs font-bold text-zinc-500">
-            แต้มคงเหลือ: {memberData.points} แต้ม
+            แต้มสะสมปัจจุบัน: {memberData.points}/10 แต้ม
           </p>
         </div>
 

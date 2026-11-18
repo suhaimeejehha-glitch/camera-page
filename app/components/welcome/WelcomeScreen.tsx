@@ -58,29 +58,10 @@ export function WelcomeScreen() {
           </p>
         </div>
 
-        {/* ฟีเจอร์เด่น 5 ข้อ เติมเต็มหน้าจอให้ดูพรีเมียม สวยงาม ครบเครื่อง */}
-        <div className="flex flex-wrap items-center justify-center gap-2.5 sm:gap-3.5 max-w-4xl py-1">
-          <span className="rounded-full border border-white/15 bg-zinc-900/80 px-4 py-2 sm:px-5 sm:py-2.5 text-xs sm:text-sm md:text-base font-bold text-zinc-200 shadow-md backdrop-blur-md">
-            📸 เลือกได้ 1–4 ช็อต
-          </span>
-          <span className="rounded-full border border-white/15 bg-zinc-900/80 px-4 py-2 sm:px-5 sm:py-2.5 text-xs sm:text-sm md:text-base font-bold text-zinc-200 shadow-md backdrop-blur-md">
-            🎨 กรอบรูป & สติกเกอร์จัดเต็ม
-          </span>
-          <span className="rounded-full border border-white/15 bg-zinc-900/80 px-4 py-2 sm:px-5 sm:py-2.5 text-xs sm:text-sm md:text-base font-bold text-zinc-200 shadow-md backdrop-blur-md">
-            🖨️ ปริ้นต์ภาพคู่ 4x6 นิ้ว
-          </span>
-          <span className="rounded-full border border-white/15 bg-zinc-900/80 px-4 py-2 sm:px-5 sm:py-2.5 text-xs sm:text-sm md:text-base font-bold text-zinc-200 shadow-md backdrop-blur-md">
-            📱 สแกน QR รับไฟล์ & GIF ทันที
-          </span>
-          <span className="rounded-full border border-pink-500/40 bg-pink-500/20 px-4 py-2 sm:px-5 sm:py-2.5 text-xs sm:text-sm md:text-base font-black text-pink-300 shadow-md backdrop-blur-md">
-            🎁 สะสมแต้ม 10 ฟรี 1
-          </span>
-        </div>
-
         {/* ปุ่มเริ่มถ่ายรูปขนาดใหญ่พิเศษสำหรับหน้าจอสัมผัส (ทัชง่ายจากทุกระยะ) */}
         <Link
           href="/payment"
-          className="group relative mt-2 sm:mt-4 inline-flex h-20 sm:h-24 md:h-26 items-center justify-center gap-3 sm:gap-4 rounded-full bg-gradient-to-r from-pink-500 via-rose-500 to-pink-500 px-12 sm:px-20 md:px-28 text-2xl sm:text-3xl md:text-4xl font-black tracking-wider text-white uppercase shadow-[0_0_50px_rgba(236,72,153,0.55)] transition-all duration-300 active:scale-95 hover:scale-105 hover:shadow-[0_0_80px_rgba(236,72,153,0.85)] border-4 border-white/30 touch-manipulation cursor-pointer"
+          className="group relative mt-3 sm:mt-6 inline-flex h-20 sm:h-24 md:h-28 items-center justify-center gap-3 sm:gap-5 rounded-full bg-gradient-to-r from-pink-500 via-rose-500 to-pink-500 px-12 sm:px-20 md:px-28 text-2xl sm:text-3xl md:text-4xl font-black tracking-wider text-white uppercase shadow-[0_0_50px_rgba(236,72,153,0.55)] transition-all duration-300 active:scale-95 hover:scale-105 hover:shadow-[0_0_80px_rgba(236,72,153,0.85)] border-4 border-white/30 touch-manipulation cursor-pointer"
         >
           <span className="text-3xl sm:text-4xl md:text-5xl">📸</span>
           <span>แตะเพื่อเริ่มถ่ายรูป</span>

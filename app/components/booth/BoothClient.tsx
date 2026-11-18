@@ -257,12 +257,12 @@ export function BoothClient() {
         </div>
 
         {/* Action Controls for Touchscreen */}
-        <div className="flex items-center gap-1.5 sm:gap-2">
+        <div className="flex items-center gap-2 sm:gap-3">
           {/* ปุ่มดูพรีวิวรูปบนมือถือ (แสดงเฉพาะหน้าจอแนวตั้ง / portrait) */}
           <button
             type="button"
             onClick={() => setShowPreviewModal(true)}
-            className="inline-flex landscape:hidden h-8 sm:h-9 items-center gap-1 rounded-full border border-pink-500/60 bg-pink-500/20 px-2.5 sm:px-3 text-xs font-bold text-pink-200 shadow-md active:scale-90 touch-manipulation cursor-pointer"
+            className="inline-flex landscape:hidden h-10 sm:h-12 items-center gap-1.5 rounded-full border border-pink-500/60 bg-pink-500/20 px-3 sm:px-4 text-xs sm:text-sm font-bold text-pink-200 shadow-md active:scale-90 touch-manipulation cursor-pointer"
           >
             <span>🎞️</span>
             <span>พรีวิว ({photos.length}/{frame.shotCount})</span>
@@ -273,9 +273,9 @@ export function BoothClient() {
             type="button"
             onClick={handleToggleCamera}
             title="สลับกล้องหน้า/หลัง"
-            className="inline-flex h-8 sm:h-10 items-center gap-1 sm:gap-1.5 rounded-full border border-white/20 bg-zinc-900/90 px-2.5 sm:px-4 text-xs sm:text-sm font-bold text-zinc-100 shadow-md backdrop-blur-md transition active:scale-90 hover:bg-zinc-800 touch-manipulation cursor-pointer"
+            className="inline-flex h-10 sm:h-12 items-center gap-1.5 sm:gap-2 rounded-full border border-white/20 bg-zinc-900/90 px-3.5 sm:px-5 text-xs sm:text-sm lg:text-base font-bold text-zinc-100 shadow-md backdrop-blur-md transition active:scale-90 hover:bg-zinc-800 touch-manipulation cursor-pointer"
           >
-            <span className="text-sm sm:text-base">🔄</span>
+            <span className="text-base sm:text-lg">🔄</span>
             <span className="hidden sm:inline">สลับกล้อง</span>
           </button>
 
@@ -284,13 +284,13 @@ export function BoothClient() {
             type="button"
             onClick={() => setIsMirrored((prev) => !prev)}
             title="สลับกระจกสะท้อน"
-            className={`inline-flex h-8 sm:h-10 items-center gap-1 rounded-full border px-2.5 sm:px-4 text-xs sm:text-sm font-bold shadow-md backdrop-blur-md transition active:scale-90 touch-manipulation cursor-pointer ${
+            className={`inline-flex h-10 sm:h-12 items-center gap-1.5 sm:gap-2 rounded-full border px-3.5 sm:px-5 text-xs sm:text-sm lg:text-base font-bold shadow-md backdrop-blur-md transition active:scale-90 touch-manipulation cursor-pointer ${
               isMirrored
-                ? "border-pink-400 bg-pink-500/30 text-pink-100 ring-1 ring-pink-500/50"
+                ? "border-pink-400 bg-pink-500/30 text-pink-100 ring-2 ring-pink-500/50"
                 : "border-white/20 bg-zinc-900/90 text-zinc-300"
             }`}
           >
-            <span className="text-sm">🪞</span>
+            <span className="text-base sm:text-lg">🪞</span>
             <span className="hidden sm:inline">กระจก:</span>
             <span>{isMirrored ? "เปิด" : "ปิด"}</span>
           </button>
@@ -340,38 +340,38 @@ export function BoothClient() {
             <span>{activeTone.name}</span>
           </div>
 
-          {/* ปุ่มชัตเตอร์ขนาดพอดีทัชง่าย */}
+          {/* ปุ่มชัตเตอร์ขนาดใหญ่พิเศษสำหรับจอทัชสกรีน */}
           {!isFull ? (
-            <div className="absolute inset-x-0 bottom-2.5 sm:bottom-4 flex flex-col items-center justify-center gap-1 z-20">
+            <div className="absolute inset-x-0 bottom-3 sm:bottom-5 flex flex-col items-center justify-center gap-2 z-20">
               <button
                 type="button"
                 onClick={handleTakePhoto}
                 disabled={!isCameraReady || countdown !== null}
                 aria-label="Take Photo"
-                className="group relative flex h-14 w-14 sm:h-18 sm:w-18 items-center justify-center rounded-full border-4 border-white bg-gradient-to-tr from-pink-600 via-pink-500 to-rose-400 text-white shadow-xl shadow-pink-500/60 transition active:scale-90 hover:scale-105 disabled:cursor-not-allowed disabled:opacity-40 select-none touch-manipulation cursor-pointer"
+                className="group relative flex h-20 w-20 sm:h-24 sm:w-24 lg:h-28 lg:w-28 items-center justify-center rounded-full border-4 border-white bg-gradient-to-tr from-pink-600 via-pink-500 to-rose-400 text-white shadow-2xl shadow-pink-500/70 transition active:scale-90 hover:scale-105 disabled:cursor-not-allowed disabled:opacity-40 select-none touch-manipulation cursor-pointer ring-4 ring-pink-500/30"
               >
                 <svg
                   viewBox="0 0 24 24"
                   fill="currentColor"
-                  className="h-7 w-7 sm:h-8 sm:w-8 transition group-active:scale-90"
+                  className="h-10 w-10 sm:h-12 sm:w-12 lg:h-14 lg:w-14 transition group-active:scale-90"
                   aria-hidden="true"
                 >
                   <path d="M9 3L7.17 5H4C2.9 5 2 5.9 2 7V19C2 20.1 2.9 21 4 21H20C21.1 21 22 20.1 22 19V7C22 5.9 21.1 5 20 5H16.83L15 3H9ZM12 18C9.24 18 7 15.76 7 13C7 10.24 9.24 8 12 8C14.76 8 17 10.24 17 13C17 15.76 14.76 18 12 18ZM12 10C10.34 10 9 11.34 9 13C9 14.66 10.34 16 12 16C13.66 16 15 14.66 15 13C15 11.34 13.66 10 12 10Z" />
                 </svg>
               </button>
-              <span className="rounded-full bg-black/80 px-2.5 py-0.5 font-bold text-[10px] sm:text-xs text-white backdrop-blur-md shadow-md border border-white/20">
+              <span className="rounded-full bg-black/85 px-4 py-1 font-black text-xs sm:text-sm lg:text-base text-white backdrop-blur-md shadow-xl border border-white/20">
                 แตะเพื่อถ่ายรูป
               </span>
             </div>
           ) : (
-            <div className="absolute inset-x-0 bottom-2.5 sm:bottom-4 flex flex-col items-center justify-center gap-1.5 z-20 px-2">
-              <div className="rounded-full border border-emerald-400 bg-black/90 px-4 py-1.5 text-xs sm:text-sm font-black text-emerald-300 shadow-xl backdrop-blur-md text-center">
+            <div className="absolute inset-x-0 bottom-4 flex flex-col items-center justify-center gap-2 z-20 px-2">
+              <div className="rounded-full border-2 border-emerald-400 bg-black/90 px-6 py-2 text-sm sm:text-base lg:text-lg font-black text-emerald-300 shadow-2xl backdrop-blur-md text-center">
                 ✓ ถ่ายครบ {frame.shotCount} ช็อตแล้ว พร้อมไปต่อ 🎉
               </div>
               <button
                 type="button"
                 onClick={() => setShowPreviewModal(true)}
-                className="landscape:hidden rounded-full border border-pink-400/80 bg-pink-500/30 px-3 py-1 text-xs font-bold text-pink-200 backdrop-blur-md shadow-md active:scale-95 cursor-pointer"
+                className="landscape:hidden rounded-full border border-pink-400/80 bg-pink-500/30 px-4 py-1.5 text-xs sm:text-sm font-bold text-pink-200 backdrop-blur-md shadow-md active:scale-95 cursor-pointer"
               >
                 🎞️ แตะดูตัวอย่างรูปสตริป (Preview)
               </button>
@@ -383,12 +383,12 @@ export function BoothClient() {
             - บนแนวนอน (Landscape / Kiosk / PC): แสดงอยู่ข้างกล้องตามปกติ
             - บนแนวตั้ง (Portrait / Mobile): ซ่อนไว้เพื่อไม่ให้แย่งพื้นที่กล้อง แต่เปิดดูได้ผ่านปุ่ม "🎞️ พรีวิว"
         */}
-        <div className="hidden landscape:flex shrink-0 flex-col items-center justify-between gap-1.5 rounded-2xl border border-zinc-800 bg-zinc-950/80 p-2 sm:p-2.5 shadow-xl backdrop-blur-md landscape:w-auto landscape:self-stretch">
+        <div className="hidden landscape:flex shrink-0 flex-col items-center justify-between gap-2 rounded-2xl sm:rounded-3xl border-2 border-zinc-800 bg-zinc-950/90 p-3 sm:p-3.5 shadow-2xl backdrop-blur-md landscape:w-auto landscape:self-stretch">
           <div className="flex w-full items-center justify-between px-1">
-            <span className="text-[11px] sm:text-xs font-bold tracking-wider text-pink-400 uppercase">
+            <span className="text-xs sm:text-sm font-black tracking-wider text-pink-400 uppercase">
               🎞️ STRIP PREVIEW
             </span>
-            <span className="text-[11px] sm:text-xs font-bold text-zinc-300">
+            <span className="text-xs sm:text-sm font-black text-zinc-200">
               {photos.length} / {frame.shotCount}
             </span>
           </div>
@@ -396,7 +396,7 @@ export function BoothClient() {
           {/* กรอบรูปสตริป */}
           <div className="flex flex-1 items-center justify-center">
             {orientation === "vertical" ? (
-              <div className="flex items-center justify-center gap-1.5 sm:gap-2">
+              <div className="flex items-center justify-center gap-2 sm:gap-2.5">
                 <div className="relative">
                   <StripPreview
                     frame={frame}
@@ -415,7 +415,7 @@ export function BoothClient() {
                 </div>
               </div>
             ) : (
-              <div className="flex flex-col items-center justify-center gap-1.5 sm:gap-2">
+              <div className="flex flex-col items-center justify-center gap-2 sm:gap-2.5">
                 <div className="relative">
                   <StripPreview
                     frame={frame}
@@ -436,7 +436,7 @@ export function BoothClient() {
             )}
           </div>
 
-          <span className="text-[10px] font-medium text-zinc-400 text-center">
+          <span className="text-xs font-bold text-zinc-400 text-center">
             {orientation === "vertical"
               ? "พิมพ์ 2 แถบคู่ (Dual Strip ซ้าย-ขวา)"
               : "พิมพ์ 2 แถบคู่ (Dual Strip บน-ล่าง)"}
@@ -449,18 +449,18 @@ export function BoothClient() {
       <div className="flex shrink-0 flex-col gap-1.5 sm:gap-2 rounded-2xl border border-zinc-800/90 bg-zinc-950/90 p-2 sm:p-2.5 shadow-xl backdrop-blur-md">
         
         {/* แถวที่ 1: โทนสีรูปภาพ */}
-        <div className="flex flex-col gap-1">
+        <div className="flex flex-col gap-1.5">
           <div className="flex items-center justify-between px-1">
-            <span className="text-[11px] sm:text-xs font-black tracking-wide text-zinc-200">
+            <span className="text-xs sm:text-sm lg:text-base font-black tracking-wide text-zinc-200">
               🎨 โทนสี (COLOR TONES)
             </span>
-            <span className="text-[11px] sm:text-xs text-pink-400 font-bold">
+            <span className="text-xs sm:text-sm lg:text-base text-pink-400 font-black">
               {activeTone.name} ({activeTone.labelEn})
             </span>
           </div>
 
           {/* แถบชิปโทนสี แตะเลื่อนได้สำหรับ Touchscreen */}
-          <div className="flex items-center gap-1.5 overflow-x-auto pb-0.5 no-scrollbar touch-pan-x">
+          <div className="flex items-center gap-2 sm:gap-2.5 overflow-x-auto pb-1 no-scrollbar touch-pan-x">
             {PHOTO_TONES.map((tone) => {
               const isSelected = tone.id === selectedToneId;
               return (
@@ -468,14 +468,14 @@ export function BoothClient() {
                   key={tone.id}
                   type="button"
                   onClick={() => setSelectedToneId(tone.id)}
-                  className={`flex shrink-0 items-center gap-1.5 rounded-full border px-2.5 py-1 sm:px-3.5 sm:py-1.5 text-xs font-black transition active:scale-90 touch-manipulation cursor-pointer ${
+                  className={`flex shrink-0 items-center gap-2 rounded-full border-2 px-3.5 py-1.5 sm:px-4.5 sm:py-2 text-xs sm:text-sm font-black transition active:scale-90 touch-manipulation cursor-pointer ${
                     isSelected
-                      ? "border-pink-500 bg-pink-500/30 text-white shadow-md ring-1 ring-pink-500/50"
+                      ? "border-pink-500 bg-pink-500/30 text-white shadow-lg ring-2 ring-pink-500/50"
                       : "border-zinc-800 bg-zinc-900 text-zinc-300 hover:border-zinc-700 hover:text-white"
                   }`}
                 >
                   <span
-                    className="h-2.5 w-2.5 sm:h-3 sm:w-3 rounded-full border border-white/60 shrink-0 shadow-xs"
+                    className="h-3.5 w-3.5 sm:h-4 sm:w-4 rounded-full border border-white/60 shrink-0 shadow-xs"
                     style={{ backgroundColor: tone.previewColor }}
                   />
                   <span>{tone.name}</span>
@@ -486,31 +486,31 @@ export function BoothClient() {
         </div>
 
         {/* แถวที่ 2: ภาพแต่ละช็อต (TOUCH FILMSTRIP) */}
-        <div className="flex flex-col gap-1 pt-1 border-t border-zinc-800/80">
+        <div className="flex flex-col gap-1.5 pt-1.5 border-t border-zinc-800/80">
           <div className="flex items-center justify-between px-1">
-            <span className="text-[11px] sm:text-xs font-black tracking-wide text-zinc-200">
+            <span className="text-xs sm:text-sm lg:text-base font-black tracking-wide text-zinc-200">
               📸 ภาพแต่ละช็อต ({photos.length} / {frame.shotCount})
             </span>
-            <span className="text-[10px] sm:text-xs text-zinc-400">
+            <span className="text-xs sm:text-sm font-bold text-zinc-400">
               {photos.length >= frame.shotCount
-                ? "ถ่ายครบแล้ว แตะปุ่ม 'ถัดไป' ด้านล่าง"
+                ? "ถ่ายครบแล้ว แตะปุ่ม 'ไปแต่งรูป & ปริ้นต์' ด้านล่าง"
                 : "แตะชัตเตอร์เพื่อถ่ายภาพ"}
             </span>
           </div>
 
           {/* แสดงช็อต 1 ถึง shotCount */}
-          <div className="flex items-center gap-1.5 sm:gap-2 overflow-x-auto rounded-xl border border-zinc-800/90 bg-zinc-900/80 p-1.5 no-scrollbar touch-pan-x">
+          <div className="flex items-center gap-2 sm:gap-3 overflow-x-auto rounded-2xl border border-zinc-800/90 bg-zinc-900/80 p-2 no-scrollbar touch-pan-x">
             {Array.from({ length: frame.shotCount }).map((_, idx) => {
               const shot = photos[idx];
               const isCurrent = idx === photos.length;
               return (
                 <div
                   key={`slot-${idx}`}
-                  className={`relative h-11 w-15 sm:h-14 sm:w-20 shrink-0 overflow-hidden rounded-lg sm:rounded-xl border transition ${
+                  className={`relative h-14 w-20 sm:h-18 sm:w-24 lg:h-20 lg:w-28 shrink-0 overflow-hidden rounded-xl border-2 transition ${
                     shot
-                      ? "border-zinc-600 bg-black shadow-sm"
+                      ? "border-zinc-600 bg-black shadow-md"
                       : isCurrent
-                      ? "border-dashed border-pink-500 bg-pink-500/20 animate-pulse ring-1 ring-pink-500/40"
+                      ? "border-dashed border-pink-500 bg-pink-500/20 animate-pulse ring-2 ring-pink-500/40"
                       : "border-dashed border-zinc-800 bg-zinc-900/50 opacity-60"
                   }`}
                 >
@@ -523,7 +523,7 @@ export function BoothClient() {
                         className="h-full w-full object-cover"
                         style={{ filter: activeTone.cssFilter }}
                       />
-                      <span className="absolute top-0.5 left-0.5 rounded bg-black/80 px-1 font-mono text-[8px] font-black text-white">
+                      <span className="absolute top-1 left-1 rounded bg-black/80 px-1.5 font-mono text-[9px] sm:text-[10px] font-black text-white">
                         #{idx + 1}
                       </span>
                       {/* ปุ่มลบ */}
@@ -531,17 +531,17 @@ export function BoothClient() {
                         type="button"
                         onClick={() => handleDeleteShot(shot.id)}
                         title="แตะเพื่อลบและถ่ายช็อตนี้ใหม่"
-                        className="absolute top-0.5 right-0.5 flex items-center rounded-full bg-rose-600 px-1 py-0.2 text-[8px] font-black text-white shadow transition active:scale-90 hover:bg-rose-500 touch-manipulation cursor-pointer border border-white/20"
+                        className="absolute top-1 right-1 flex h-5 w-5 sm:h-6 sm:w-6 items-center justify-center rounded-full bg-rose-600 text-xs font-black text-white shadow transition active:scale-90 hover:bg-rose-500 touch-manipulation cursor-pointer border border-white/40"
                       >
                         ✕
                       </button>
                     </div>
                   ) : (
                     <div className="flex h-full w-full flex-col items-center justify-center p-0.5 text-center">
-                      <span className="text-[11px] font-black text-zinc-300">
+                      <span className="text-xs sm:text-sm font-black text-zinc-300">
                         #{idx + 1}
                       </span>
-                      <span className={`text-[9px] font-bold ${isCurrent ? "text-pink-400" : "text-zinc-500"}`}>
+                      <span className={`text-[10px] sm:text-xs font-bold ${isCurrent ? "text-pink-400" : "text-zinc-500"}`}>
                         {isCurrent ? "รอถ่าย" : "ว่าง"}
                       </span>
                     </div>
@@ -554,11 +554,11 @@ export function BoothClient() {
 
       </div>
 
-      {/* 4. Bottom Footer: Back Button ซ้ายล่าง • Next Button ขวาล่าง */}
-      <div className="flex w-full shrink-0 items-center justify-between gap-2 border-t border-zinc-800/80 pt-1.5 pb-0.5">
+      {/* 4. Bottom Footer: Back Button ซ้ายล่าง • Next Button ขวาล่าง ขนาดใหญ่ทัชง่าย */}
+      <div className="flex w-full shrink-0 items-center justify-between gap-3 border-t border-zinc-800/80 pt-2 pb-1">
         <Link
           href={`/frames?shots=${shots}&orientation=${orientation}`}
-          className="inline-flex h-10 sm:h-12 items-center justify-center rounded-full border border-zinc-700 bg-zinc-900 px-4 sm:px-6 text-xs sm:text-sm font-black text-zinc-200 shadow-md transition active:scale-95 hover:bg-zinc-800 hover:text-white touch-manipulation cursor-pointer"
+          className="inline-flex h-14 sm:h-16 lg:h-18 items-center justify-center rounded-2xl sm:rounded-3xl border-2 border-zinc-700 bg-zinc-900 px-6 sm:px-8 text-sm sm:text-base lg:text-lg font-black text-zinc-200 shadow-md transition active:scale-95 hover:bg-zinc-800 hover:text-white touch-manipulation cursor-pointer"
         >
           ← เปลี่ยนกรอบ (Back)
         </Link>
@@ -566,12 +566,12 @@ export function BoothClient() {
         {canProceed ? (
           <Link
             href={`/result?frame=${frame.id}&shots=${shots}&orientation=${orientation}`}
-            className="inline-flex h-10 sm:h-12 items-center justify-center rounded-full bg-gradient-to-r from-pink-500 via-rose-500 to-pink-500 px-5 sm:px-8 text-xs sm:text-base font-black text-white uppercase shadow-xl shadow-pink-500/40 transition active:scale-95 hover:from-pink-400 hover:to-rose-400 border border-white/20 touch-manipulation cursor-pointer"
+            className="inline-flex h-14 sm:h-16 lg:h-18 items-center justify-center rounded-2xl sm:rounded-3xl bg-gradient-to-r from-pink-500 via-rose-500 to-pink-500 px-8 sm:px-12 text-base sm:text-lg lg:text-xl font-black text-white uppercase shadow-xl shadow-pink-500/40 transition active:scale-95 hover:from-pink-400 hover:to-rose-400 border-2 border-white/20 touch-manipulation cursor-pointer"
           >
             ไปแต่งรูป & ปริ้นต์ (Next) →
           </Link>
         ) : (
-          <div className="text-[11px] sm:text-xs font-bold text-zinc-400">
+          <div className="text-sm sm:text-base lg:text-lg font-black text-pink-300">
             ถ่ายอีก {frame.shotCount - photos.length} ช็อต เพื่อไปต่อ
           </div>
         )}

@@ -22,51 +22,78 @@ export function WelcomeScreen() {
   }, []);
 
   return (
-    <div className="relative flex h-dvh w-full flex-col items-center justify-between overflow-hidden bg-[#0c0a0f] px-5 py-4 text-white sm:px-8 sm:py-6">
-      {/* แสงฟุ้งชมพูสไตล์สตูดิโอโมเดิร์น */}
-      <div className="pointer-events-none absolute -top-24 -left-24 h-80 w-80 rounded-full bg-pink-600/20 blur-3xl" />
-      <div className="pointer-events-none absolute -right-20 -bottom-20 h-96 w-96 rounded-full bg-pink-500/20 blur-3xl" />
+    <div className="relative flex h-dvh w-full flex-col items-center justify-between overflow-hidden bg-[#0a080f] px-6 py-6 text-white sm:px-10 sm:py-8 lg:px-16 lg:py-10 select-none">
+      {/* แสงฟุ้งสไตล์สตูดิโอขนาดใหญ่ ให้บรรยากาศดูมีมิติ ไม่มืดว่างเปล่า */}
+      <div className="pointer-events-none absolute -top-40 -left-40 h-[36rem] w-[36rem] rounded-full bg-pink-600/25 blur-[140px]" />
+      <div className="pointer-events-none absolute -right-40 -bottom-40 h-[40rem] w-[40rem] rounded-full bg-rose-500/20 blur-[150px]" />
+      <div className="pointer-events-none absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-[42rem] w-[42rem] rounded-full bg-pink-500/10 blur-[180px]" />
 
-      {/* แถบบน: ชื่อบูธ + ปุ่ม Fullscreen สำหรับเปิดบนจอตู้ */}
-      <div className="relative z-10 flex w-full max-w-5xl items-center justify-between">
-        <div className="inline-flex items-center gap-2.5 font-mono text-xs sm:text-sm font-black tracking-widest text-zinc-300 uppercase">
-          <span className="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-pink-500 text-white shadow-md shadow-pink-500/30 text-base">
+      {/* แถบบน: โลโก้สถานะบูธ + ปุ่มเต็มจอ ขนาดใหญ่ชัดเจนสำหรับจอตู้ */}
+      <header className="relative z-10 flex w-full max-w-6xl items-center justify-between">
+        <div className="inline-flex items-center gap-3 font-mono text-sm sm:text-base md:text-lg font-black tracking-widest text-zinc-200 uppercase">
+          <span className="inline-flex h-11 w-11 sm:h-12 sm:w-12 items-center justify-center rounded-2xl bg-pink-500 text-white shadow-lg shadow-pink-500/40 text-xl font-bold">
             ◉
           </span>
-          <span>STUDIO BOOTH // READY</span>
+          <span className="tracking-wider">STUDIO BOOTH // READY</span>
         </div>
 
         <FullscreenButton />
-      </div>
+      </header>
 
-      {/* โซนกลาง: โลโก้ ข้อความต้อนรับ และปุ่มเริ่มขนาดใหญ่พอดีจอ */}
-      <div className="relative z-10 flex w-full max-w-3xl flex-1 flex-col items-center justify-center gap-6 sm:gap-8 text-center my-auto">
-        <span className="rounded-full border border-pink-400/40 bg-pink-500/15 px-6 py-2 text-xs sm:text-sm font-black tracking-widest text-pink-300 uppercase shadow-md">
-          CAPTURE • PRINT • SHARE • 190 THB
-        </span>
+      {/* โซนกลาง: หัวข้อขนาดใหญ่สะดุดตา + จุดเด่น + ปุ่มกดทัชสกรีนขนาดใหญ่พิเศษ */}
+      <main className="relative z-10 flex w-full max-w-5xl flex-1 flex-col items-center justify-center gap-6 sm:gap-8 md:gap-10 text-center my-auto">
+        {/* ป้ายแสดงราคาและจุดเด่น */}
+        <div className="inline-flex items-center gap-2 rounded-full border-2 border-pink-400/50 bg-pink-500/20 px-8 py-2.5 sm:px-10 sm:py-3 text-sm sm:text-base md:text-lg font-black tracking-widest text-pink-200 uppercase shadow-xl shadow-pink-500/20 backdrop-blur-md">
+          <span className="h-2.5 w-2.5 rounded-full bg-pink-400 animate-pulse" />
+          <span>CAPTURE • PRINT • SHARE • 190 THB</span>
+        </div>
 
-        <div className="flex flex-col gap-3 sm:gap-4">
-          <h1 className="text-5xl font-black tracking-tight text-white uppercase sm:text-7xl drop-shadow-md">
-            STUDIO <span className="text-pink-500">BOOTH</span>
+        {/* ชื่อบูธขนาดใหญ่เต็มตา คมชัดทุกมุมมอง */}
+        <div className="flex flex-col gap-3 sm:gap-5">
+          <h1 className="text-6xl sm:text-8xl md:text-9xl font-black tracking-tight text-white uppercase drop-shadow-[0_12px_40px_rgba(0,0,0,0.9)]">
+            STUDIO <span className="bg-gradient-to-r from-pink-400 via-rose-400 to-pink-500 bg-clip-text text-transparent drop-shadow-[0_0_45px_rgba(236,72,153,0.7)]">BOOTH</span>
           </h1>
-          <p className="mx-auto max-w-xl text-base text-zinc-300 sm:text-xl font-medium">
+          <p className="mx-auto max-w-3xl text-lg sm:text-2xl md:text-3xl font-semibold text-zinc-200 leading-relaxed drop-shadow">
             เลือกแนวกรอบ แต่งลายน่ารักๆ แล้วรับรูปปริ้นต์พร้อมไฟล์ภาพและ GIF ได้ทันที
           </p>
         </div>
 
-        {/* ปุ่มหลักขนาดใหญ่ทัชง่าย พอดีกับจอตู้ */}
+        {/* ฟีเจอร์เด่น 5 ข้อ เติมเต็มหน้าจอให้ดูพรีเมียม สวยงาม ครบเครื่อง */}
+        <div className="flex flex-wrap items-center justify-center gap-2.5 sm:gap-3.5 max-w-4xl py-1">
+          <span className="rounded-full border border-white/15 bg-zinc-900/80 px-4 py-2 sm:px-5 sm:py-2.5 text-xs sm:text-sm md:text-base font-bold text-zinc-200 shadow-md backdrop-blur-md">
+            📸 เลือกได้ 1–4 ช็อต
+          </span>
+          <span className="rounded-full border border-white/15 bg-zinc-900/80 px-4 py-2 sm:px-5 sm:py-2.5 text-xs sm:text-sm md:text-base font-bold text-zinc-200 shadow-md backdrop-blur-md">
+            🎨 กรอบรูป & สติกเกอร์จัดเต็ม
+          </span>
+          <span className="rounded-full border border-white/15 bg-zinc-900/80 px-4 py-2 sm:px-5 sm:py-2.5 text-xs sm:text-sm md:text-base font-bold text-zinc-200 shadow-md backdrop-blur-md">
+            🖨️ ปริ้นต์ภาพคู่ 4x6 นิ้ว
+          </span>
+          <span className="rounded-full border border-white/15 bg-zinc-900/80 px-4 py-2 sm:px-5 sm:py-2.5 text-xs sm:text-sm md:text-base font-bold text-zinc-200 shadow-md backdrop-blur-md">
+            📱 สแกน QR รับไฟล์ & GIF ทันที
+          </span>
+          <span className="rounded-full border border-pink-500/40 bg-pink-500/20 px-4 py-2 sm:px-5 sm:py-2.5 text-xs sm:text-sm md:text-base font-black text-pink-300 shadow-md backdrop-blur-md">
+            🎁 สะสมแต้ม 10 ฟรี 1
+          </span>
+        </div>
+
+        {/* ปุ่มเริ่มถ่ายรูปขนาดใหญ่พิเศษสำหรับหน้าจอสัมผัส (ทัชง่ายจากทุกระยะ) */}
         <Link
           href="/payment"
-          className="mt-2 inline-flex h-16 sm:h-18 items-center justify-center rounded-full bg-gradient-to-r from-pink-500 via-rose-500 to-pink-500 px-12 sm:px-18 text-xl sm:text-2xl font-black tracking-wider text-white uppercase shadow-2xl shadow-pink-500/40 transition active:scale-95 hover:from-pink-400 hover:to-rose-400 border-2 border-white/20 touch-manipulation cursor-pointer"
+          className="group relative mt-2 sm:mt-4 inline-flex h-20 sm:h-24 md:h-26 items-center justify-center gap-3 sm:gap-4 rounded-full bg-gradient-to-r from-pink-500 via-rose-500 to-pink-500 px-12 sm:px-20 md:px-28 text-2xl sm:text-3xl md:text-4xl font-black tracking-wider text-white uppercase shadow-[0_0_50px_rgba(236,72,153,0.55)] transition-all duration-300 active:scale-95 hover:scale-105 hover:shadow-[0_0_80px_rgba(236,72,153,0.85)] border-4 border-white/30 touch-manipulation cursor-pointer"
         >
-          แตะเพื่อเริ่มถ่ายรูป →
+          <span className="text-3xl sm:text-4xl md:text-5xl">📸</span>
+          <span>แตะเพื่อเริ่มถ่ายรูป</span>
+          <span className="transition-transform duration-300 group-hover:translate-x-2">→</span>
         </Link>
-      </div>
+      </main>
 
-      {/* ข้อความด้านล่าง */}
-      <p className="relative z-10 font-mono text-xs sm:text-sm tracking-widest text-zinc-500 uppercase font-bold">
-        TOUCH TO START • PROMPTPAY &amp; MEMBER STAMP
-      </p>
+      {/* แถบล่าง: คำแนะนำการใช้งาน */}
+      <footer className="relative z-10 flex flex-col items-center gap-1.5 text-center pb-1">
+        <p className="font-mono text-xs sm:text-sm md:text-base tracking-widest text-zinc-400 uppercase font-black">
+          TOUCH TO START • PROMPTPAY QR &amp; MEMBER STAMP (10 FREE 1)
+        </p>
+      </footer>
     </div>
   );
 }

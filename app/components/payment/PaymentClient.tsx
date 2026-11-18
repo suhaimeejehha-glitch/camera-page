@@ -245,110 +245,140 @@ export function PaymentClient() {
 
   // ==========================================
   // STEP: สรุปรายการชำระเงิน (Summary)
-  // ดีไซน์สัดส่วน Golden Ratio Kiosk ไม่ยืดแบน ไม่ติดขอบล่าง
+  // ดีไซน์ 2 คอลัมน์สำหรับจอสัมผัส Kiosk 16:9
+  // ตัวอักษรใหญ่ ปุ่มใหญ่มาก ไม่ต้องเลื่อนจอ (No Scroll)
   // ==========================================
   if (step === "summary") {
     return (
-      <div className="flex w-full max-w-xl flex-col gap-5 rounded-[28px] sm:rounded-[32px] border-2 border-pink-100 bg-white p-6 sm:p-8 shadow-[0_20px_60px_-15px_rgba(244,63,94,0.18)] my-auto select-none">
-        {/* ส่วนหัวการ์ด */}
-        <div className="flex items-center justify-between border-b border-zinc-100 pb-4">
+      <div className="grid w-full max-w-4xl lg:max-w-5xl grid-cols-1 md:grid-cols-2 gap-4 lg:gap-6 my-auto items-stretch select-none">
+        {/* ฝั่งซ้าย: ข้อมูลแพ็กเกจ & สิ่งที่จะได้รับ */}
+        <div className="flex flex-col justify-between gap-4 rounded-[28px] sm:rounded-[32px] border-2 border-zinc-200/90 bg-white p-5 sm:p-6 lg:p-7 shadow-xl">
+          <div className="flex flex-col gap-3">
+            <div className="flex items-center justify-between border-b border-zinc-100 pb-3">
+              <div>
+                <p className="font-mono text-xs sm:text-sm font-black tracking-widest text-pink-500 uppercase">
+                  Studio Booth // Package
+                </p>
+                <h2 className="mt-0.5 text-2xl sm:text-3xl font-black text-zinc-900 tracking-tight">
+                  ถ่ายภาพ Photobooth
+                </h2>
+              </div>
+              <span className="rounded-full bg-pink-50 px-3.5 py-1 text-xs sm:text-sm font-black text-pink-600 border border-pink-200">
+                1 รอบ
+              </span>
+            </div>
+
+            {/* รายการสิ่งที่ได้รับ: ตัวอักษรใหญ่ ชัดเจน อ่านง่ายมาก */}
+            <div className="flex flex-col gap-2.5 pt-1">
+              <div className="flex items-start gap-3 rounded-2xl bg-zinc-50 p-3 sm:p-3.5 border border-zinc-200/70">
+                <span className="text-2xl shrink-0">📸</span>
+                <div className="flex flex-col">
+                  <span className="text-base sm:text-lg font-black text-zinc-900">
+                    เลือกถ่ายได้ 1–4 แอ็กชัน
+                  </span>
+                  <span className="text-xs sm:text-sm font-semibold text-zinc-500">
+                    เลือกสไตล์เฟรมแนวตั้ง หรือ แนวนอนได้ตามใจชอบ
+                  </span>
+                </div>
+              </div>
+
+              <div className="flex items-start gap-3 rounded-2xl bg-zinc-50 p-3 sm:p-3.5 border border-zinc-200/70">
+                <span className="text-2xl shrink-0">🖨️</span>
+                <div className="flex flex-col">
+                  <span className="text-base sm:text-lg font-black text-zinc-900">
+                    พิมพ์ภาพคู่ 2 แถบ (Dual Strip)
+                  </span>
+                  <span className="text-xs sm:text-sm font-semibold text-zinc-500">
+                    ขนาด 4x6 นิ้ว พร้อมแบ่งกับเพื่อนได้ทันที
+                  </span>
+                </div>
+              </div>
+
+              <div className="flex items-start gap-3 rounded-2xl bg-zinc-50 p-3 sm:p-3.5 border border-zinc-200/70">
+                <span className="text-2xl shrink-0">📱</span>
+                <div className="flex flex-col">
+                  <span className="text-base sm:text-lg font-black text-zinc-900">
+                    สแกน QR รับไฟล์รูป & วิดีโอ GIF
+                  </span>
+                  <span className="text-xs sm:text-sm font-semibold text-zinc-500">
+                    ดาวน์โหลดเข้าสมาร์ตโฟนได้ทันที
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* แถบแลกแต้มถ่ายฟรี */}
+          <div className="flex items-center justify-between gap-3 rounded-2xl border-2 border-dashed border-pink-300 bg-pink-50/70 p-3 shadow-xs">
+            <div className="flex items-center gap-2.5">
+              <span className="text-xl">🎁</span>
+              <div className="flex flex-col">
+                <span className="text-xs sm:text-sm font-black text-zinc-900">
+                  สะสมครบ 10 แต้มแล้ว?
+                </span>
+                <span className="text-[11px] sm:text-xs text-zinc-500 font-semibold">
+                  ตรวจและใช้สิทธิ์ถ่ายฟรี
+                </span>
+              </div>
+            </div>
+            <button
+              type="button"
+              onClick={() => {
+                setRedeemPhoneInput("");
+                setRedeemError(null);
+                setStep("redeem_numpad");
+              }}
+              className="inline-flex h-9 sm:h-10 shrink-0 items-center justify-center rounded-full bg-pink-500 px-4 text-xs sm:text-sm font-black text-white shadow-md shadow-pink-500/25 transition active:scale-95 hover:bg-pink-600 cursor-pointer touch-manipulation"
+            >
+              แลกสิทธิ์ ✨
+            </button>
+          </div>
+        </div>
+
+        {/* ฝั่งขวา: ยอดชำระ & ปุ่มแตะชำระเงินขนาดยักษ์สำหรับทัชสกรีน */}
+        <div className="flex flex-col justify-between gap-4 rounded-[28px] sm:rounded-[32px] border-2 border-pink-200 bg-white p-5 sm:p-6 lg:p-7 shadow-xl shadow-pink-500/10">
           <div>
-            <p className="font-mono text-xs sm:text-sm font-black tracking-widest text-pink-500 uppercase">
-              Studio Booth // Checkout
-            </p>
-            <h2 className="mt-1 text-2xl sm:text-3xl font-black text-zinc-900 tracking-tight">
-              สรุปรายการชำระเงิน
-            </h2>
-          </div>
-          <span className="rounded-full border-2 border-pink-200 bg-pink-50 px-4 py-1.5 font-mono text-xs sm:text-sm font-black text-pink-600 uppercase shadow-xs">
-            PromptPay
-          </span>
-        </div>
-
-        {/* รายละเอียดแพ็กเกจ (ดีไซน์สะอาด สไตล์ตู้ถ่ายภาพเกาหลี) */}
-        <div className="flex flex-col gap-3 rounded-2xl bg-zinc-50/90 p-4 sm:p-5 border border-zinc-200/80">
-          <div className="flex items-center justify-between">
-            <span className="text-lg sm:text-xl font-black text-zinc-900">
-              📸 ถ่ายภาพ Photobooth
-            </span>
-            <span className="font-mono text-xl sm:text-2xl font-black text-zinc-900">
-              ฿{SESSION_PRICE}
-            </span>
-          </div>
-
-          {/* รายการจุดเด่นแบบ Bullet ชัดเจน ไม่ตกบรรทัดเพี้ยน */}
-          <div className="flex flex-col gap-1.5 text-xs sm:text-sm font-bold text-zinc-600 pt-1">
-            <div className="flex items-center gap-2">
-              <span className="text-pink-500 font-black">✓</span>
-              <span>เลือกถ่ายได้ 1–4 แอ็กชัน (แนวตั้ง หรือ แนวนอน)</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <span className="text-pink-500 font-black">✓</span>
-              <span>พิมพ์ภาพคู่ 2 แถบ (Dual Strip ขนาด 4x6 นิ้ว)</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <span className="text-pink-500 font-black">✓</span>
-              <span>สแกน QR รับไฟล์ภาพต้นฉบับและวิดีโอ GIF ได้ทันที</span>
-            </div>
-          </div>
-
-          {/* ยอดชำระรวม */}
-          <div className="mt-2 flex items-baseline justify-between border-t border-zinc-200 pt-3">
-            <span className="text-base sm:text-lg font-black text-zinc-700">
-              รวมยอดชำระทั้งหมด
-            </span>
-            <span className="font-mono text-3xl sm:text-4xl font-black text-pink-500 drop-shadow-xs">
-              ฿{SESSION_PRICE}.00
-            </span>
-          </div>
-        </div>
-
-        {/* แถบกดใช้สิทธิ์ถ่ายฟรีสำหรับลูกค้าสมาชิกที่สะสมครบ 10 แต้ม */}
-        <div className="flex items-center justify-between gap-3 rounded-2xl border-2 border-dashed border-pink-300 bg-pink-50/70 p-3 sm:p-3.5 shadow-xs">
-          <div className="flex items-center gap-3 text-left">
-            <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-pink-500 text-lg font-black text-white shadow-md shadow-pink-500/20">
-              🎁
-            </span>
-            <div className="flex flex-col">
-              <span className="text-xs sm:text-sm font-black text-zinc-900">
-                สะสมครบ 10 แต้มแล้ว?
+            <div className="flex items-center justify-between border-b border-zinc-100 pb-3">
+              <span className="font-mono text-xs sm:text-sm font-black tracking-widest text-zinc-500 uppercase">
+                Payment Summary
               </span>
-              <span className="text-[11px] sm:text-xs text-zinc-500 font-semibold">
-                กดเพื่อตรวจและใช้สิทธิ์ถ่ายฟรีรอบนี้
+              <span className="rounded-full border-2 border-pink-200 bg-pink-50 px-3.5 py-1 font-mono text-xs sm:text-sm font-black text-pink-600 uppercase">
+                PromptPay
+              </span>
+            </div>
+
+            {/* กล่องแสดงราคายักษ์ โดดเด่น ชัดเจน มองเห็นง่ายมาก */}
+            <div className="mt-4 flex flex-col items-center justify-center rounded-2xl border-2 border-pink-100 bg-gradient-to-b from-pink-50/60 to-white p-5 sm:p-6 text-center">
+              <span className="text-sm sm:text-base font-bold text-zinc-600">
+                รวมยอดชำระทั้งหมด
+              </span>
+              <span className="mt-1 font-mono text-5xl sm:text-6xl lg:text-7xl font-black text-pink-500 tracking-tight">
+                ฿{SESSION_PRICE}
+              </span>
+              <span className="mt-2 text-xs sm:text-sm font-bold text-zinc-500">
+                สแกนจ่ายผ่าน QR Code ทุกธนาคาร
               </span>
             </div>
           </div>
 
-          <button
-            type="button"
-            onClick={() => {
-              setRedeemPhoneInput("");
-              setRedeemError(null);
-              setStep("redeem_numpad");
-            }}
-            className="inline-flex h-9 sm:h-10 shrink-0 items-center justify-center rounded-full bg-pink-500 px-4 sm:px-5 text-xs sm:text-sm font-black text-white shadow-md shadow-pink-500/25 transition active:scale-95 hover:bg-pink-600 border border-white/20 touch-manipulation cursor-pointer"
-          >
-            ใช้สิทธิ์แลกฟรี ✨
-          </button>
-        </div>
+          {/* ปุ่ม Action ขนาดใหญ่พิเศษสำหรับนิ้วทัชสกรีน */}
+          <div className="flex flex-col gap-3 pt-2">
+            <button
+              type="button"
+              onClick={handleOpenQr}
+              className="inline-flex h-16 sm:h-18 lg:h-20 w-full items-center justify-center gap-3 rounded-2xl sm:rounded-3xl bg-gradient-to-r from-pink-500 via-rose-500 to-pink-500 px-8 text-xl sm:text-2xl font-black tracking-wider text-white uppercase shadow-xl shadow-pink-500/35 transition active:scale-95 hover:from-pink-400 hover:to-rose-400 border-2 border-white/30 cursor-pointer touch-manipulation"
+            >
+              <span>ชำระเงิน ฿{SESSION_PRICE}</span>
+              <span className="text-2xl sm:text-3xl">→</span>
+            </button>
 
-        {/* ปุ่ม Back และ ปุ่มชำระเงิน เชื่อมเข้ากับการ์ด ไม่ลอยเคว้ง ไม่ติดขอบล่างจอ */}
-        <div className="flex w-full items-center gap-3 sm:gap-4 pt-1">
-          <Link
-            href="/"
-            className="inline-flex h-13 sm:h-14 w-32 sm:w-36 shrink-0 items-center justify-center rounded-2xl border-2 border-zinc-200 bg-zinc-50 text-base sm:text-lg font-black tracking-wider text-zinc-700 uppercase shadow-xs transition active:scale-95 hover:border-pink-300 hover:text-pink-600 hover:bg-white touch-manipulation cursor-pointer"
-          >
-            ← Back
-          </Link>
-
-          <button
-            type="button"
-            onClick={handleOpenQr}
-            className="inline-flex h-13 sm:h-14 flex-1 items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-pink-500 via-rose-500 to-pink-500 px-6 text-lg sm:text-xl font-black tracking-wider text-white uppercase shadow-lg shadow-pink-500/35 transition active:scale-95 hover:from-pink-400 hover:to-rose-400 border border-white/20 touch-manipulation cursor-pointer"
-          >
-            <span>ชำระเงิน ฿{SESSION_PRICE}</span>
-            <span className="text-xl">→</span>
-          </button>
+            <Link
+              href="/"
+              className="inline-flex h-12 sm:h-13 w-full items-center justify-center rounded-2xl border-2 border-zinc-200 bg-zinc-50 text-base sm:text-lg font-black tracking-wider text-zinc-600 uppercase transition active:scale-95 hover:bg-zinc-100 hover:text-zinc-900 cursor-pointer touch-manipulation"
+            >
+              ← ย้อนกลับไปหน้าแรก
+            </Link>
+          </div>
         </div>
       </div>
     );
@@ -356,18 +386,19 @@ export function PaymentClient() {
 
   // ==========================================
   // STEP: หน้าสแกน QR Code PromptPay (QR Step)
+  // ดีไซน์ 2 คอลัมน์สำหรับจอสัมผัส Kiosk 16:9
   // ==========================================
   const isExpired = secondsLeft === 0;
 
   return (
-    <div className="flex w-full max-w-2xl flex-col items-center justify-center gap-6 rounded-[28px] sm:rounded-[32px] border-2 border-pink-100 bg-white p-6 sm:p-8 shadow-[0_20px_60px_-15px_rgba(244,63,94,0.18)] sm:flex-row my-auto select-none">
-      {/* ฝั่ง QR Code พร้อมเพย์ */}
-      <div className="flex shrink-0 flex-col items-center gap-2.5 rounded-2xl border border-zinc-200 bg-zinc-50 p-4 text-zinc-900 shadow-sm">
-        <div className="flex w-full items-center justify-between border-b border-zinc-200 pb-2">
+    <div className="grid w-full max-w-4xl lg:max-w-5xl grid-cols-1 md:grid-cols-2 gap-4 lg:gap-6 my-auto items-stretch select-none">
+      {/* ฝั่งซ้าย: รูป QR พร้อมเพย์ขนาดใหญ่ */}
+      <div className="flex flex-col items-center justify-center gap-3 rounded-[28px] sm:rounded-[32px] border-2 border-zinc-200 bg-white p-5 sm:p-6 lg:p-7 shadow-xl">
+        <div className="flex w-full items-center justify-between border-b border-zinc-100 pb-2">
           <span className="text-xs sm:text-sm font-black tracking-wider text-pink-600 uppercase">
             Thai QR PromptPay
           </span>
-          <span className="font-mono text-sm sm:text-base font-black text-zinc-900">
+          <span className="font-mono text-base sm:text-lg font-black text-zinc-900">
             ฿{SESSION_PRICE}.00
           </span>
         </div>
@@ -376,60 +407,63 @@ export function PaymentClient() {
         <img
           src={PROMPTPAY_QR_SRC}
           alt="PromptPay QR Code"
-          className="h-48 w-48 sm:h-52 sm:w-52 rounded-xl object-contain shadow-inner bg-white p-2"
+          className="h-52 w-52 sm:h-56 sm:w-56 lg:h-60 lg:w-60 rounded-2xl object-contain border-2 border-zinc-100 bg-white p-2 shadow-inner"
         />
 
-        <p className="font-mono text-xs font-bold text-zinc-500">
-          สแกนจ่ายผ่านแอปธนาคารใดก็ได้
+        <p className="font-mono text-xs sm:text-sm font-bold text-zinc-500">
+          เปิดแอปธนาคารใดก็ได้ แล้วสแกนเพื่อจ่ายเงิน
         </p>
       </div>
 
-      {/* ฝั่งสถานะ เวลาที่เหลือ และปุ่มตรวจสอบยอดชำระ */}
-      <div className="flex w-full flex-1 flex-col items-center gap-4 text-center sm:items-start sm:text-left">
-        <div className="w-full rounded-2xl border border-zinc-200 bg-zinc-50 p-4 sm:p-5">
-          <p className="font-mono text-xs font-black tracking-wider text-zinc-500 uppercase">
-            รวมยอดชำระทั้งหมด
-          </p>
-          <p className="mt-1 font-mono text-3xl sm:text-4xl font-black text-pink-500">
-            ฿{SESSION_PRICE}.00
-          </p>
-
-          <div className="mt-2.5 flex items-center justify-center gap-2 sm:justify-start">
-            <span
-              className={`h-3 w-3 rounded-full ${
-                isExpired
-                  ? "bg-rose-500"
-                  : isChecking
-                  ? "animate-ping bg-amber-400"
-                  : "animate-pulse bg-pink-500"
-              }`}
-            />
-            <span className="font-mono text-xs sm:text-sm font-bold text-zinc-700">
-              {isExpired
-                ? "QR Code หมดอายุ กรุณาสร้างใหม่"
-                : statusMessage ?? "รอสแกนชำระเงิน • เหลือเวลา "}
-              {!isExpired && !statusMessage ? (
-                <span className="text-pink-600 font-black">{formatTime(secondsLeft)}</span>
-              ) : null}
+      {/* ฝั่งขวา: สถานะ นับถอยหลัง และปุ่มทัชสกรีนขนาดใหญ่ */}
+      <div className="flex flex-col justify-between gap-4 rounded-[28px] sm:rounded-[32px] border-2 border-pink-200 bg-white p-5 sm:p-6 lg:p-7 shadow-xl shadow-pink-500/10">
+        <div>
+          <div className="flex items-center justify-between border-b border-zinc-100 pb-3">
+            <span className="font-mono text-xs sm:text-sm font-black tracking-widest text-zinc-500 uppercase">
+              Payment Status
             </span>
+            <span className="rounded-full bg-pink-50 px-3.5 py-1 font-mono text-xs sm:text-sm font-black text-pink-600">
+              รอการชำระ
+            </span>
+          </div>
+
+          <div className="mt-4 flex flex-col items-center justify-center rounded-2xl border-2 border-pink-100 bg-gradient-to-b from-pink-50/60 to-white p-5 sm:p-6 text-center">
+            <span className="text-sm sm:text-base font-bold text-zinc-600">
+              ยอดที่ต้องชำระ
+            </span>
+            <span className="mt-1 font-mono text-5xl sm:text-6xl font-black text-pink-500">
+              ฿{SESSION_PRICE}.00
+            </span>
+
+            <div className="mt-3 inline-flex items-center gap-2 rounded-full bg-white px-4 py-1.5 border border-zinc-200 shadow-xs">
+              <span
+                className={`h-3 w-3 rounded-full ${
+                  isExpired
+                    ? "bg-rose-500"
+                    : isChecking
+                    ? "animate-ping bg-amber-400"
+                    : "animate-pulse bg-pink-500"
+                }`}
+              />
+              <span className="font-mono text-xs sm:text-sm font-bold text-zinc-700">
+                {isExpired
+                  ? "QR หมดอายุ กรุณาสร้างใหม่"
+                  : statusMessage ?? "เวลาที่เหลือ "}
+                {!isExpired && !statusMessage ? (
+                  <span className="text-pink-600 font-black">{formatTime(secondsLeft)}</span>
+                ) : null}
+              </span>
+            </div>
           </div>
         </div>
 
-        <div className="flex w-full items-center justify-between gap-3 pt-1">
-          <button
-            type="button"
-            onClick={() => setStep("summary")}
-            disabled={isChecking}
-            className="inline-flex h-13 sm:h-14 w-28 sm:w-32 shrink-0 items-center justify-center rounded-2xl border-2 border-zinc-200 bg-zinc-50 text-sm sm:text-base font-black tracking-wider text-zinc-700 uppercase shadow-xs transition active:scale-95 hover:border-pink-300 hover:text-pink-600 disabled:opacity-50 touch-manipulation cursor-pointer"
-          >
-            ← Back
-          </button>
-
+        {/* ปุ่มทัชสกรีนขนาดใหญ่ */}
+        <div className="flex flex-col gap-3 pt-2">
           {isExpired ? (
             <button
               type="button"
               onClick={handleOpenQr}
-              className="inline-flex h-13 sm:h-14 flex-1 items-center justify-center rounded-2xl bg-pink-500 px-5 text-sm sm:text-base font-black tracking-wider text-white uppercase shadow-lg shadow-pink-500/30 transition active:scale-95 hover:bg-pink-400 touch-manipulation cursor-pointer"
+              className="inline-flex h-16 sm:h-18 lg:h-20 w-full items-center justify-center rounded-2xl sm:rounded-3xl bg-pink-500 px-8 text-xl sm:text-2xl font-black tracking-wider text-white uppercase shadow-xl shadow-pink-500/30 transition active:scale-95 hover:bg-pink-400 cursor-pointer touch-manipulation"
             >
               สร้าง QR Code ใหม่
             </button>
@@ -438,11 +472,20 @@ export function PaymentClient() {
               type="button"
               onClick={handleCheckPayment}
               disabled={isChecking}
-              className="inline-flex h-13 sm:h-14 flex-1 items-center justify-center rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-500 px-5 text-sm sm:text-base font-black tracking-wider text-white uppercase shadow-lg shadow-emerald-500/35 transition active:scale-95 hover:from-emerald-400 hover:to-teal-400 disabled:cursor-not-allowed disabled:opacity-60 border border-white/20 touch-manipulation cursor-pointer"
+              className="inline-flex h-16 sm:h-18 lg:h-20 w-full items-center justify-center gap-2 rounded-2xl sm:rounded-3xl bg-gradient-to-r from-emerald-500 to-teal-500 px-8 text-xl sm:text-2xl font-black tracking-wider text-white uppercase shadow-xl shadow-emerald-500/35 transition active:scale-95 hover:from-emerald-400 hover:to-teal-400 disabled:opacity-60 cursor-pointer touch-manipulation border-2 border-white/20"
             >
-              {isChecking ? "กำลังตรวจสอบ..." : "สแกนจ่ายแล้ว • Next →"}
+              {isChecking ? "กำลังตรวจสอบยอดเงิน..." : "สแกนจ่ายแล้ว • ไปต่อ →"}
             </button>
           )}
+
+          <button
+            type="button"
+            onClick={() => setStep("summary")}
+            disabled={isChecking}
+            className="inline-flex h-12 sm:h-13 w-full items-center justify-center rounded-2xl border-2 border-zinc-200 bg-zinc-50 text-base sm:text-lg font-black tracking-wider text-zinc-600 uppercase transition active:scale-95 hover:bg-zinc-100 cursor-pointer touch-manipulation"
+          >
+            ← ย้อนกลับ
+          </button>
         </div>
       </div>
     </div>

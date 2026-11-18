@@ -4,7 +4,7 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { TouchNumpad } from "./TouchNumpad";
+import { TouchNumpad, formatPhoneNumber } from "./TouchNumpad";
 import { StampCardView } from "./StampCardView";
 import {
   addMemberPoint,
@@ -44,7 +44,11 @@ export function PaymentClient() {
   const [phoneInput, setPhoneInput] = useState("");
   const [redeemPhoneInput, setRedeemPhoneInput] = useState("");
   const [memberData, setMemberData] = useState<MemberPointsData | null>(null);
-  const [redeemError, setRedeemError] = useState<string | null>(null);
+  const [redeemAlert, setRedeemAlert] = useState<{
+    title: string;
+    message: string;
+    points?: number | null;
+  } | null>(null);
   const [isSubmittingPoints, setIsSubmittingPoints] = useState(false);
 
   const checkTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -113,20 +117,33 @@ export function PaymentClient() {
 
   // ตรวจสอบและใช้สิทธิ์ถ่ายฟรี (Hold สิทธิ์ไว้ก่อน ยังไม่ตัดแต้มจริงจนกว่าจะสั่งพิมพ์สำเร็จ)
   const handleRedeemCheck = async () => {
-    if (redeemPhoneInput.length !== 10 || isSubmittingPoints) return;
+    const clean = redeemPhoneInput.replace(/\D/g, "");
+    if (clean.length < 10) {
+      setRedeemAlert({
+        title: "กรอกเบอร์ยังไม่ครบ 10 หลัก",
+        message: `คุณกรอกเบอร์โทรศัพท์ไปเพียง ${clean.length}/10 หลัก กรุณากรอกให้ครบ 10 หลักก่อนกดแลกสิทธิ์ครับ`,
+        points: null,
+      });
+      return;
+    }
+    if (isSubmittingPoints) return;
     setIsSubmittingPoints(true);
-    setRedeemError(null);
+    setRedeemAlert(null);
     try {
-      const member = await getMemberPoints(redeemPhoneInput);
+      const member = await getMemberPoints(clean);
       if (member.points >= 10) {
         // บันทึกเบอร์ที่ขอใช้สิทธิ์ไว้ใน sessionStorage (จะหักแต้มจริงเมื่อถึงขั้นตอนสั่งพิมพ์)
         try {
-          sessionStorage.setItem("photobooth_pending_redeem", redeemPhoneInput);
+          sessionStorage.setItem("photobooth_pending_redeem", clean);
         } catch {}
         setMemberData(member);
         setStep("redeem_success");
       } else {
-        setRedeemError(`เบอร์นี้มี ${member.points}/10 แต้ม (ยังไม่ครบ 10 แต้มสำหรับการแลกถ่ายฟรี)`);
+        setRedeemAlert({
+          title: "แต้มสะสมยังไม่ครบ 10 แต้ม",
+          message: `เบอร์ ${formatPhoneNumber(clean)} มีแต้มสะสมปัจจุบัน ${member.points}/10 แต้ม (ต้องสะสมครบ 10 แต้มเพื่อแลกสิทธิ์ถ่ายฟรี 1 ครั้ง)`,
+          points: member.points,
+        });
       }
     } finally {
       setIsSubmittingPoints(false);
@@ -176,13 +193,16 @@ export function PaymentClient() {
   // ==========================================
   if (step === "redeem_numpad") {
     return (
-      <div className="flex w-full flex-col items-center gap-3 my-auto">
+      <div className="relative flex w-full flex-col items-center justify-center my-auto">
         <TouchNumpad
           value={redeemPhoneInput}
-          onChange={setRedeemPhoneInput}
+          onChange={(val) => {
+            setRedeemPhoneInput(val);
+            if (redeemAlert) setRedeemAlert(null);
+          }}
           onSubmit={handleRedeemCheck}
           onCancel={() => {
-            setRedeemError(null);
+            setRedeemAlert(null);
             setStep("summary");
           }}
           title="🎁 แลกสิทธิ์ถ่ายฟรี 1 ครั้ง"
@@ -191,11 +211,44 @@ export function PaymentClient() {
           cancelLabel="← กลับไปหน้าชำระเงินปกติ"
           submitColor="emerald"
           isLoading={isSubmittingPoints}
+          onIncomplete={() => {
+            const clean = redeemPhoneInput.replace(/\D/g, "");
+            setRedeemAlert({
+              title: "กรอกเบอร์ยังไม่ครบ 10 หลัก",
+              message: `คุณกรอกเบอร์โทรศัพท์ไปเพียง ${clean.length}/10 หลัก กรุณากรอกให้ครบ 10 หลักก่อนกดแลกสิทธิ์ครับ`,
+              points: null,
+            });
+          }}
         />
 
-        {redeemError ? (
-          <div className="rounded-2xl border-2 border-rose-300 bg-rose-50 px-6 py-2.5 text-center text-sm sm:text-base font-black text-rose-600 shadow-sm">
-            ⚠️ {redeemError}
+        {/* Modal Popup แจ้งเตือนเมื่อกรอกเบอร์ไม่ครบ หรือ แต้มสะสมยังไม่ครบ 10 แต้ม */}
+        {redeemAlert ? (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm select-none">
+            <div className="flex w-full max-w-md sm:max-w-lg flex-col items-center gap-5 rounded-[32px] border-2 border-rose-200 bg-white p-7 sm:p-9 text-center shadow-2xl">
+              <div className="flex h-20 w-20 items-center justify-center rounded-3xl border-4 border-rose-200 bg-rose-50 text-4xl shadow-sm">
+                ⚠️
+              </div>
+              <div className="flex flex-col gap-2">
+                <h3 className="text-2xl sm:text-3xl font-black text-zinc-900 tracking-tight">
+                  {redeemAlert.title}
+                </h3>
+                <p className="text-base sm:text-lg font-bold text-zinc-600 leading-relaxed">
+                  {redeemAlert.message}
+                </p>
+                {redeemAlert.points !== null && redeemAlert.points !== undefined ? (
+                  <div className="mt-2 inline-flex items-center justify-center gap-2 self-center rounded-full bg-rose-50 px-5 py-2 font-mono text-base font-black text-rose-600 border border-rose-200">
+                    แต้มสะสม: {redeemAlert.points}/10 แต้ม
+                  </div>
+                ) : null}
+              </div>
+              <button
+                type="button"
+                onClick={() => setRedeemAlert(null)}
+                className="inline-flex h-15 sm:h-16 w-full items-center justify-center rounded-2xl bg-gradient-to-r from-pink-500 to-rose-500 px-8 text-xl font-black text-white shadow-lg shadow-pink-500/30 transition active:scale-95 hover:from-pink-400 hover:to-rose-400 cursor-pointer touch-manipulation"
+              >
+                ตกลง / ลองเบอร์อื่น
+              </button>
+            </div>
           </div>
         ) : null}
       </div>
@@ -324,7 +377,7 @@ export function PaymentClient() {
             type="button"
             onClick={() => {
               setRedeemPhoneInput("");
-              setRedeemError(null);
+              setRedeemAlert(null);
               setStep("redeem_numpad");
             }}
             className="inline-flex h-11 sm:h-13 shrink-0 items-center justify-center rounded-full bg-pink-500 px-5 sm:px-7 text-xs sm:text-sm lg:text-base font-black text-white shadow-md shadow-pink-500/25 transition active:scale-95 hover:bg-pink-600 border border-white/20 touch-manipulation cursor-pointer"

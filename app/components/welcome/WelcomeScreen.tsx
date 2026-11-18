@@ -53,7 +53,7 @@ export function WelcomeScreen() {
           <h1 className="text-6xl sm:text-8xl md:text-9xl font-black tracking-tight text-white uppercase drop-shadow-[0_12px_40px_rgba(0,0,0,0.9)]">
             STUDIO <span className="bg-gradient-to-r from-pink-400 via-rose-400 to-pink-500 bg-clip-text text-transparent drop-shadow-[0_0_45px_rgba(236,72,153,0.7)]">BOOTH</span>
           </h1>
-          <p className="mx-auto max-w-3xl text-lg sm:text-2xl md:text-3xl font-semibold text-zinc-200 leading-relaxed drop-shadow">
+          <p className="mx-auto max-w-none text-base sm:text-xl md:text-2xl lg:text-[28px] font-semibold text-zinc-200 leading-relaxed drop-shadow whitespace-normal sm:whitespace-nowrap">
             เลือกแนวกรอบ แต่งลายน่ารักๆ แล้วรับรูปปริ้นต์พร้อมไฟล์ภาพและ GIF ได้ทันที
           </p>
         </div>

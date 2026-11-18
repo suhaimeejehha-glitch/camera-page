@@ -118,7 +118,11 @@ function MiniLayoutIcon({
         active
           ? "border-pink-500 bg-pink-100/60 shadow-pink-500/20"
           : "border-zinc-200 bg-zinc-100"
-      } ${isVertical ? "h-16 sm:h-20 w-10 sm:w-12 flex-col" : "h-10 sm:h-12 w-18 sm:w-22 flex-row"}`}
+      } ${
+        isVertical
+          ? "h-20 sm:h-24 lg:h-28 w-12 sm:w-14 lg:w-16 flex-col"
+          : "h-12 sm:h-14 lg:h-16 w-20 sm:w-24 lg:w-28 flex-row"
+      }`}
     >
       {Array.from({ length: count }).map((_, idx) => (
         <div
@@ -451,7 +455,7 @@ export function LayoutSetupStep() {
   }
 
   return (
-    <div className="flex h-full max-h-full w-full max-w-5xl lg:max-w-6xl flex-col items-center justify-between gap-3 sm:gap-5 py-2 select-none">
+    <div className="flex h-full max-h-full w-full max-w-6xl lg:max-w-7xl flex-col items-center justify-between gap-3 sm:gap-5 py-2 select-none">
       {/* หัวข้อ Step 2 */}
       <div className="flex flex-col items-center gap-1.5 text-center shrink-0">
         <span className="rounded-full border border-pink-200 bg-pink-50 px-6 py-1.5 font-mono text-xs sm:text-sm lg:text-base font-black tracking-widest text-pink-600 uppercase shadow-xs">
@@ -460,18 +464,25 @@ export function LayoutSetupStep() {
         <h2 className="text-3xl font-black text-zinc-900 sm:text-4xl lg:text-5xl tracking-tight">
           เลือกจำนวนรูป ({orientation === "vertical" ? "แนวตั้ง" : "แนวนอน"})
         </h2>
-        <p className="text-base font-bold text-zinc-500 sm:text-lg">
+        <p className="text-base font-bold text-zinc-500 sm:text-lg lg:text-xl">
           แตะเลือกจำนวนช็อตที่ต้องการถ่าย 1-4 รูป แล้วกดปุ่มถัดไป
         </p>
       </div>
 
-      {/* ตัวเลือกจำนวนรูป 1-4 + พรีวิว */}
-      <div className="grid w-full grid-cols-1 gap-4 sm:grid-cols-12 sm:gap-6 my-auto">
-        <div className="flex flex-col justify-center gap-3 rounded-[32px] border-2 border-zinc-200 bg-white p-5 sm:p-6 shadow-xl sm:col-span-7">
-          <p className="font-mono text-xs sm:text-sm font-black tracking-wider text-zinc-500 uppercase text-center sm:text-left">
-            SHOT COUNT • เลือกจำนวนรูป
-          </p>
-          <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+      {/* ตัวเลือกจำนวนรูป 1-4 + พรีวิว เต็มจอสัมผัส */}
+      <div className="grid w-full grid-cols-1 gap-5 sm:grid-cols-12 sm:gap-6 my-auto items-stretch">
+        {/* ฝั่งซ้าย: ปุ่มเลือก 1, 2, 3, 4 รูป */}
+        <div className="flex flex-col justify-between gap-4 rounded-[32px] sm:rounded-[36px] border-2 border-zinc-200 bg-white p-5 sm:p-7 shadow-xl sm:col-span-7">
+          <div className="flex items-center justify-between">
+            <p className="font-mono text-xs sm:text-sm font-black tracking-wider text-pink-600 uppercase">
+              SHOT COUNT • เลือกจำนวนรูป
+            </p>
+            <span className="text-xs sm:text-sm font-bold text-zinc-400">
+              เลือกได้ 1 รูปแบบ
+            </span>
+          </div>
+
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 sm:gap-3.5 my-auto">
             {SHOT_OPTIONS.map((opt) => {
               const active = shots === opt.count;
               return (
@@ -479,14 +490,14 @@ export function LayoutSetupStep() {
                   key={opt.count}
                   type="button"
                   onClick={() => setShots(opt.count)}
-                  className={`relative flex min-h-32 sm:min-h-40 flex-col items-center justify-center gap-2.5 rounded-2xl border-2 p-3 sm:p-4 transition active:scale-95 touch-manipulation cursor-pointer ${
+                  className={`relative flex min-h-48 sm:min-h-56 lg:min-h-64 flex-col items-center justify-center gap-3 rounded-2xl sm:rounded-3xl border-3 p-4 sm:p-5 transition-all active:scale-95 touch-manipulation cursor-pointer ${
                     active
-                      ? "border-pink-500 bg-pink-50/80 text-pink-600 shadow-md ring-3 ring-pink-500/20"
-                      : "border-zinc-200 bg-zinc-50 text-zinc-700 hover:border-pink-300 hover:bg-white"
+                      ? "border-pink-500 bg-pink-50/90 text-pink-600 shadow-xl shadow-pink-500/20 ring-4 ring-pink-500/20"
+                      : "border-zinc-200 bg-white text-zinc-700 hover:border-pink-300 shadow-md"
                   }`}
                 >
                   {active ? (
-                    <span className="absolute -top-2.5 -right-2.5 flex h-7 w-7 items-center justify-center rounded-full bg-pink-500 text-xs font-black text-white shadow ring-2 ring-white">
+                    <span className="absolute -top-3 -right-3 flex h-8 w-8 sm:h-9 sm:w-9 items-center justify-center rounded-full bg-pink-500 text-sm sm:text-base font-black text-white shadow-lg ring-3 ring-white">
                       ✓
                     </span>
                   ) : null}
@@ -496,11 +507,11 @@ export function LayoutSetupStep() {
                     orientation={orientation}
                     active={active}
                   />
-                  <div className="flex flex-col items-center text-center">
-                    <span className="text-lg sm:text-xl font-black">
+                  <div className="flex flex-col items-center text-center gap-0.5">
+                    <span className="text-2xl sm:text-3xl lg:text-4xl font-black">
                       {opt.label}
                     </span>
-                    <span className="text-xs text-zinc-500 font-semibold">
+                    <span className="text-xs sm:text-sm lg:text-base text-zinc-500 font-bold">
                       {opt.desc}
                     </span>
                   </div>
@@ -508,44 +519,48 @@ export function LayoutSetupStep() {
               );
             })}
           </div>
+
+          <p className="text-center text-xs sm:text-sm font-semibold text-zinc-400">
+            แตะที่การ์ดเพื่อดูการจัดวางใน Layout Preview
+          </p>
         </div>
 
-        {/* ฝั่งตัวอย่างโครงกรอบ */}
-        <div className="flex flex-col items-center justify-center gap-2.5 rounded-[32px] border-2 border-zinc-200 bg-white p-5 sm:p-6 shadow-xl sm:col-span-5">
+        {/* ฝั่งขวา: ตัวอย่างโครงกรอบ (Preview) */}
+        <div className="flex flex-col items-center justify-between gap-3 rounded-[32px] sm:rounded-[36px] border-2 border-zinc-200 bg-white p-5 sm:p-7 shadow-xl sm:col-span-5">
           <div className="text-center">
-            <p className="font-mono text-xs sm:text-sm font-black tracking-widest text-zinc-500 uppercase">
-              Layout Preview
+            <p className="font-mono text-xs sm:text-sm font-black tracking-widest text-pink-600 uppercase">
+              LAYOUT PREVIEW
             </p>
-            <p className="font-black text-zinc-900 text-lg sm:text-xl">
+            <p className="font-black text-zinc-900 text-xl sm:text-2xl lg:text-3xl mt-0.5">
               {shots} รูป • {orientation === "vertical" ? "แนวตั้ง" : "แนวนอน"}
             </p>
           </div>
 
-          <div className="flex min-h-[170px] sm:min-h-[200px] w-full items-center justify-center py-1">
+          <div className="flex min-h-[220px] sm:min-h-[260px] lg:min-h-[300px] w-full items-center justify-center py-2">
             <div
-              className={`flex gap-2 rounded-2xl border-2 border-zinc-300 bg-zinc-100 p-2.5 shadow-md transition-all ${
+              className={`flex gap-2.5 rounded-2xl border-2 border-zinc-300 bg-zinc-100 p-3 shadow-md transition-all ${
                 orientation === "vertical"
-                  ? "w-40 sm:w-44 flex-col"
-                  : "w-full max-w-[340px] sm:max-w-[400px] flex-row"
+                  ? "w-44 sm:w-52 flex-col"
+                  : "w-full max-w-[380px] sm:max-w-[440px] flex-row"
               }`}
             >
               {Array.from({ length: shots }).map((_, idx) => (
                 <div
                   key={idx}
-                  className={`group relative overflow-hidden rounded-lg border border-zinc-300 bg-white shadow-xs ${
+                  className={`group relative overflow-hidden rounded-xl border border-zinc-300 bg-white shadow-xs ${
                     orientation === "vertical"
                       ? shots === 1
-                        ? "h-40 sm:h-44 w-full"
+                        ? "h-56 sm:h-64 w-full"
                         : shots === 2
-                        ? "h-24 sm:h-26 w-full"
+                        ? "h-28 sm:h-32 w-full"
                         : shots === 3
-                        ? "h-18 sm:h-20 w-full"
-                        : "h-14 sm:h-16 w-full"
-                      : "h-22 sm:h-26 flex-1"
+                        ? "h-20 sm:h-22 w-full"
+                        : "h-15 sm:h-17 w-full"
+                      : "h-24 sm:h-28 flex-1"
                   }`}
                 >
                   <SamplePosePhoto poseIndex={idx} />
-                  <span className="absolute bottom-0.5 right-1 rounded-full bg-black/60 px-1.5 font-mono text-[9px] font-bold text-white">
+                  <span className="absolute bottom-1 right-1.5 rounded-full bg-black/60 px-2 font-mono text-[10px] sm:text-xs font-bold text-white">
                     #{idx + 1}
                   </span>
                 </div>
@@ -553,18 +568,18 @@ export function LayoutSetupStep() {
             </div>
           </div>
 
-          <p className="text-xs sm:text-sm text-zinc-500 font-semibold">
-            ตัวอย่างการจัดวาง {shots} ช็อตในกรอบ
+          <p className="text-xs sm:text-sm lg:text-base text-zinc-500 font-bold text-center">
+            ตัวอย่างการจัดวางภาพ {shots} ช็อตในกรอบ
           </p>
         </div>
       </div>
 
-      {/* ปุ่ม Back และ Next ด้านล่าง */}
-      <div className="flex w-full items-center justify-between gap-4 max-w-5xl shrink-0 pt-2">
+      {/* ปุ่ม Back และ Next ด้านล่าง ขนาดใหญ่พอดีกับจอทัชสกรีน */}
+      <div className="flex w-full items-center justify-between gap-4 max-w-6xl lg:max-w-7xl shrink-0 pt-2">
         <button
           type="button"
           onClick={() => setStep("orientation")}
-          className="inline-flex h-16 sm:h-18 lg:h-20 w-40 sm:w-48 items-center justify-center rounded-2xl sm:rounded-3xl border-2 border-zinc-300 bg-white px-6 text-lg sm:text-xl font-black tracking-wider text-zinc-700 uppercase shadow-md transition active:scale-95 hover:border-pink-400 hover:text-pink-600 touch-manipulation cursor-pointer"
+          className="inline-flex h-16 sm:h-18 lg:h-20 w-40 sm:w-48 lg:w-52 items-center justify-center rounded-2xl sm:rounded-3xl border-2 border-zinc-300 bg-white px-6 text-lg sm:text-xl lg:text-2xl font-black tracking-wider text-zinc-700 uppercase shadow-md transition active:scale-95 hover:border-pink-400 hover:text-pink-600 touch-manipulation cursor-pointer"
         >
           ← BACK
         </button>

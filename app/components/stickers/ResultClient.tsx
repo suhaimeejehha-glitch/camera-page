@@ -17,6 +17,7 @@ import { STICKERS } from "@/lib/stickers";
 import { renderPhotoboothStrip, renderPrintSheet } from "@/lib/canvasRenderer";
 import { clearMotionFrames, clearSessionPhotos, loadMotionFrames, loadSessionPhotos } from "@/lib/mediaStore";
 import { createAnimatedGifBlob } from "@/lib/gifBuilder";
+import { createMotionVideoBlob, type MotionVideoResult } from "@/lib/videoBuilder";
 import { PHOTO_TONES, type PhotoTone } from "@/lib/filters";
 import { redeemMemberPoints } from "@/lib/pointsStore";
 import type { PhotoShot, PlacedSticker, StickerItem } from "@/types/photobooth";
@@ -61,6 +62,7 @@ export function ResultClient() {
   const [isDriveReady, setIsDriveReady] = useState(false);
   const [isFileSyncing, setIsFileSyncing] = useState(false);
   const [gifBlobCache, setGifBlobCache] = useState<Blob | null>(null);
+  const [videoBlobCache, setVideoBlobCache] = useState<MotionVideoResult | null>(null);
 
   const [printStripUrl, setPrintStripUrl] = useState<string | null>(null);
   const [isPrinting, setIsPrinting] = useState(false);
@@ -71,6 +73,7 @@ export function ResultClient() {
   const printTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const folderIdRef = useRef<string | null>(null);
   const gifUploadedRef = useRef<boolean>(false);
+  const videoUploadedRef = useRef<boolean>(false);
 
   const activeTone = useMemo<PhotoTone>(
     () => PHOTO_TONES.find((t) => t.id === selectedToneId) ?? PHOTO_TONES[0],
@@ -191,31 +194,45 @@ export function ResultClient() {
     };
   }, []);
 
-  // 2. สร้างไฟล์ GIF ล่วงหน้าในพื้นหลัง
+  // 2. สร้างไฟล์ GIF และวิดีโอ 8 วินาที (MP4) ล่วงหน้าในพื้นหลัง
   useEffect(() => {
     if (photos.length === 0) return;
     let cancelled = false;
 
-    async function prepareGif() {
+    async function prepareMedia() {
       try {
         const motionFrames = await loadMotionFrames();
-        const blob = await createAnimatedGifBlob(motionFrames, photos);
-        if (!cancelled && blob) {
-          setGifBlobCache(blob);
-        }
+
+        // สร้าง GIF
+        void createAnimatedGifBlob(motionFrames, photos).then((blob) => {
+          if (!cancelled && blob) {
+            setGifBlobCache(blob);
+          }
+        });
+
+        // สร้างวิดีโอ 8 วินาที (.mp4) พร้อมฟิลเตอร์สี เพื่อให้ส่งต่อเพื่อนใน LINE ไม่กลายเป็นรูปภาพนิ่ง
+        void createMotionVideoBlob(motionFrames, photos, {
+          durationSeconds: 8,
+          orientation,
+          filterCss: activeTone.cssFilter,
+        }).then((res) => {
+          if (!cancelled && res) {
+            setVideoBlobCache(res);
+          }
+        });
       } catch (err) {
-        console.error("Prepare GIF error:", err);
+        console.error("Prepare motion media error:", err);
       }
     }
 
-    void prepareGif();
+    void prepareMedia();
 
     return () => {
       cancelled = true;
     };
-  }, [photos]);
+  }, [photos, orientation, activeTone]);
 
-  // 3. อัปโหลดไฟล์ (รูปภาพพร้อมฟิลเตอร์โทนสี + GIF) เข้าโฟลเดอร์ Google Drive ในพื้นหลัง
+  // 3. อัปโหลดไฟล์ (รูปภาพพร้อมฟิลเตอร์โทนสี + GIF + วิดีโอ 8 วินาที MP4) เข้าโฟลเดอร์ Google Drive ในพื้นหลัง
   useEffect(() => {
     if (photos.length === 0 || !isDriveReady) return;
 
@@ -247,6 +264,12 @@ export function ResultClient() {
           formData.append("gif", gifBlobCache, "photo-motion.gif");
         }
 
+        // ส่งวิดีโอ 8 วินาที (MP4) เพียงครั้งเดียว
+        const shouldUploadVideo = Boolean(videoBlobCache && !videoUploadedRef.current);
+        if (shouldUploadVideo && videoBlobCache) {
+          formData.append("video", videoBlobCache.blob, videoBlobCache.filename);
+        }
+
         const uploadRes = await fetch("/api/upload-drive", {
           method: "POST",
           body: formData,
@@ -261,6 +284,9 @@ export function ResultClient() {
 
         if (shouldUploadGif) {
           gifUploadedRef.current = true;
+        }
+        if (shouldUploadVideo) {
+          videoUploadedRef.current = true;
         }
       } catch (error) {
         console.error("Background sync error:", error);
@@ -280,7 +306,7 @@ export function ResultClient() {
       cancelled = true;
       clearTimeout(timer);
     };
-  }, [frame, photos, placedStickers, activeTone, gifBlobCache, isDriveReady]);
+  }, [frame, photos, placedStickers, activeTone, gifBlobCache, videoBlobCache, isDriveReady]);
 
   const selectedSticker =
     placedStickers.find((s) => s.instanceId === selectedStickerId) ?? null;
@@ -510,7 +536,7 @@ export function ResultClient() {
               </div>
 
               <p className="text-xs sm:text-sm font-bold text-zinc-300">
-                สแกนด้วยมือถือเพื่อดาวน์โหลดภาพและ GIF จาก Google Drive
+                สแกนด้วยมือถือเพื่อดาวน์โหลดภาพปริ้นต์, วิดีโอ 8 วิ (MP4) และ GIF จาก Google Drive
               </p>
             </div>
 

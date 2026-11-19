@@ -12,6 +12,7 @@ export async function POST(request: Request) {
     let folderId: string | null = null;
     let photoFile: File | null = null;
     let gifFile: File | null = null;
+    let videoFile: File | null = null;
 
     if (contentType.includes("application/json")) {
       const json = await request.json();
@@ -25,6 +26,8 @@ export async function POST(request: Request) {
       if (p instanceof File && p.size > 0) photoFile = p;
       const g = formData.get("gif");
       if (g instanceof File && g.size > 0) gifFile = g;
+      const v = formData.get("video");
+      if (v instanceof File && v.size > 0) videoFile = v;
     }
 
     const accessToken = await getAccessToken();
@@ -85,6 +88,20 @@ export async function POST(request: Request) {
         "photo-motion.gif",
         "image/gif",
         gifBytes
+      );
+    }
+
+    // อัปโหลดวิดีโอ 8 วินาที (.mp4)
+    if (videoFile) {
+      const videoBytes = new Uint8Array(await videoFile.arrayBuffer());
+      const videoName = videoFile.name || "photo-motion.mp4";
+      const videoMime = videoFile.type || "video/mp4";
+      await uploadFileToFolder(
+        accessToken,
+        folderId,
+        videoName,
+        videoMime,
+        videoBytes
       );
     }
 

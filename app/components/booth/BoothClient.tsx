@@ -22,7 +22,6 @@ import { PHOTO_TONES, type PhotoTone } from "@/lib/filters";
 import type { PhotoShot } from "@/types/photobooth";
 
 const STORAGE_KEY = "photobooth_photos";
-const ALL_PHOTOS_KEY = "photobooth_all_photos";
 const SELECTED_TONE_KEY = "photobooth_selected_tone";
 
 export function BoothClient() {
@@ -222,10 +221,6 @@ export function BoothClient() {
         captureFromVideo();
       }
     }, 1000);
-  };
-
-  const handleDeleteShot = (targetIndex: number) => {
-    setPhotos((prev) => prev.filter((_, idx) => idx !== targetIndex));
   };
 
   const canProceed = photos.length >= frame.shotCount;

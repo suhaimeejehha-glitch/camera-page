@@ -23,7 +23,6 @@ import { redeemMemberPoints } from "@/lib/pointsStore";
 import type { PhotoShot, PlacedSticker, StickerItem } from "@/types/photobooth";
 
 const STORAGE_KEY = "photobooth_photos";
-const ALL_PHOTOS_KEY = "photobooth_all_photos";
 const SELECTED_TONE_KEY = "photobooth_selected_tone";
 
 function clamp(value: number, min: number, max: number) {
@@ -395,7 +394,7 @@ export function ResultClient() {
   const handleFinishSession = useCallback(() => {
     try {
       sessionStorage.removeItem(STORAGE_KEY);
-      sessionStorage.removeItem(ALL_PHOTOS_KEY);
+      sessionStorage.removeItem("photobooth_all_photos");
       sessionStorage.removeItem("photobooth_drive_qr");
       sessionStorage.removeItem("photobooth_pending_redeem");
     } catch {}

@@ -303,7 +303,7 @@ export function PaymentClient() {
   // ==========================================
   if (step === "summary") {
     return (
-      <div className="flex w-full max-w-2xl lg:max-w-3xl flex-col gap-5 sm:gap-6 rounded-[32px] sm:rounded-[36px] border-2 border-pink-100 bg-white p-7 sm:p-9 lg:p-10 shadow-[0_20px_70px_-15px_rgba(244,63,94,0.18)] my-auto select-none">
+      <div className="flex w-full max-w-2xl lg:max-w-3xl flex-col gap-4 sm:gap-6 rounded-[28px] sm:rounded-[36px] border-2 border-pink-100 bg-white p-5 sm:p-9 lg:p-10 shadow-[0_20px_70px_-15px_rgba(244,63,94,0.18)] my-auto select-none">
         {/* ส่วนหัวการ์ด */}
         <div className="flex items-center justify-between border-b-2 border-zinc-100 pb-4 sm:pb-5">
           <div>
@@ -416,7 +416,7 @@ export function PaymentClient() {
   const isExpired = secondsLeft === 0;
 
   return (
-    <div className="flex w-full max-w-xl sm:max-w-2xl flex-col items-center gap-4 sm:gap-5 rounded-[32px] sm:rounded-[36px] border-2 border-pink-100 bg-white p-6 sm:p-7 lg:p-8 shadow-[0_20px_70px_-15px_rgba(244,63,94,0.18)] my-auto select-none">
+    <div className="flex w-full max-w-xl sm:max-w-2xl flex-col items-center gap-3.5 sm:gap-5 rounded-[28px] sm:rounded-[36px] border-2 border-pink-100 bg-white p-5 sm:p-7 lg:p-8 shadow-[0_20px_70px_-15px_rgba(244,63,94,0.18)] my-auto select-none">
       {/* ส่วนหัวการ์ด (แนวตั้ง) */}
       <div className="flex w-full items-center justify-between border-b-2 border-zinc-100 pb-3 sm:pb-4">
         <div>

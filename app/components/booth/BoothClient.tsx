@@ -232,7 +232,7 @@ export function BoothClient() {
   const isFull = photos.length >= frame.shotCount;
 
   return (
-    <div className="flex h-full w-full max-w-7xl flex-1 flex-col justify-between gap-1.5 sm:gap-2.5 overflow-hidden select-none touch-manipulation font-sans">
+    <div className="flex min-h-0 md:h-full w-full max-w-7xl flex-1 flex-col justify-between gap-2 sm:gap-2.5 select-none touch-manipulation font-sans">
       {/* 1. Top Bar: Studio Booth Brand + Shot Status + Controls */}
       <header className="flex w-full shrink-0 items-center justify-between gap-2 border-b border-zinc-800/80 pb-2">
         {/* Brand & Shot Status */}
@@ -299,7 +299,7 @@ export function BoothClient() {
       </header>
 
       {/* 2. Main Stage: กล้องสดชัดเต็มตา + พรีวิวสตริปรูป (ซ่อนในแนวตั้งเพื่อไม่ให้บังกล้อง) */}
-      <div className="flex min-h-0 w-full flex-1 flex-col gap-2 landscape:flex-row landscape:items-stretch landscape:justify-center landscape:gap-4 overflow-hidden">
+      <div className="flex min-h-0 w-full flex-1 flex-col gap-2 landscape:flex-row landscape:items-stretch landscape:justify-center landscape:gap-4">
         
         {/* กล้องสด Live Camera (เด่นเต็มพื้นที่ ทั้งมือถือและจอตู้) */}
         <div className="relative flex min-h-[220px] flex-1 flex-col items-center justify-center overflow-hidden rounded-2xl sm:rounded-3xl border-2 border-zinc-800 bg-black shadow-2xl">

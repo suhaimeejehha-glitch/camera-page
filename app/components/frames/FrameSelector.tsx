@@ -135,7 +135,7 @@ export function FrameSelector({
     : filteredFrames[0]?.id ?? frames[0]?.id ?? "";
 
   return (
-    <div className="flex h-full max-h-full w-full max-w-6xl lg:max-w-7xl flex-col items-center justify-between gap-2.5 sm:gap-3.5 py-1 select-none overflow-hidden">
+    <div className="flex min-h-0 md:h-full w-full max-w-6xl lg:max-w-7xl flex-col items-center justify-between gap-3 sm:gap-3.5 py-1 select-none">
       {/* แถบปุ่มหมวดหมู่ด้านบน (Chunky Touch Pills) */}
       <div className="flex flex-wrap items-center justify-center gap-2.5 sm:gap-3 shrink-0">
         {FRAME_CATEGORIES.map((cat) => {

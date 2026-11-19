@@ -83,7 +83,7 @@ export function TouchNumpad({
       : "bg-gradient-to-r from-emerald-500 to-teal-500 shadow-emerald-500/30 hover:from-emerald-400 hover:to-teal-400";
 
   return (
-    <div className="flex w-full max-w-md sm:max-w-lg md:max-w-xl flex-col items-center gap-3.5 sm:gap-4 rounded-[28px] sm:rounded-[32px] border-2 border-zinc-200/90 bg-white p-5 sm:p-7 md:p-8 shadow-2xl select-none my-auto">
+    <div className="flex w-full max-w-md sm:max-w-lg md:max-w-xl flex-col items-center gap-3 sm:gap-4 rounded-[28px] sm:rounded-[32px] border-2 border-zinc-200/90 bg-white p-4 sm:p-7 md:p-8 shadow-2xl select-none my-auto">
       {/* ส่วนหัวข้อ */}
       <div className="flex flex-col items-center gap-1 text-center">
         <h2 className="text-2xl sm:text-3xl md:text-4xl font-black text-zinc-900 tracking-tight">

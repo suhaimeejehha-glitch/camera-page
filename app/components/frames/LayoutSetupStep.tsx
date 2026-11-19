@@ -371,7 +371,7 @@ export function LayoutSetupStep() {
 
   if (step === "orientation") {
     return (
-      <div className="flex h-full max-h-full w-full max-w-5xl lg:max-w-6xl flex-col items-center justify-between gap-3 sm:gap-5 py-2 select-none">
+      <div className="flex min-h-0 md:h-full w-full max-w-5xl lg:max-w-6xl flex-col items-center justify-between gap-3 sm:gap-5 py-2 select-none">
         {/* หัวข้อ */}
         <div className="flex flex-col items-center gap-1.5 text-center shrink-0">
           <span className="rounded-full border border-pink-200 bg-pink-50 px-6 py-1.5 font-mono text-xs sm:text-sm lg:text-base font-black tracking-widest text-pink-600 uppercase shadow-xs">
@@ -455,7 +455,7 @@ export function LayoutSetupStep() {
   }
 
   return (
-    <div className="flex h-full max-h-full w-full max-w-6xl lg:max-w-7xl flex-col items-center justify-between gap-2 sm:gap-3 py-1 select-none overflow-hidden">
+    <div className="flex min-h-0 md:h-full w-full max-w-6xl lg:max-w-7xl flex-col items-center justify-between gap-3 sm:gap-3 py-1 select-none">
       {/* หัวข้อ Step 2 */}
       <div className="flex flex-col items-center gap-1 text-center shrink-0">
         <span className="rounded-full border border-pink-200 bg-pink-50 px-5 py-1 font-mono text-xs sm:text-sm font-black tracking-widest text-pink-600 uppercase shadow-xs">

@@ -406,7 +406,7 @@ export function ResultClient() {
         />
 
         {/* พื้นที่หลัก: แถบรูปคู่ 2 ชุดทางซ้าย | QR Code Google Drive + สติกเกอร์ + สั่งปริ้นต์ทางขวา */}
-        <div className="flex min-h-0 w-full max-w-7xl flex-1 flex-col items-center justify-evenly gap-4 py-1 landscape:flex-row landscape:items-center landscape:justify-center landscape:gap-8 overflow-hidden select-none">
+        <div className="flex min-h-0 w-full max-w-7xl flex-1 flex-col items-center justify-evenly gap-4 py-1 landscape:flex-row landscape:items-center landscape:justify-center landscape:gap-8 select-none">
           
           {/* ฝั่งซ้าย: ตัวอย่างแถบรูป (แสดง 2 แถบคู่กันสำหรับแนวตั้งเหมือนหน้าตู้จริง) */}
           <div className="flex shrink-0 flex-col items-center gap-2">
@@ -487,7 +487,7 @@ export function ResultClient() {
           </div>
 
           {/* ฝั่งขวา: QR Code + สติกเกอร์ + สั่งปริ้นต์ ในดีไซน์ Dark Studio Kiosk */}
-          <div className="flex max-h-full w-full flex-1 flex-col gap-3 overflow-y-auto rounded-[32px] sm:rounded-[36px] border-2 border-zinc-800 bg-zinc-900/90 p-4 sm:p-5 shadow-2xl backdrop-blur-md landscape:max-w-xl landscape:max-h-[82dvh] portrait:max-h-[48dvh]">
+          <div className="flex max-h-full w-full flex-1 flex-col gap-3 overflow-y-auto rounded-[32px] sm:rounded-[36px] border-2 border-zinc-800 bg-zinc-900/90 p-4 sm:p-5 shadow-2xl backdrop-blur-md landscape:max-w-xl landscape:max-h-[82dvh] portrait:max-h-none md:portrait:max-h-[48dvh]">
             
             {/* โซนบน: QR Code ตรงกลาง ขนาดใหญ่ชัดเจนสำหรับมือถือสแกน */}
             <div className="flex flex-col items-center justify-center gap-2 rounded-2xl sm:rounded-3xl border-2 border-zinc-800 bg-zinc-950/80 p-3 sm:p-4 text-center shadow-lg">

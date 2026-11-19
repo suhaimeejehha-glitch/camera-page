@@ -49,7 +49,7 @@ export function ThankYouClient() {
   );
 
   return (
-    <div className="relative flex h-dvh max-h-dvh w-full flex-col items-center justify-between overflow-hidden bg-[#0c0a0f] px-6 py-5 text-white sm:px-10 sm:py-6 select-none">
+    <div className="relative flex min-h-dvh md:h-dvh md:max-h-dvh w-full flex-col items-center justify-between overflow-x-hidden overflow-y-auto md:overflow-hidden bg-[#0c0a0f] px-4 py-5 text-white sm:px-10 sm:py-6 select-none">
       {/* แสงฟุ้งชมพูสไตล์สตูดิโอโมเดิร์น */}
       <div className="pointer-events-none absolute -top-28 -left-28 h-96 w-96 rounded-full bg-pink-600/25 blur-3xl" />
       <div className="pointer-events-none absolute -right-24 -bottom-28 h-[28rem] w-[28rem] rounded-full bg-pink-500/25 blur-3xl" />

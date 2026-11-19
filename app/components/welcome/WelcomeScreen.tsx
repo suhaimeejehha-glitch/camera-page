@@ -22,7 +22,7 @@ export function WelcomeScreen() {
   }, []);
 
   return (
-    <div className="relative flex h-dvh w-full flex-col items-center justify-between overflow-hidden bg-[#0a080f] px-6 py-6 text-white sm:px-10 sm:py-8 lg:px-16 lg:py-10 select-none">
+    <div className="relative flex min-h-dvh md:h-dvh w-full flex-col items-center justify-between overflow-x-hidden overflow-y-auto md:overflow-hidden bg-[#0a080f] px-4 py-6 text-white sm:px-10 sm:py-8 lg:px-16 lg:py-10 select-none">
       {/* แสงฟุ้งสไตล์สตูดิโอขนาดใหญ่ ให้บรรยากาศดูมีมิติ ไม่มืดว่างเปล่า */}
       <div className="pointer-events-none absolute -top-40 -left-40 h-[36rem] w-[36rem] rounded-full bg-pink-600/25 blur-[140px]" />
       <div className="pointer-events-none absolute -right-40 -bottom-40 h-[40rem] w-[40rem] rounded-full bg-rose-500/20 blur-[150px]" />
@@ -50,7 +50,7 @@ export function WelcomeScreen() {
 
         {/* ชื่อบูธขนาดใหญ่เต็มตา คมชัดทุกมุมมอง */}
         <div className="flex flex-col gap-3 sm:gap-5">
-          <h1 className="text-6xl sm:text-8xl md:text-9xl font-black tracking-tight text-white uppercase drop-shadow-[0_12px_40px_rgba(0,0,0,0.9)]">
+          <h1 className="text-5xl sm:text-8xl md:text-9xl font-black tracking-tight text-white uppercase drop-shadow-[0_12px_40px_rgba(0,0,0,0.9)]">
             STUDIO <span className="bg-gradient-to-r from-pink-400 via-rose-400 to-pink-500 bg-clip-text text-transparent drop-shadow-[0_0_45px_rgba(236,72,153,0.7)]">BOOTH</span>
           </h1>
           <p className="mx-auto max-w-none text-base sm:text-xl md:text-2xl lg:text-[28px] font-semibold text-zinc-200 leading-relaxed drop-shadow whitespace-normal sm:whitespace-nowrap">
@@ -61,7 +61,7 @@ export function WelcomeScreen() {
         {/* ปุ่มเริ่มถ่ายรูปขนาดใหญ่พิเศษสำหรับหน้าจอสัมผัส (ทัชง่ายจากทุกระยะ) */}
         <Link
           href="/payment"
-          className="group relative mt-3 sm:mt-6 inline-flex h-20 sm:h-24 md:h-28 items-center justify-center gap-3 sm:gap-5 rounded-full bg-gradient-to-r from-pink-500 via-rose-500 to-pink-500 px-12 sm:px-20 md:px-28 text-2xl sm:text-3xl md:text-4xl font-black tracking-wider text-white uppercase shadow-[0_0_50px_rgba(236,72,153,0.55)] transition-all duration-300 active:scale-95 hover:scale-105 hover:shadow-[0_0_80px_rgba(236,72,153,0.85)] border-4 border-white/30 touch-manipulation cursor-pointer"
+          className="group relative mt-3 sm:mt-6 inline-flex h-18 sm:h-24 md:h-28 items-center justify-center gap-3 sm:gap-5 rounded-full bg-gradient-to-r from-pink-500 via-rose-500 to-pink-500 px-8 sm:px-20 md:px-28 text-xl sm:text-3xl md:text-4xl font-black tracking-wider text-white uppercase shadow-[0_0_50px_rgba(236,72,153,0.55)] transition-all duration-300 active:scale-95 hover:scale-105 hover:shadow-[0_0_80px_rgba(236,72,153,0.85)] border-4 border-white/30 touch-manipulation cursor-pointer"
         >
           <span className="text-3xl sm:text-4xl md:text-5xl">📸</span>
           <span>แตะเพื่อเริ่มถ่ายรูป</span>

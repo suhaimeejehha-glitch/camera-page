@@ -590,7 +590,7 @@ export function ResultClient() {
                   />
                 ) : (
                   <div className="flex flex-col items-center gap-2 text-center">
-                    <div className="h-8 w-8 animate-spin rounded-full border-3 border-pink-500 border-t-transparent" />
+                    <div className="h-8 w-8 animate-spin rounded-full border-3 border-sky-500 border-t-transparent" />
                     <span className="font-mono text-xs font-bold text-zinc-400">
                       กำลังเตรียม QR...
                     </span>
@@ -616,7 +616,7 @@ export function ResultClient() {
                   </span>
                 ) : (
                   <span className="inline-flex items-center gap-1.5 rounded-full bg-zinc-800 px-3 py-1 font-mono text-zinc-400 border border-zinc-700">
-                    <span className="h-2 w-2 rounded-full bg-pink-500 animate-pulse" />
+                    <span className="h-2 w-2 rounded-full bg-sky-500 animate-pulse" />
                     กำลังสร้างวิดีโอ 8 วิ แนวนอน...
                   </span>
                 )}
@@ -628,10 +628,10 @@ export function ResultClient() {
                   href={driveQr.folderUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="mt-1 inline-flex items-center gap-2 rounded-xl bg-zinc-800/90 hover:bg-zinc-700/90 px-3 py-1.5 text-xs font-bold text-zinc-200 transition-all border border-zinc-700 hover:border-pink-500/50 hover:text-white"
+                  className="mt-1 inline-flex items-center gap-2 rounded-xl bg-zinc-800/90 hover:bg-zinc-700/90 px-3 py-1.5 text-xs font-bold text-zinc-200 transition-all border border-zinc-700 hover:border-sky-500/50 hover:text-white"
                 >
                   <span>📂 แตะเปิดโฟลเดอร์ใน Google Drive</span>
-                  <span className="text-pink-400 font-mono">↗</span>
+                  <span className="text-sky-400 font-mono">↗</span>
                 </a>
               )}
             </div>
@@ -639,7 +639,7 @@ export function ResultClient() {
             {/* โซนสติกเกอร์ */}
             <div className="flex flex-col gap-1.5">
               <div className="flex items-center justify-between px-1">
-                <span className="font-mono text-xs sm:text-sm font-black tracking-wider text-pink-400 uppercase">
+                <span className="font-mono text-xs sm:text-sm font-black tracking-wider text-sky-400 uppercase">
                   STICKERS • แตะเพื่อแปะสติกเกอร์
                 </span>
                 {placedStickers.length > 0 ? (
@@ -665,7 +665,7 @@ export function ResultClient() {
             {selectedSticker ? (
               <div className="flex flex-col gap-2 rounded-2xl border-2 border-zinc-700 bg-zinc-950/80 p-3">
                 <div className="flex items-center justify-between">
-                  <span className="font-mono text-xs sm:text-sm font-black tracking-wider text-pink-400 uppercase">
+                  <span className="font-mono text-xs sm:text-sm font-black tracking-wider text-sky-400 uppercase">
                     Selected: {selectedSticker.stickerId}
                   </span>
                   <button
@@ -776,7 +776,7 @@ export function ResultClient() {
               <button
                 type="button"
                 onClick={handleFinishSession}
-                className="inline-flex h-14 sm:h-16 lg:h-18 items-center justify-center rounded-2xl sm:rounded-3xl bg-gradient-to-r from-pink-500 via-rose-500 to-pink-500 px-7 sm:px-10 text-base sm:text-lg lg:text-xl font-black text-white shadow-xl shadow-pink-500/40 transition active:scale-95 hover:from-pink-400 hover:to-rose-400 border-2 border-white/20 touch-manipulation cursor-pointer"
+                className="inline-flex h-14 sm:h-16 lg:h-18 items-center justify-center rounded-2xl sm:rounded-3xl bg-gradient-to-r from-sky-500 via-blue-600 to-sky-500 px-7 sm:px-10 text-base sm:text-lg lg:text-xl font-black text-white shadow-xl shadow-sky-500/40 transition active:scale-95 hover:from-sky-400 hover:to-blue-500 border-2 border-white/20 touch-manipulation cursor-pointer"
               >
                 เสร็จสิ้น ({postPrintSeconds}s) →
               </button>

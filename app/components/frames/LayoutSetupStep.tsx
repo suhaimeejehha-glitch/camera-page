@@ -116,7 +116,7 @@ function MiniLayoutIcon({
     <div
       className={`flex gap-1 rounded-lg border-2 p-1 shadow-sm transition-all ${
         active
-          ? "border-pink-500 bg-pink-100/60 shadow-pink-500/20"
+          ? "border-sky-500 bg-sky-100/60 shadow-sky-500/20"
           : "border-zinc-200 bg-zinc-100"
       } ${
         isVertical
@@ -128,7 +128,7 @@ function MiniLayoutIcon({
         <div
           key={idx}
           className={`flex-1 min-h-0 min-w-0 rounded-xs transition-colors ${
-            active ? "bg-pink-500" : "bg-zinc-400"
+            active ? "bg-sky-500" : "bg-zinc-400"
           }`}
         />
       ))}
@@ -374,14 +374,14 @@ export function LayoutSetupStep() {
       <div className="flex min-h-0 md:h-full w-full max-w-5xl lg:max-w-6xl flex-col items-center justify-between gap-3 sm:gap-5 py-2 select-none">
         {/* หัวข้อ */}
         <div className="flex flex-col items-center gap-1.5 text-center shrink-0">
-          <span className="rounded-full border border-pink-200 bg-pink-50 px-6 py-1.5 font-mono text-xs sm:text-sm lg:text-base font-black tracking-widest text-pink-600 uppercase shadow-xs">
+          <span className="rounded-full border border-sky-200 bg-sky-50 px-6 py-1.5 font-mono text-xs sm:text-sm lg:text-base font-black tracking-widest text-sky-700 uppercase shadow-xs">
             Step 1 of 2 • CHOOSE ORIENTATION
           </span>
           <h2 className="text-3xl font-black text-zinc-900 sm:text-4xl lg:text-5xl tracking-tight">
             เลือกแนวกรอบที่ต้องการ
           </h2>
           <p className="text-base font-bold text-zinc-500 sm:text-lg lg:text-xl">
-            แตะเลือก <span className="text-pink-600 font-black">แนวตั้ง</span> หรือ <span className="text-pink-600 font-black">แนวนอน</span> แล้วกดปุ่มถัดไป
+            แตะเลือก <span className="text-sky-600 font-black">แนวตั้ง</span> หรือ <span className="text-sky-600 font-black">แนวนอน</span> แล้วกดปุ่มถัดไป
           </p>
         </div>
 
@@ -397,12 +397,12 @@ export function LayoutSetupStep() {
                 onClick={() => handleSelectOrientation(opt.value)}
                 className={`group relative flex min-h-64 sm:min-h-76 lg:min-h-84 flex-col items-center justify-center gap-4 rounded-[32px] sm:rounded-[36px] border-3 bg-white p-6 sm:p-8 text-center shadow-xl transition-all active:scale-[0.98] touch-manipulation cursor-pointer ${
                   isSelected
-                    ? "border-pink-500 shadow-pink-500/25 ring-4 ring-pink-500/20 bg-gradient-to-b from-pink-50/40 to-white"
-                    : "border-zinc-200 hover:border-pink-300"
+                    ? "border-sky-500 shadow-sky-500/25 ring-4 ring-sky-500/20 bg-gradient-to-b from-sky-50/40 to-white"
+                    : "border-zinc-200 hover:border-sky-300"
                 }`}
               >
                 {isSelected ? (
-                  <span className="absolute -top-3.5 -right-3.5 flex h-10 w-10 sm:h-12 sm:w-12 items-center justify-center rounded-full bg-pink-500 text-lg sm:text-xl font-black text-white shadow-lg ring-4 ring-white">
+                  <span className="absolute -top-3.5 -right-3.5 flex h-10 w-10 sm:h-12 sm:w-12 items-center justify-center rounded-full bg-sky-500 text-lg sm:text-xl font-black text-white shadow-lg ring-4 ring-white">
                     ✓
                   </span>
                 ) : null}
@@ -415,13 +415,13 @@ export function LayoutSetupStep() {
                   <span
                     className={`text-3xl sm:text-4xl lg:text-5xl font-black transition ${
                       isSelected
-                        ? "text-pink-600"
-                        : "text-zinc-900 group-hover:text-pink-600"
+                        ? "text-sky-600"
+                        : "text-zinc-900 group-hover:text-sky-600"
                     }`}
                   >
                     {opt.label}
                   </span>
-                  <span className="font-mono text-sm sm:text-base font-black tracking-wider text-pink-500 uppercase">
+                  <span className="font-mono text-sm sm:text-base font-black tracking-wider text-sky-500 uppercase">
                     {opt.sub}
                   </span>
                   <span className="mt-1 text-sm sm:text-base lg:text-lg text-zinc-500 font-semibold max-w-xs">
@@ -437,7 +437,7 @@ export function LayoutSetupStep() {
         <div className="flex w-full items-center justify-between gap-4 max-w-4xl lg:max-w-5xl shrink-0 pt-2">
           <Link
             href="/payment"
-            className="inline-flex h-16 sm:h-18 lg:h-20 w-40 sm:w-48 items-center justify-center rounded-2xl sm:rounded-3xl border-2 border-zinc-300 bg-white px-6 text-lg sm:text-xl font-black tracking-wider text-zinc-700 uppercase shadow-md transition active:scale-95 hover:border-pink-400 hover:text-pink-600 touch-manipulation cursor-pointer"
+            className="inline-flex h-16 sm:h-18 lg:h-20 w-40 sm:w-48 items-center justify-center rounded-2xl sm:rounded-3xl border-2 border-zinc-300 bg-white px-6 text-lg sm:text-xl font-black tracking-wider text-zinc-700 uppercase shadow-md transition active:scale-95 hover:border-sky-400 hover:text-sky-600 touch-manipulation cursor-pointer"
           >
             ← BACK
           </Link>
@@ -445,7 +445,7 @@ export function LayoutSetupStep() {
           <button
             type="button"
             onClick={() => setStep("shots")}
-            className="inline-flex h-16 sm:h-18 lg:h-20 flex-1 items-center justify-center rounded-2xl sm:rounded-3xl bg-gradient-to-r from-pink-500 via-rose-500 to-pink-500 px-8 text-xl sm:text-2xl lg:text-3xl font-black tracking-wider text-white uppercase shadow-xl shadow-pink-500/30 transition active:scale-95 hover:from-pink-400 hover:to-rose-400 border-2 border-white/20 touch-manipulation cursor-pointer"
+            className="inline-flex h-16 sm:h-18 lg:h-20 flex-1 items-center justify-center rounded-2xl sm:rounded-3xl bg-gradient-to-r from-sky-500 via-blue-600 to-sky-500 px-8 text-xl sm:text-2xl lg:text-3xl font-black tracking-wider text-white uppercase shadow-xl shadow-sky-500/30 transition active:scale-95 hover:from-sky-400 hover:to-blue-500 border-2 border-white/20 touch-manipulation cursor-pointer"
           >
             ไปเลือกจำนวนรูป • NEXT →
           </button>
@@ -458,7 +458,7 @@ export function LayoutSetupStep() {
     <div className="flex min-h-0 md:h-full w-full max-w-6xl lg:max-w-7xl flex-col items-center justify-between gap-3 sm:gap-3 py-1 select-none">
       {/* หัวข้อ Step 2 */}
       <div className="flex flex-col items-center gap-1 text-center shrink-0">
-        <span className="rounded-full border border-pink-200 bg-pink-50 px-5 py-1 font-mono text-xs sm:text-sm font-black tracking-widest text-pink-600 uppercase shadow-xs">
+        <span className="rounded-full border border-sky-200 bg-sky-50 px-5 py-1 font-mono text-xs sm:text-sm font-black tracking-widest text-sky-700 uppercase shadow-xs">
           Step 2 of 2 • {orientation === "vertical" ? "แนวตั้ง (Vertical)" : "แนวนอน (Horizontal)"}
         </span>
         <h2 className="text-2xl sm:text-3xl lg:text-4xl font-black text-zinc-900 tracking-tight">
@@ -474,7 +474,7 @@ export function LayoutSetupStep() {
         {/* ฝั่งซ้าย: ปุ่มเลือก 1, 2, 3, 4 รูป */}
         <div className="flex flex-col justify-between gap-3 rounded-[32px] sm:rounded-[36px] border-2 border-zinc-200 bg-white p-4 sm:p-5 shadow-xl sm:col-span-7">
           <div className="flex items-center justify-between">
-            <p className="font-mono text-xs sm:text-sm font-black tracking-wider text-pink-600 uppercase">
+            <p className="font-mono text-xs sm:text-sm font-black tracking-wider text-sky-600 uppercase">
               SHOT COUNT • เลือกจำนวนรูป
             </p>
             <span className="text-xs font-bold text-zinc-400">
@@ -492,12 +492,12 @@ export function LayoutSetupStep() {
                   onClick={() => setShots(opt.count)}
                   className={`relative flex h-36 sm:h-42 lg:h-46 flex-col items-center justify-center gap-2 rounded-2xl border-3 p-2.5 sm:p-3 transition-all active:scale-95 touch-manipulation cursor-pointer ${
                     active
-                      ? "border-pink-500 bg-pink-50/90 text-pink-600 shadow-lg shadow-pink-500/20 ring-4 ring-pink-500/20"
-                      : "border-zinc-200 bg-white text-zinc-700 hover:border-pink-300 shadow-sm"
+                      ? "border-sky-500 bg-sky-50/90 text-sky-600 shadow-lg shadow-sky-500/20 ring-4 ring-sky-500/20"
+                      : "border-zinc-200 bg-white text-zinc-700 hover:border-sky-300 shadow-sm"
                   }`}
                 >
                   {active ? (
-                    <span className="absolute -top-2.5 -right-2.5 flex h-7 w-7 sm:h-8 sm:w-8 items-center justify-center rounded-full bg-pink-500 text-xs sm:text-sm font-black text-white shadow-md ring-2 ring-white">
+                    <span className="absolute -top-2.5 -right-2.5 flex h-7 w-7 sm:h-8 sm:w-8 items-center justify-center rounded-full bg-sky-500 text-xs sm:text-sm font-black text-white shadow-md ring-2 ring-white">
                       ✓
                     </span>
                   ) : null}
@@ -531,7 +531,7 @@ export function LayoutSetupStep() {
         {/* ฝั่งขวา: ตัวอย่างโครงกรอบ (Preview) - ความสูงตายตัว 100% ไม่ว่าเลือกกี่รูปจะไม่ขยับ */}
         <div className="flex flex-col items-center justify-between gap-2 rounded-[32px] sm:rounded-[36px] border-2 border-zinc-200 bg-white p-4 sm:p-5 shadow-xl sm:col-span-5">
           <div className="text-center">
-            <p className="font-mono text-xs sm:text-sm font-black tracking-widest text-pink-600 uppercase">
+            <p className="font-mono text-xs sm:text-sm font-black tracking-widest text-sky-600 uppercase">
               LAYOUT PREVIEW
             </p>
             <p className="font-black text-zinc-900 text-lg sm:text-xl lg:text-2xl mt-0.5">
@@ -573,14 +573,14 @@ export function LayoutSetupStep() {
         <button
           type="button"
           onClick={() => setStep("orientation")}
-          className="inline-flex h-16 sm:h-18 lg:h-20 w-40 sm:w-48 lg:w-52 items-center justify-center rounded-2xl sm:rounded-3xl border-2 border-zinc-300 bg-white px-6 text-lg sm:text-xl lg:text-2xl font-black tracking-wider text-zinc-700 uppercase shadow-md transition active:scale-95 hover:border-pink-400 hover:text-pink-600 touch-manipulation cursor-pointer"
+          className="inline-flex h-16 sm:h-18 lg:h-20 w-40 sm:w-48 lg:w-52 items-center justify-center rounded-2xl sm:rounded-3xl border-2 border-zinc-300 bg-white px-6 text-lg sm:text-xl lg:text-2xl font-black tracking-wider text-zinc-700 uppercase shadow-md transition active:scale-95 hover:border-sky-400 hover:text-sky-600 touch-manipulation cursor-pointer"
         >
           ← BACK
         </button>
 
         <Link
           href={`/frames?shots=${shots}&orientation=${orientation}`}
-          className="inline-flex h-16 sm:h-18 lg:h-20 flex-1 items-center justify-center rounded-2xl sm:rounded-3xl bg-gradient-to-r from-pink-500 via-rose-500 to-pink-500 px-8 text-xl sm:text-2xl lg:text-3xl font-black tracking-wider text-white uppercase shadow-xl shadow-pink-500/30 transition active:scale-95 hover:from-pink-400 hover:to-rose-400 border-2 border-white/20 touch-manipulation cursor-pointer"
+          className="inline-flex h-16 sm:h-18 lg:h-20 flex-1 items-center justify-center rounded-2xl sm:rounded-3xl bg-gradient-to-r from-sky-500 via-blue-600 to-sky-500 px-8 text-xl sm:text-2xl lg:text-3xl font-black tracking-wider text-white uppercase shadow-xl shadow-sky-500/30 transition active:scale-95 hover:from-sky-400 hover:to-blue-500 border-2 border-white/20 touch-manipulation cursor-pointer"
         >
           ไปเลือกธีมกรอบรูป • NEXT →
         </Link>

@@ -79,7 +79,7 @@ export function TouchNumpad({
 
   const submitButtonClass =
     submitColor === "pink"
-      ? "bg-gradient-to-r from-pink-500 via-rose-500 to-pink-500 shadow-pink-500/30 hover:from-pink-400 hover:to-rose-400"
+      ? "bg-gradient-to-r from-sky-500 via-blue-600 to-sky-500 shadow-sky-500/30 hover:from-sky-400 hover:to-blue-500"
       : "bg-gradient-to-r from-emerald-500 to-teal-500 shadow-emerald-500/30 hover:from-emerald-400 hover:to-teal-400";
 
   return (
@@ -98,7 +98,7 @@ export function TouchNumpad({
 
       {/* ช่องแสดงเบอร์โทรขนาดใหญ่ชัดเจน พร้อมตัวนับหลัก */}
       <div className="flex flex-col w-full gap-1">
-        <div className="flex w-full h-15 sm:h-17 md:h-18 items-center justify-center rounded-2xl sm:rounded-3xl border-2 border-pink-200 bg-pink-50/70 px-5 text-center shadow-inner">
+        <div className="flex w-full h-15 sm:h-17 md:h-18 items-center justify-center rounded-2xl sm:rounded-3xl border-2 border-sky-200 bg-sky-50/70 px-5 text-center shadow-inner">
           {cleanDigits.length > 0 ? (
             <span className="font-mono text-3xl sm:text-4xl md:text-5xl font-black tracking-wider text-zinc-900">
               {formatPhoneNumber(cleanDigits)}
@@ -129,7 +129,7 @@ export function TouchNumpad({
             key={digit}
             type="button"
             onClick={() => handleDigit(digit)}
-            className="flex h-13 sm:h-15 md:h-16 items-center justify-center rounded-2xl sm:rounded-3xl border-2 border-zinc-200 bg-zinc-50 text-2xl sm:text-3xl md:text-4xl font-black text-zinc-800 shadow-xs transition active:scale-90 active:bg-pink-100 hover:border-pink-300 hover:bg-white touch-manipulation cursor-pointer"
+            className="flex h-13 sm:h-15 md:h-16 items-center justify-center rounded-2xl sm:rounded-3xl border-2 border-zinc-200 bg-zinc-50 text-2xl sm:text-3xl md:text-4xl font-black text-zinc-800 shadow-xs transition active:scale-90 active:bg-sky-100 hover:border-sky-300 hover:bg-white touch-manipulation cursor-pointer"
           >
             {digit}
           </button>
@@ -149,7 +149,7 @@ export function TouchNumpad({
         <button
           type="button"
           onClick={() => handleDigit("0")}
-          className="flex h-13 sm:h-15 md:h-16 items-center justify-center rounded-2xl sm:rounded-3xl border-2 border-zinc-200 bg-zinc-50 text-2xl sm:text-3xl md:text-4xl font-black text-zinc-800 shadow-xs transition active:scale-90 active:bg-pink-100 hover:border-pink-300 hover:bg-white touch-manipulation cursor-pointer"
+          className="flex h-13 sm:h-15 md:h-16 items-center justify-center rounded-2xl sm:rounded-3xl border-2 border-zinc-200 bg-zinc-50 text-2xl sm:text-3xl md:text-4xl font-black text-zinc-800 shadow-xs transition active:scale-90 active:bg-sky-100 hover:border-sky-300 hover:bg-white touch-manipulation cursor-pointer"
         >
           0
         </button>

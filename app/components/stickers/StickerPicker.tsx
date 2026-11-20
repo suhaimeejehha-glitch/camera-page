@@ -35,8 +35,8 @@ export function StickerPicker({
           onClick={() => onAddSticker(sticker)}
           className={`flex min-h-22 sm:min-h-26 flex-col items-center justify-center gap-1.5 rounded-2xl border-2 p-2 sm:p-3 transition-all hover:scale-105 active:scale-95 touch-manipulation cursor-pointer shadow-md ${
             isDark
-              ? "border-zinc-800 bg-zinc-900/90 text-zinc-200 hover:border-pink-500 hover:bg-zinc-800"
-              : "border-zinc-300 bg-zinc-50/90 text-zinc-800 hover:border-pink-400 hover:bg-pink-50"
+              ? "border-zinc-800 bg-zinc-900/90 text-zinc-200 hover:border-sky-500 hover:bg-zinc-800"
+              : "border-zinc-300 bg-zinc-50/90 text-zinc-800 hover:border-sky-400 hover:bg-sky-50"
           }`}
         >
           {/* eslint-disable-next-line @next/next/no-img-element */}

@@ -25,8 +25,8 @@ export function BoothHeader({
 
   const borderClass = isLight ? "border-zinc-200" : "border-zinc-800";
   const backBtnClass = isLight
-    ? "border-zinc-300 bg-white text-zinc-700 shadow-sm hover:border-pink-400 hover:text-pink-600"
-    : "border-zinc-700 bg-zinc-900 text-zinc-200 hover:border-pink-400";
+    ? "border-zinc-300 bg-white text-zinc-700 shadow-sm hover:border-sky-400 hover:text-sky-600"
+    : "border-zinc-700 bg-zinc-900 text-zinc-200 hover:border-sky-400";
   const brandTextClass = isLight ? "text-zinc-900" : "text-white";
   const titleClass = isLight ? "text-zinc-600" : "text-zinc-300";
 
@@ -48,7 +48,7 @@ export function BoothHeader({
           <div
             className={`inline-flex items-center gap-2.5 sm:gap-3 font-black tracking-wider uppercase text-sm sm:text-lg ${brandTextClass}`}
           >
-            <span className="inline-flex h-9 w-9 sm:h-11 sm:w-11 items-center justify-center rounded-xl bg-pink-500 font-mono text-sm sm:text-base font-black text-white shadow-md shadow-pink-500/30">
+            <span className="inline-flex h-9 w-9 sm:h-11 sm:w-11 items-center justify-center rounded-xl bg-sky-500 font-mono text-sm sm:text-base font-black text-white shadow-md shadow-sky-500/30">
               ◉
             </span>
             <span className="hidden xs:inline">{brandName}</span>
@@ -67,11 +67,11 @@ export function BoothHeader({
                   <span
                     className={`flex h-8 w-8 sm:h-9 sm:w-9 items-center justify-center rounded-full font-mono text-xs sm:text-base font-black transition ${
                       isCurrent
-                        ? "bg-pink-500 text-white shadow-md shadow-pink-500/40 scale-110"
+                        ? "bg-sky-500 text-white shadow-md shadow-sky-500/40 scale-110"
                         : isDone
                         ? isLight
-                          ? "border-2 border-pink-300 bg-pink-50 text-pink-600"
-                          : "border border-pink-400/50 bg-pink-500/20 text-pink-300"
+                          ? "border-2 border-sky-300 bg-sky-50 text-sky-600"
+                          : "border border-sky-400/50 bg-sky-500/20 text-sky-300"
                         : isLight
                         ? "border-2 border-zinc-200 bg-white text-zinc-400"
                         : "border border-zinc-800 bg-zinc-900 text-zinc-500"
@@ -83,7 +83,7 @@ export function BoothHeader({
                     <span
                       className={`h-0.5 sm:h-1 w-3 sm:w-5 rounded-full ${
                         isDone
-                          ? "bg-pink-400"
+                          ? "bg-sky-400"
                           : isLight
                           ? "bg-zinc-200"
                           : "bg-zinc-800"

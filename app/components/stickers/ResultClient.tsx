@@ -62,6 +62,7 @@ export function ResultClient() {
   const [isFileSyncing, setIsFileSyncing] = useState(false);
   const [gifBlobCache, setGifBlobCache] = useState<Blob | null>(null);
   const [videoBlobCache, setVideoBlobCache] = useState<MotionVideoResult | null>(null);
+  const [videoStatus, setVideoStatus] = useState<"rendering" | "uploading" | "ready" | "failed">("rendering");
 
   const [printStripUrl, setPrintStripUrl] = useState<string | null>(null);
   const [isPrinting, setIsPrinting] = useState(false);
@@ -193,7 +194,7 @@ export function ResultClient() {
     };
   }, []);
 
-  // 2. สร้างไฟล์ GIF และวิดีโอ 8 วินาที (MP4) ล่วงหน้าในพื้นหลัง
+  // 2. สร้างไฟล์ GIF และวิดีโอ 8 วินาที (MP4 แนวนอนเต็มตา) ล่วงหน้าในพื้นหลัง
   useEffect(() => {
     if (photos.length === 0) return;
     let cancelled = false;
@@ -209,15 +210,18 @@ export function ResultClient() {
           }
         });
 
-        // สร้างวิดีโอ 8 วินาที (.mp4) พร้อมฟิลเตอร์สี เพื่อให้ส่งต่อเพื่อนใน LINE ไม่กลายเป็นรูปภาพนิ่ง
+        // สร้างวิดีโอ 8 วินาที (.mp4) แนวนอนเต็มตา ไม่มีขอบดำ พร้อมฟิลเตอร์สี
         void createMotionVideoBlob(motionFrames, photos, {
           durationSeconds: 8,
-          orientation,
+          orientation: "horizontal", // แนวนอนเต็มตาเสมอ
           filterCss: activeTone.cssFilter,
         }).then((res) => {
-          if (!cancelled && res) {
-            setVideoBlobCache(res);
+          if (cancelled) return;
+          if (!res) {
+            setVideoStatus("failed");
+            return;
           }
+          setVideoBlobCache(res);
         });
       } catch (err) {
         console.error("Prepare motion media error:", err);
@@ -231,7 +235,70 @@ export function ResultClient() {
     };
   }, [photos, orientation, activeTone]);
 
-  // 3. อัปโหลดไฟล์ (รูปภาพพร้อมฟิลเตอร์โทนสี + GIF + วิดีโอ 8 วินาที MP4) เข้าโฟลเดอร์ Google Drive ในพื้นหลัง
+  // 2.1 อัปโหลดวิดีโอ 8 วินาที (MP4 แนวนอน) เข้า Drive ทันทีที่พร้อม (แยก Request ไม่เกิน 4.5MB limit)
+  useEffect(() => {
+    const currentVideo = videoBlobCache;
+    const currentFolderId = folderIdRef.current;
+    if (!currentVideo || !isDriveReady || !currentFolderId || videoUploadedRef.current) return;
+    let cancelled = false;
+
+    async function uploadVideo(video: MotionVideoResult, folderId: string) {
+      try {
+        setVideoStatus("uploading");
+        const vFd = new FormData();
+        vFd.append("folderId", folderId);
+        vFd.append("video", video.blob, video.filename);
+        const upRes = await fetch("/api/upload-drive", {
+          method: "POST",
+          body: vFd,
+        });
+        if (upRes.ok) {
+          videoUploadedRef.current = true;
+          if (!cancelled) setVideoStatus("ready");
+          console.log("[Drive Upload] Motion video uploaded successfully!");
+        } else {
+          if (!cancelled) setVideoStatus("failed");
+        }
+      } catch (err) {
+        console.error("Direct video upload error:", err);
+        if (!cancelled) setVideoStatus("failed");
+      }
+    }
+
+    void uploadVideo(currentVideo, currentFolderId);
+    return () => {
+      cancelled = true;
+    };
+  }, [videoBlobCache, isDriveReady]);
+
+  // 2.2 อัปโหลด GIF เข้า Drive ทันทีที่พร้อม (แยก Request)
+  useEffect(() => {
+    const currentGif = gifBlobCache;
+    const currentFolderId = folderIdRef.current;
+    if (!currentGif || !isDriveReady || !currentFolderId || gifUploadedRef.current) return;
+
+    async function uploadGif(gif: Blob, folderId: string) {
+      try {
+        const gFd = new FormData();
+        gFd.append("folderId", folderId);
+        gFd.append("gif", gif, "photo-motion.gif");
+        const upRes = await fetch("/api/upload-drive", {
+          method: "POST",
+          body: gFd,
+        });
+        if (upRes.ok) {
+          gifUploadedRef.current = true;
+          console.log("[Drive Upload] Motion GIF uploaded successfully!");
+        }
+      } catch (err) {
+        console.error("Direct gif upload error:", err);
+      }
+    }
+
+    void uploadGif(currentGif, currentFolderId);
+  }, [gifBlobCache, isDriveReady]);
+
+  // 3. อัปโหลดรูปภาพปริ้นต์ (Photo Strip พร้อมฟิลเตอร์โทนสีและสติกเกอร์) เข้าโฟลเดอร์ Google Drive
   useEffect(() => {
     if (photos.length === 0 || !isDriveReady) return;
 
@@ -257,15 +324,13 @@ export function ResultClient() {
         }
         formData.append("photo", stripBlob, "photo-strip.png");
 
-        // ส่ง GIF เพียงครั้งเดียว
-        const shouldUploadGif = Boolean(gifBlobCache && !gifUploadedRef.current);
-        if (shouldUploadGif && gifBlobCache) {
+        // ส่ง GIF Fallback หากยังไม่ได้อัปโหลด
+        if (gifBlobCache && !gifUploadedRef.current) {
           formData.append("gif", gifBlobCache, "photo-motion.gif");
         }
 
-        // ส่งวิดีโอ 8 วินาที (MP4) เพียงครั้งเดียว
-        const shouldUploadVideo = Boolean(videoBlobCache && !videoUploadedRef.current);
-        if (shouldUploadVideo && videoBlobCache) {
+        // ส่งวิดีโอ 8 วินาที Fallback หากยังไม่ได้อัปโหลด
+        if (videoBlobCache && !videoUploadedRef.current) {
           formData.append("video", videoBlobCache.blob, videoBlobCache.filename);
         }
 
@@ -281,11 +346,10 @@ export function ResultClient() {
           throw new Error(errData?.error ?? "อัปโหลดไฟล์เข้า Drive ไม่สำเร็จ");
         }
 
-        if (shouldUploadGif) {
-          gifUploadedRef.current = true;
-        }
-        if (shouldUploadVideo) {
+        if (gifBlobCache) gifUploadedRef.current = true;
+        if (videoBlobCache) {
           videoUploadedRef.current = true;
+          if (!cancelled) setVideoStatus("ready");
         }
       } catch (error) {
         console.error("Background sync error:", error);
@@ -537,6 +601,39 @@ export function ResultClient() {
               <p className="text-xs sm:text-sm font-bold text-zinc-300">
                 สแกนด้วยมือถือเพื่อดาวน์โหลดภาพปริ้นต์, วิดีโอ 8 วิ (MP4) และ GIF จาก Google Drive
               </p>
+
+              {/* สถานะการประมวลผลวิดีโอ 8 วินาที */}
+              <div className="flex flex-wrap items-center justify-center gap-2 pt-1 text-xs">
+                {videoStatus === "ready" ? (
+                  <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-500/20 px-3 py-1 font-mono font-bold text-emerald-300 border border-emerald-500/30">
+                    <span className="h-2 w-2 rounded-full bg-emerald-400" />
+                    ✓ วิดีโอ 8 วิ (แนวนอน): พร้อมแล้วใน Drive
+                  </span>
+                ) : videoStatus === "uploading" ? (
+                  <span className="inline-flex items-center gap-1.5 rounded-full bg-amber-500/20 px-3 py-1 font-mono font-bold text-amber-300 border border-amber-500/30">
+                    <span className="h-2 w-2 rounded-full bg-amber-400 animate-ping" />
+                    กำลังอัปโหลดวิดีโอ 8 วิ ลง Drive...
+                  </span>
+                ) : (
+                  <span className="inline-flex items-center gap-1.5 rounded-full bg-zinc-800 px-3 py-1 font-mono text-zinc-400 border border-zinc-700">
+                    <span className="h-2 w-2 rounded-full bg-pink-500 animate-pulse" />
+                    กำลังสร้างวิดีโอ 8 วิ แนวนอน...
+                  </span>
+                )}
+              </div>
+
+              {/* ปุ่มเปิดโฟลเดอร์ Google Drive โดยตรง */}
+              {driveQr?.folderUrl && (
+                <a
+                  href={driveQr.folderUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="mt-1 inline-flex items-center gap-2 rounded-xl bg-zinc-800/90 hover:bg-zinc-700/90 px-3 py-1.5 text-xs font-bold text-zinc-200 transition-all border border-zinc-700 hover:border-pink-500/50 hover:text-white"
+                >
+                  <span>📂 แตะเปิดโฟลเดอร์ใน Google Drive</span>
+                  <span className="text-pink-400 font-mono">↗</span>
+                </a>
+              )}
             </div>
 
             {/* โซนสติกเกอร์ */}

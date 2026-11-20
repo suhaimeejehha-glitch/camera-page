@@ -15,9 +15,15 @@ export interface MotionVideoResult {
 function loadImage(src: string): Promise<HTMLImageElement> {
   return new Promise((resolve, reject) => {
     const img = new Image();
-    img.crossOrigin = "anonymous";
+    // อย่าใส่ crossOrigin บน data: หรือ blob: เด็ดขาด เพราะทำให้ WebKit/Safari เกิด CORS Error
+    if (!src.startsWith("data:") && !src.startsWith("blob:")) {
+      img.crossOrigin = "anonymous";
+    }
     img.onload = () => resolve(img);
-    img.onerror = () => reject(new Error("Load image failed for video builder"));
+    img.onerror = (err) => {
+      console.warn("Load image failed for video frame:", err);
+      reject(new Error("Load image failed"));
+    };
     img.src = src;
   });
 }
@@ -28,7 +34,9 @@ function drawCover(
   width: number,
   height: number
 ) {
-  const imgRatio = img.width / img.height;
+  const iW = img.naturalWidth || img.width;
+  const iH = img.naturalHeight || img.height;
+  const imgRatio = iW / iH;
   const boxRatio = width / height;
   let drawW = width;
   let drawH = height;
@@ -54,7 +62,7 @@ function drawCover(
  */
 export function getSupportedVideoMimeType(): { mimeType: string; filename: string } {
   if (typeof MediaRecorder === "undefined") {
-    return { mimeType: "video/mp4", filename: "photo-motion.mp4" };
+    return { mimeType: "", filename: "photo-motion.mp4" };
   }
 
   const mp4Types = [
@@ -65,9 +73,11 @@ export function getSupportedVideoMimeType(): { mimeType: string; filename: strin
   ];
 
   for (const type of mp4Types) {
-    if (MediaRecorder.isTypeSupported(type)) {
-      return { mimeType: type, filename: "photo-motion.mp4" };
-    }
+    try {
+      if (MediaRecorder.isTypeSupported(type)) {
+        return { mimeType: type, filename: "photo-motion.mp4" };
+      }
+    } catch {}
   }
 
   const webmTypes = [
@@ -78,20 +88,21 @@ export function getSupportedVideoMimeType(): { mimeType: string; filename: strin
   ];
 
   for (const type of webmTypes) {
-    if (MediaRecorder.isTypeSupported(type)) {
-      // แม้เบราว์เซอร์จะเข้ารหัสแบบ WebM แต่ตั้งชื่อ .mp4 หรือ .webm ให้เหมาะสม
-      return { mimeType: type, filename: "photo-motion.mp4" };
-    }
+    try {
+      if (MediaRecorder.isTypeSupported(type)) {
+        return { mimeType: type, filename: "photo-motion.mp4" };
+      }
+    } catch {}
   }
 
-  return { mimeType: "video/mp4", filename: "photo-motion.mp4" };
+  return { mimeType: "", filename: "photo-motion.mp4" };
 }
 
 /**
  * สร้างไฟล์วิดีโอความยาวประมาณ 8 วินาทีจาก Motion Frames หรือ Photo Shots
  * - วน Loop ภาพเคลื่อนไหวอย่างสมูท
- * - มีแถบแท็ก STUDIO BOOTH สวยหรูสไตล์เกาหลี
- * - ส่งออกเป็นไฟล์วิดีโอที่เมื่อเซฟลงเครื่องแล้วจะอยู่ในหมวด Videos และส่งต่อเพื่อนใน LINE ไม่กลายเป็นรูปนิ่ง
+ * - ปลอดภัย ไม่บล็อกหรือแครชบนเบราว์เซอร์ต่างๆ
+ * - ส่งออกเป็นไฟล์วิดีโอที่เมื่อเซฟลงเครื่องแล้วจะอยู่ในหมวด Videos
  */
 export async function createMotionVideoBlob(
   motionFrames: string[],
@@ -99,6 +110,7 @@ export async function createMotionVideoBlob(
   options: MotionVideoOptions = {}
 ): Promise<MotionVideoResult | null> {
   if (typeof window === "undefined" || typeof document === "undefined" || typeof MediaRecorder === "undefined") {
+    console.warn("MediaRecorder is not supported in this environment");
     return null;
   }
 
@@ -109,14 +121,38 @@ export async function createMotionVideoBlob(
         : photos.map((p) => p.dataUrl);
 
     if (rawSources.length === 0) {
+      console.warn("No sources for motion video");
       return null;
     }
 
     const durationSeconds = options.durationSeconds ?? 8;
-    const isVertical = options.orientation !== "horizontal";
-    // ขนาดความละเอียดคมชัด เหมาะกับจอมือถือและการแชร์โซเชียล
-    const width = isVertical ? 720 : 960;
-    const height = isVertical ? 960 : 720;
+
+    // โหลดรูปทั้งหมดล่วงหน้าแบบปลอดภัย (ข้ามรูปที่โหลดไม่ได้ ไม่ทำให้ทั้งคลิปพัง)
+    const loadedImages = (
+      await Promise.all(
+        rawSources.map((src) => loadImage(src).catch(() => null))
+      )
+    ).filter((img): img is HTMLImageElement => img !== null);
+
+    if (loadedImages.length === 0) {
+      console.warn("No images could be loaded for motion video");
+      return null;
+    }
+
+    // คำนวณสัดส่วนแนวนอน (Landscape) ให้เต็มตาเสมอ ไม่มีขอบดำข้างๆ
+    const sampleImg = loadedImages[0];
+    const iW = sampleImg.naturalWidth || sampleImg.width || 800;
+    const iH = sampleImg.naturalHeight || sampleImg.height || 600;
+    const photoRatio = iW / iH;
+
+    // บังคับสัดส่วนแนวนอน (Landscape): หากภาพกว้างกว่าสูงใช้ตามสัดส่วนภาพจริง ถ้าเป็นแนวตั้งให้จัดเป็น 16:9 แนวนอน
+    const targetAspect = photoRatio > 1 ? photoRatio : 16 / 9;
+
+    let width = 800;
+    let height = Math.round(width / targetAspect);
+    // Codec H.264 / VP8 / VP9 ต้องการขนาดความกว้างและความสูงเป็นเลขคู่ (Even numbers)
+    if (width % 2 !== 0) width += 1;
+    if (height % 2 !== 0) height += 1;
 
     const canvas = document.createElement("canvas");
     canvas.width = width;
@@ -124,18 +160,26 @@ export async function createMotionVideoBlob(
     const ctx = canvas.getContext("2d", { willReadFrequently: false });
     if (!ctx) return null;
 
-    // โหลดรูปทั้งหมดล่วงหน้า
-    const images = await Promise.all(rawSources.map(loadImage));
-    if (images.length === 0) return null;
-
     const { mimeType, filename } = getSupportedVideoMimeType();
 
-    // เริ่ม Stream จาก Canvas ที่ 30 FPS
-    const stream = canvas.captureStream(30);
-    const recorder = new MediaRecorder(stream, {
-      mimeType,
-      videoBitsPerSecond: 2500000, // 2.5 Mbps คมชัดระดับ HD
-    });
+    // เริ่ม Stream จาก Canvas ที่ 24 FPS
+    const stream = canvas.captureStream(24);
+    
+    // ตั้งค่า MediaRecorder แบบมี Fallback ป้องกัน NotSupportedError
+    let recorder: MediaRecorder;
+    try {
+      if (mimeType && MediaRecorder.isTypeSupported(mimeType)) {
+        recorder = new MediaRecorder(stream, {
+          mimeType,
+          videoBitsPerSecond: 1500000, // 1.5 Mbps คมชัดและขนาดไฟล์กระทัดรัด
+        });
+      } else {
+        recorder = new MediaRecorder(stream, { videoBitsPerSecond: 1500000 });
+      }
+    } catch (e) {
+      console.warn("MediaRecorder init with options failed, fallback to plain recorder:", e);
+      recorder = new MediaRecorder(stream);
+    }
 
     const chunks: Blob[] = [];
     recorder.ondataavailable = (e) => {
@@ -151,19 +195,23 @@ export async function createMotionVideoBlob(
         if (isResolved) return;
         isResolved = true;
         try {
-          const finalBlob = new Blob(chunks, { type: mimeType.split(";")[0] || "video/mp4" });
+          const finalMime = recorder.mimeType || mimeType.split(";")[0] || "video/mp4";
+          const finalBlob = new Blob(chunks, { type: finalMime });
+          console.log(`Motion video created successfully: ${finalBlob.size} bytes (${finalMime})`);
           resolve({
             blob: finalBlob,
-            mimeType: mimeType.split(";")[0] || "video/mp4",
+            mimeType: finalMime,
             filename,
           });
-        } catch {
+        } catch (err) {
+          console.error("Failed to assemble video blob:", err);
           resolve(null);
         }
       };
 
       recorder.onstop = finish;
-      recorder.onerror = () => {
+      recorder.onerror = (err) => {
+        console.error("MediaRecorder error event:", err);
         if (!isResolved) {
           isResolved = true;
           resolve(null);
@@ -174,13 +222,12 @@ export async function createMotionVideoBlob(
 
       const startTime = performance.now();
       const totalMs = durationSeconds * 1000;
-      // ความเร็วการสลับภาพโมชัน 160ms ต่อเฟรม เพื่อความลื่นไหลเป็นธรรมชาติ
+      // ความเร็วการสลับภาพ 160ms ต่อเฟรม เพื่อความลื่นไหลเป็นธรรมชาติ
       const frameDelayMs = 160;
 
-      // วาดเฟรมแรกทันทีก่อนเริ่ม Loop
       const drawFrameAt = (elapsed: number) => {
-        const frameIndex = Math.floor(elapsed / frameDelayMs) % images.length;
-        const currentImg = images[frameIndex];
+        const frameIndex = Math.floor(elapsed / frameDelayMs) % loadedImages.length;
+        const currentImg = loadedImages[frameIndex];
 
         // พื้นหลังสีดำเข้ม
         ctx.fillStyle = "#0c0a10";
@@ -193,40 +240,11 @@ export async function createMotionVideoBlob(
         }
         drawCover(ctx, currentImg, width, height);
         ctx.restore();
-
-        // ตกแต่งป้ายลายน้ำ STUDIO BOOTH • 8s MOTION สไตล์โมเดิร์น
-        ctx.save();
-        const badgeText = "STUDIO BOOTH // MOTION";
-        ctx.font = "bold 20px -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif";
-        const textWidth = ctx.measureText(badgeText).width;
-        const badgeW = textWidth + 36;
-        const badgeH = 34;
-        const badgeX = width - badgeW - 20;
-        const badgeY = height - badgeH - 20;
-
-        // พื้นหลังแท็กกลมมนสีดำโปร่งแสง
-        ctx.fillStyle = "rgba(0, 0, 0, 0.65)";
-        ctx.beginPath();
-        ctx.roundRect(badgeX, badgeY, badgeW, badgeH, 17);
-        ctx.fill();
-
-        // จุดสีชมพู Live
-        ctx.fillStyle = "#ec4899";
-        ctx.beginPath();
-        ctx.arc(badgeX + 16, badgeY + badgeH / 2, 4, 0, Math.PI * 2);
-        ctx.fill();
-
-        // ข้อความสีขาว
-        ctx.fillStyle = "#ffffff";
-        ctx.textBaseline = "middle";
-        ctx.fillText(badgeText, badgeX + 28, badgeY + badgeH / 2 + 1);
-
-        ctx.restore();
       };
 
       drawFrameAt(0);
 
-      // Loop ทุก 33ms (~30 FPS) ตลอด 8 วินาที
+      // รันแอนิเมชันทุก 40ms (~25 FPS) จนครบ 8 วินาที
       const intervalId = setInterval(() => {
         const now = performance.now();
         const elapsed = now - startTime;
@@ -242,7 +260,7 @@ export async function createMotionVideoBlob(
         }
 
         drawFrameAt(elapsed);
-      }, 33);
+      }, 40);
     });
   } catch (error) {
     console.error("Failed to build motion video:", error);

@@ -22,12 +22,20 @@ export async function POST(request: Request) {
       const formData = await request.formData();
       action = (formData.get("action") as string) || null;
       folderId = (formData.get("folderId") as string) || null;
+
+      const isFileLike = (val: unknown): val is Blob =>
+        val !== null &&
+        typeof val === "object" &&
+        "arrayBuffer" in val &&
+        typeof (val as Blob).size === "number" &&
+        (val as Blob).size > 0;
+
       const p = formData.get("photo");
-      if (p instanceof File && p.size > 0) photoFile = p;
+      if (isFileLike(p)) photoFile = p as File;
       const g = formData.get("gif");
-      if (g instanceof File && g.size > 0) gifFile = g;
+      if (isFileLike(g)) gifFile = g as File;
       const v = formData.get("video");
-      if (v instanceof File && v.size > 0) videoFile = v;
+      if (isFileLike(v)) videoFile = v as File;
     }
 
     const accessToken = await getAccessToken();
@@ -94,7 +102,7 @@ export async function POST(request: Request) {
     // อัปโหลดวิดีโอ 8 วินาที (.mp4)
     if (videoFile) {
       const videoBytes = new Uint8Array(await videoFile.arrayBuffer());
-      const videoName = videoFile.name || "photo-motion.mp4";
+      const videoName = ("name" in videoFile && typeof videoFile.name === "string" && videoFile.name) ? videoFile.name : "photo-motion.mp4";
       const videoMime = videoFile.type || "video/mp4";
       await uploadFileToFolder(
         accessToken,

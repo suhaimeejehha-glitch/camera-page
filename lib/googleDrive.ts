@@ -1,4 +1,5 @@
 import crypto from "node:crypto";
+import { getSetting } from "@/lib/db";
 
 interface GoogleDriveConfig {
   clientEmail: string;
@@ -84,13 +85,22 @@ function getGoogleDriveConfig(): GoogleDriveConfig {
 }
 
 /**
- * สร้าง Google OAuth 2.0 Access Token โดยใช้ Refresh Token (หากมี) หรือ Service Account Private Key
+ * สร้าง Google OAuth 2.0 Access Token โดยใช้ Refresh Token จาก Database (หากมี) หรือ Service Account
  */
 export async function getAccessToken(): Promise<string> {
-  const refreshToken = process.env.GOOGLE_REFRESH_TOKEN || DEFAULT_REFRESH_TOKEN;
+  // 1. ดึง Refresh Token จาก Database ก่อน (อัปเดตอัตโนมัติเมื่อกดเชื่อมต่อบัญชี)
+  let refreshToken: string | null = null;
+  try {
+    refreshToken = await getSetting("google_refresh_token");
+  } catch {}
+
+  if (!refreshToken) {
+    refreshToken = process.env.GOOGLE_REFRESH_TOKEN || DEFAULT_REFRESH_TOKEN;
+  }
+
   const { clientId, clientSecret } = getOAuthCredentials();
 
-  // 1. ถ้ามี Refresh Token ให้ใช้ OAuth ในนามบัญชีของผู้ใช้ (ได้พื้นที่ 15 GB ไม่ติดโควต้า 0 MB)
+  // 2. ถ้ามี Refresh Token ให้ใช้ OAuth ในนามบัญชีของผู้ใช้ (ได้พื้นที่ 15 GB ไม่ติดโควต้า Service Account 0 MB)
   if (refreshToken) {
     try {
       const res = await fetch("https://oauth2.googleapis.com/token", {
@@ -114,7 +124,7 @@ export async function getAccessToken(): Promise<string> {
     }
   }
 
-  // 2. ถ้ายังไม่มี Refresh Token ให้ใช้ Service Account เดิม
+  // 3. ถ้ายังไม่มี Refresh Token ให้ใช้ Service Account เดิม
   const config = getGoogleDriveConfig();
   const now = Math.floor(Date.now() / 1000);
   const header = {

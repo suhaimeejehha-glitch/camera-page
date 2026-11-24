@@ -1,3 +1,5 @@
+import { setSetting } from "@/lib/db";
+
 function getOAuthCredentials() {
   const clientId =
     process.env.GOOGLE_CLIENT_ID ||
@@ -53,7 +55,15 @@ export async function GET(request: Request) {
       throw new Error(JSON.stringify(tokenData));
     }
 
-    const { refresh_token, access_token } = tokenData;
+    const { refresh_token, access_token } = tokenData as { refresh_token?: string; access_token?: string };
+
+    // บันทึก Refresh Token ลงใน Neon Database อัตโนมัติทันที
+    if (refresh_token) {
+      await setSetting("google_refresh_token", refresh_token);
+    }
+    if (access_token) {
+      await setSetting("google_access_token", access_token);
+    }
 
     return new Response(
       `<!DOCTYPE html>
@@ -63,20 +73,19 @@ export async function GET(request: Request) {
         <title>เชื่อมต่อ Google Drive สำเร็จ</title>
         <style>
           body { font-family: system-ui, -apple-system, sans-serif; background: #09090b; color: #f4f4f5; display: flex; align-items: center; justify-content: center; min-height: 100vh; margin: 0; padding: 20px; }
-          .card { background: #18181b; border: 1px solid #27272a; border-radius: 16px; padding: 32px; max-width: 560px; width: 100%; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
-          h1 { color: #10b981; margin-top: 0; font-size: 24px; }
-          p { color: #a1a1aa; font-size: 14px; line-height: 1.6; }
-          .token-box { background: #09090b; border: 1px solid #3f3f46; border-radius: 8px; padding: 12px; margin: 20px 0; word-break: break-all; font-family: monospace; font-size: 13px; color: #34d399; text-align: left; }
-          button { background: #e11d48; color: white; border: none; border-radius: 8px; padding: 12px 24px; font-weight: 600; cursor: pointer; transition: opacity 0.2s; font-size: 15px; }
-          button:hover { opacity: 0.9; }
+          .card { background: #18181b; border: 1px solid #27272a; border-radius: 16px; padding: 36px 32px; max-width: 560px; width: 100%; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
+          h1 { color: #10b981; margin-top: 0; font-size: 26px; }
+          p { color: #d4d4d8; font-size: 15px; line-height: 1.6; }
+          .badge { display: inline-block; background: #064e3b; color: #34d399; border: 1px solid #059669; padding: 6px 14px; border-radius: 9999px; font-weight: 700; font-size: 13px; margin: 12px 0 20px; }
+          .btn { display: inline-block; background: #b91c1c; color: white; text-decoration: none; border-radius: 9999px; padding: 14px 32px; font-weight: 800; font-size: 16px; margin-top: 16px; box-shadow: 0 4px 12px rgba(185,28,28,0.5); }
         </style>
       </head>
       <body>
         <div class="card">
-          <h1>🎉 เชื่อมต่อ Google Drive สำเร็จ!</h1>
-          <p>ระบบได้รับสิทธิ์ในการเข้าถึง Google Drive ของคุณเรียบร้อยแล้ว<br>กรุณาคัดลอก <b>Refresh Token</b> ด้านล่างนี้ส่งกลับมาที่แชทครับ:</p>
-          <div class="token-box" id="tokenBox">${refresh_token || access_token}</div>
-          <button onclick="navigator.clipboard.writeText(document.getElementById('tokenBox').innerText); alert('คัดลอก Refresh Token เรียบร้อยแล้ว!');">📋 คลิกเพื่อคัดลอกรหัส</button>
+          <h1>🎉 เชื่อมต่อ Google Drive สำเร็จแล้ว!</h1>
+          <div class="badge">✓ อัปเดตสิทธิ์บันทึกภาพลงฐานข้อมูลแล้ว</div>
+          <p>ระบบเชื่อมต่อกับบัญชี Google ของคุณเรียบร้อยแล้ว<br>ตู้ Photobooth พร้อมใช้งานได้ทันที สามารถปิดหน้านี้และเริ่มถ่ายรูปได้เลยครับ</p>
+          <a href="/" class="btn">กลับสู่หน้าแรกของตู้ Photobooth</a>
         </div>
       </body>
       </html>`,

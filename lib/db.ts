@@ -153,3 +153,47 @@ export async function setTestPoints(phone: string, points: number): Promise<Memb
 
   return updated;
 }
+
+/** ดึงการตั้งค่าระบบจากตาราง system_settings (เช่น Google OAuth tokens) */
+export async function getSetting(key: string): Promise<string | null> {
+  try {
+    const sql = getSql();
+    await sql`
+      CREATE TABLE IF NOT EXISTS system_settings (
+        key VARCHAR(100) PRIMARY KEY,
+        value TEXT NOT NULL,
+        updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+      );
+    `;
+    const rows = await sql`
+      SELECT value FROM system_settings WHERE key = ${key} LIMIT 1;
+    `;
+    if (rows.length === 0) return null;
+    return (rows[0] as { value: string }).value;
+  } catch (err) {
+    console.warn(`Failed to get setting ${key}:`, err);
+    return null;
+  }
+}
+
+/** บันทึกการตั้งค่าระบบลงในตาราง system_settings */
+export async function setSetting(key: string, value: string): Promise<void> {
+  try {
+    const sql = getSql();
+    await sql`
+      CREATE TABLE IF NOT EXISTS system_settings (
+        key VARCHAR(100) PRIMARY KEY,
+        value TEXT NOT NULL,
+        updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+      );
+    `;
+    await sql`
+      INSERT INTO system_settings (key, value, updated_at)
+      VALUES (${key}, ${value}, NOW())
+      ON CONFLICT (key)
+      DO UPDATE SET value = ${value}, updated_at = NOW();
+    `;
+  } catch (err) {
+    console.error(`Failed to set setting ${key}:`, err);
+  }
+}

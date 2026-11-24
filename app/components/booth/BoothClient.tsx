@@ -327,15 +327,6 @@ export function BoothClient() {
     }
   };
 
-  const handleRetakeAll = () => {
-    stopShooting();
-    setPhotos([]);
-    void clearMotionFrames();
-    try {
-      sessionStorage.removeItem(STORAGE_KEY);
-    } catch {}
-  };
-
   useEffect(() => {
     return () => {
       stopShooting();
@@ -593,21 +584,12 @@ export function BoothClient() {
         </Link>
 
         {canProceed ? (
-          <div className="flex items-center gap-2 sm:gap-3">
-            <button
-              type="button"
-              onClick={handleRetakeAll}
-              className="inline-flex h-14 sm:h-16 lg:h-18 items-center justify-center rounded-2xl sm:rounded-3xl border-2 border-zinc-700 bg-zinc-900 px-5 sm:px-7 text-sm sm:text-base lg:text-lg font-black text-zinc-200 shadow-md transition active:scale-95 hover:border-amber-400 hover:text-amber-200 touch-manipulation cursor-pointer"
-            >
-              🔄 ถ่ายใหม่ (Retake)
-            </button>
-            <Link
-              href={`/result?frame=${frame.id}&shots=${shots}&orientation=${orientation}`}
-              className="inline-flex h-14 sm:h-16 lg:h-18 items-center justify-center rounded-2xl sm:rounded-3xl bg-gradient-to-r from-red-700 via-red-600 to-amber-600 px-8 sm:px-12 text-base sm:text-lg lg:text-xl font-black text-amber-100 uppercase shadow-xl shadow-red-700/40 transition active:scale-95 hover:from-red-600 hover:to-amber-500 border-2 border-amber-300/40 touch-manipulation cursor-pointer"
-            >
-              ไปแต่งรูป & ปริ้นต์ (Next) →
-            </Link>
-          </div>
+          <Link
+            href={`/result?frame=${frame.id}&shots=${shots}&orientation=${orientation}`}
+            className="inline-flex h-14 sm:h-16 lg:h-18 items-center justify-center rounded-2xl sm:rounded-3xl bg-gradient-to-r from-red-700 via-red-600 to-amber-600 px-8 sm:px-12 text-base sm:text-lg lg:text-xl font-black text-amber-100 uppercase shadow-xl shadow-red-700/40 transition active:scale-95 hover:from-red-600 hover:to-amber-500 border-2 border-amber-300/40 touch-manipulation cursor-pointer"
+          >
+            ไปแต่งรูป & ปริ้นต์ (Next) →
+          </Link>
         ) : isShooting ? (
           <div className="text-sm sm:text-base lg:text-lg font-black text-amber-300 animate-pulse">
             กำลังถ่ายรูปต่อเนื่อง...

@@ -621,19 +621,6 @@ export function ResultClient() {
                   </span>
                 )}
               </div>
-
-              {/* ปุ่มเปิดโฟลเดอร์ Google Drive โดยตรง */}
-              {driveQr?.folderUrl && (
-                <a
-                  href={driveQr.folderUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="mt-1 inline-flex items-center gap-2 rounded-xl bg-zinc-800/90 hover:bg-zinc-700/90 px-3 py-1.5 text-xs font-bold text-zinc-200 transition-all border border-zinc-700 hover:border-amber-400/50 hover:text-white"
-                >
-                  <span>📂 แตะเปิดโฟลเดอร์ใน Google Drive</span>
-                  <span className="text-amber-400 font-mono">↗</span>
-                </a>
-              )}
             </div>
 
             {/* โซนสติกเกอร์ */}
@@ -753,15 +740,8 @@ export function ResultClient() {
           </div>
         </div>
 
-        {/* แถบปุ่ม Back (ซ้ายล่าง) และ Print / Next (ขวาล่าง) ขนาดใหญ่พอดีกับจอทัชสกรีน */}
-        <div className="flex w-full max-w-7xl shrink-0 items-center justify-between gap-4 pt-2">
-          <Link
-            href={`/booth?frame=${frame.id}&shots=${shots}&orientation=${orientation}`}
-            className="inline-flex h-14 sm:h-16 lg:h-18 items-center justify-center rounded-2xl sm:rounded-3xl border-2 border-zinc-700 bg-zinc-900 px-6 sm:px-8 text-sm sm:text-base lg:text-lg font-black text-zinc-200 shadow-xl transition active:scale-95 hover:bg-zinc-800 hover:text-white touch-manipulation cursor-pointer"
-          >
-            ← ย้อนกลับไปถ่ายใหม่ (Back)
-          </Link>
-
+        {/* แถบปุ่ม Print และ เสร็จสิ้น ด้านล่าง ขนาดใหญ่พอดีกับจอทัชสกรีน */}
+        <div className="flex w-full max-w-7xl shrink-0 items-center justify-end gap-4 pt-2">
           <div className="flex items-center gap-3">
             <button
               type="button"

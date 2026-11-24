@@ -16,7 +16,7 @@ interface BoothHeaderProps {
 export function BoothHeader({
   title = "READY // STRIKE A POSE",
   backHref,
-  brandName = "VINTAGE BOOTH",
+  brandName = "STUDIO BOOTH",
   theme = "dark",
   currentStep,
   totalSteps = 6,

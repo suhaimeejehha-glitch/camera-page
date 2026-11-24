@@ -237,7 +237,7 @@ export function BoothClient() {
               ★
             </span>
             <span className="font-extrabold tracking-wide text-white text-xs sm:text-base hidden min-[360px]:inline">
-              SMILE FOREVER
+              STUDIO BOOTH
             </span>
           </div>
 

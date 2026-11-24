@@ -34,7 +34,7 @@ export function WelcomeScreen() {
           <span className="inline-flex h-11 w-11 sm:h-12 sm:w-12 items-center justify-center rounded-2xl bg-red-700 text-amber-300 shadow-lg shadow-red-700/50 text-xl font-bold border border-amber-400/50">
             ★
           </span>
-          <span className="tracking-wider">SMILE FOREVER // VINTAGE BOOTH</span>
+          <span className="tracking-wider">STUDIO BOOTH // READY</span>
         </div>
 
         <FullscreenButton />
@@ -45,16 +45,16 @@ export function WelcomeScreen() {
         {/* ป้ายแสดงราคาและจุดเด่นสไตล์ Marquee */}
         <div className="inline-flex items-center gap-2 rounded-full border-2 border-amber-400/60 bg-red-950/80 px-8 py-2.5 sm:px-10 sm:py-3 text-sm sm:text-base md:text-lg font-black tracking-widest text-amber-200 uppercase shadow-xl shadow-red-950/50 backdrop-blur-md">
           <span className="h-2.5 w-2.5 rounded-full bg-amber-400 animate-pulse shadow-[0_0_8px_#f59e0b]" />
-          <span>CAPTURE GOOD TIMES • 190 THB</span>
+          <span>CAPTURE • PRINT • SHARE • 190 THB</span>
         </div>
 
-        {/* ชื่อบูธขนาดใหญ่เต็มตา คมชัดสไตล์ Vintage Marquee */}
+        {/* ชื่อบูธขนาดใหญ่เต็มตา คมชัดทุกมุมมอง */}
         <div className="flex flex-col gap-3 sm:gap-5">
-          <h1 className="text-5xl sm:text-8xl md:text-9xl font-black tracking-tight text-white uppercase drop-shadow-[0_12px_40px_rgba(0,0,0,0.9)] font-sans">
-            VINTAGE <span className="bg-gradient-to-r from-amber-300 via-red-500 to-amber-400 bg-clip-text text-transparent drop-shadow-[0_0_45px_rgba(239,68,68,0.7)]">PHOTO BOOTH</span>
+          <h1 className="text-5xl sm:text-8xl md:text-9xl font-black tracking-tight text-white uppercase drop-shadow-[0_12px_40px_rgba(0,0,0,0.9)]">
+            STUDIO <span className="bg-gradient-to-r from-red-500 via-amber-400 to-amber-200 bg-clip-text text-transparent drop-shadow-[0_0_45px_rgba(245,158,11,0.7)]">BOOTH</span>
           </h1>
-          <p className="mx-auto max-w-none text-base sm:text-xl md:text-2xl lg:text-[28px] font-semibold text-amber-100/90 leading-relaxed drop-shadow whitespace-normal sm:whitespace-nowrap">
-            Smile Forever • สนุกกับภาพถ่ายสไตล์วินเทจ พร้อมพิมพ์และรับไฟล์ทันที
+          <p className="mx-auto max-w-none text-base sm:text-xl md:text-2xl lg:text-[28px] font-semibold text-zinc-200 leading-relaxed drop-shadow whitespace-normal sm:whitespace-nowrap">
+            เลือกแนวกรอบ แต่งลายน่ารักๆ แล้วรับรูปปริ้นต์พร้อมไฟล์ภาพและ GIF ได้ทันที
           </p>
         </div>
 

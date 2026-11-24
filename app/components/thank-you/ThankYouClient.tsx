@@ -60,7 +60,7 @@ export function ThankYouClient() {
           <span className="inline-flex h-10 w-10 sm:h-12 sm:w-12 items-center justify-center rounded-2xl bg-red-700 text-amber-300 shadow-xl shadow-red-700/50 border border-amber-400/40 text-base sm:text-lg">
             ★
           </span>
-          <span>SMILE FOREVER // VINTAGE BOOTH</span>
+          <span>STUDIO BOOTH // COMPLETE</span>
         </div>
 
         <FullscreenButton />
@@ -78,7 +78,7 @@ export function ThankYouClient() {
           </h1>
 
           <p className="text-xl sm:text-2xl lg:text-3xl font-black text-amber-100">
-            ขอบคุณที่มาใช้บริการ SMILE FOREVER PHOTO BOOTH
+            ขอบคุณที่มาใช้บริการ STUDIO BOOTH
           </p>
         </div>
 
@@ -108,7 +108,7 @@ export function ThankYouClient() {
 
       {/* แถบล่าง */}
       <div className="relative z-10 font-mono text-xs sm:text-sm font-bold text-zinc-500 shrink-0">
-        SMILE FOREVER • VINTAGE PHOTO BOOTH EXPERIENCE
+        STUDIO BOOTH • PHOTO &amp; MOTION EXPERIENCE
       </div>
     </div>
   );

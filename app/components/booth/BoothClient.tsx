@@ -50,8 +50,6 @@ export function BoothClient() {
 
   // สถานะสำหรับการถ่ายรูปต่อเนื่องอัตโนมัติ (Continuous Auto Shooting)
   const [isShooting, setIsShooting] = useState(false);
-  const [currentShotNumber, setCurrentShotNumber] = useState<number | null>(null);
-  const [intermissionText, setIntermissionText] = useState<string | null>(null);
   const isShootingRef = useRef(false);
 
   const activeTone = useMemo<PhotoTone>(
@@ -245,8 +243,6 @@ export function BoothClient() {
     isShootingRef.current = false;
     setIsShooting(false);
     setCountdown(null);
-    setIntermissionText(null);
-    setCurrentShotNumber(null);
     if (timerRef.current) {
       clearInterval(timerRef.current);
       timerRef.current = null;
@@ -255,7 +251,7 @@ export function BoothClient() {
   }, [stopMotionCapture]);
 
   // ระบบถ่ายรูปต่อเนื่องอัตโนมัติ (Continuous Auto Shooting)
-  // กดเพียงครั้งเดียว ระบบจะนับถอยหลังและถ่ายทีละช็อตจนครบทั้งเซ็ต (1–4 ช็อต)
+  // กดเพียงครั้งเดียว ระบบจะนับถอยหลัง 3, 2, 1 และถ่ายทีละช็อตจนครบทั้งเซ็ต (1–4 ช็อต)
   const handleStartAutoShoot = async () => {
     if (!isCameraReady || isShootingRef.current || photos.length >= frame.shotCount) {
       return;
@@ -268,18 +264,13 @@ export function BoothClient() {
     let currentList = [...photos];
 
     while (currentList.length < totalNeeded && isShootingRef.current) {
-      const nextIndex = currentList.length + 1;
-      setCurrentShotNumber(nextIndex);
-
-      // ถ้าไม่ใช่ช็อตแรก ให้มีช่วงหยุดพัก 2 วิ เพื่อให้ลูกค้าเปลี่ยนท่าโพส
+      // ถ้าไม่ใช่ช็อตแรก ให้เว้นระยะ 1.8 วิ เพื่อให้ลูกค้าเปลี่ยนท่าโพส
       if (currentList.length > 0) {
-        setIntermissionText(`เตรียมท่าช็อตที่ ${nextIndex}/${totalNeeded}`);
-        for (let wait = 0; wait < 20; wait++) {
+        for (let wait = 0; wait < 18; wait++) {
           if (!isShootingRef.current) break;
           await new Promise((r) => setTimeout(r, 100));
         }
         if (!isShootingRef.current) break;
-        setIntermissionText(null);
       }
 
       // เริ่มเก็บภาพโมชั่นระหว่างนับถอยหลัง 3 วินาทีสำหรับ GIF/MP4
@@ -287,7 +278,7 @@ export function BoothClient() {
       if (motionTimerRef.current) clearInterval(motionTimerRef.current);
       motionTimerRef.current = setInterval(captureMotionSnapshot, 300);
 
-      // นับถอยหลัง 3, 2, 1
+      // นับถอยหลัง 3, 2, 1 เท่านั้น
       for (let sec = 3; sec >= 1; sec--) {
         if (!isShootingRef.current) break;
         setCountdown(sec);
@@ -325,7 +316,15 @@ export function BoothClient() {
       }
     }
 
+    const completed = currentList.length >= totalNeeded && isShootingRef.current;
     stopShooting();
+
+    // เมื่อถ่ายครบทุกช็อตแล้ว นำเข้าสู่หน้าตกแต่ง & ปริ้นต์อัตโนมัติทันที
+    if (completed) {
+      setTimeout(() => {
+        router.push(`/result?frame=${frame.id}&shots=${shots}&orientation=${orientation}`);
+      }, 800);
+    }
   };
 
   const handleRetakeAll = () => {
@@ -435,12 +434,7 @@ export function BoothClient() {
               <span className="absolute right-0 bottom-0 h-6 w-6 sm:h-10 sm:w-10 rounded-br-xl border-r-2 border-b-2 sm:border-r-4 sm:border-b-4 border-white/90" />
             </div>
 
-            <CountdownOverlay
-              secondsLeft={countdown}
-              currentShotIndex={currentShotNumber}
-              totalShots={frame.shotCount}
-              intermissionText={intermissionText}
-            />
+            <CountdownOverlay secondsLeft={countdown} />
           </CameraView>
 
           {/* ป้ายบอกสถานะกล้องสด ● LIVE CAMERA */}
@@ -459,75 +453,39 @@ export function BoothClient() {
           </div>
 
           {/* ปุ่มชัตเตอร์ขนาดใหญ่พิเศษสำหรับจอทัชสกรีน */}
-          {!isFull ? (
+          {!isFull && !isShooting ? (
             <div className="absolute inset-x-0 bottom-3 sm:bottom-5 flex flex-col items-center justify-center gap-2 z-20">
-              {isShooting ? (
-                <div className="flex flex-col items-center gap-2">
-                  <div className="flex items-center gap-2 rounded-full border-2 border-amber-300 bg-red-950/90 px-6 py-2.5 font-mono text-xs sm:text-base font-black text-amber-200 shadow-2xl backdrop-blur-md animate-pulse">
-                    <span className="h-2.5 w-2.5 rounded-full bg-amber-400 animate-ping" />
-                    <span>กำลังถ่ายต่อเนื่อง (ช็อตที่ {currentShotNumber}/{frame.shotCount})...</span>
-                  </div>
-                  <button
-                    type="button"
-                    onClick={stopShooting}
-                    className="rounded-full border border-red-500/70 bg-black/85 px-4 py-1.5 text-xs font-bold text-red-300 backdrop-blur-md shadow-md transition active:scale-95 hover:bg-red-950 hover:text-white cursor-pointer"
-                  >
-                    ✕ หยุดการถ่าย (Cancel)
-                  </button>
-                </div>
-              ) : (
-                <>
-                  <button
-                    type="button"
-                    onClick={handleStartAutoShoot}
-                    disabled={!isCameraReady}
-                    aria-label="Start Continuous Shooting"
-                    className="group relative flex h-20 w-20 sm:h-24 sm:w-24 lg:h-28 lg:w-28 items-center justify-center rounded-full border-4 border-amber-200 bg-gradient-to-tr from-red-700 via-red-600 to-amber-500 text-amber-100 shadow-2xl shadow-red-700/70 transition active:scale-90 hover:scale-105 disabled:cursor-not-allowed disabled:opacity-40 select-none touch-manipulation cursor-pointer ring-4 ring-amber-400/40"
-                  >
-                    <svg
-                      viewBox="0 0 24 24"
-                      fill="currentColor"
-                      className="h-10 w-10 sm:h-12 sm:w-12 lg:h-14 lg:w-14 transition group-active:scale-90"
-                      aria-hidden="true"
-                    >
-                      <path d="M9 3L7.17 5H4C2.9 5 2 5.9 2 7V19C2 20.1 2.9 21 4 21H20C21.1 21 22 20.1 22 19V7C22 5.9 21.1 5 20 5H16.83L15 3H9ZM12 18C9.24 18 7 15.76 7 13C7 10.24 9.24 8 12 8C14.76 8 17 10.24 17 13C17 15.76 14.76 18 12 18ZM12 10C10.34 10 9 11.34 9 13C9 14.66 10.34 16 12 16C13.66 16 15 14.66 15 13C15 11.34 13.66 10 12 10Z" />
-                    </svg>
-                  </button>
-                  <span className="rounded-full bg-black/85 px-5 py-1.5 font-black text-xs sm:text-sm lg:text-base text-amber-200 backdrop-blur-md shadow-xl border border-amber-300/30 text-center">
-                    แตะเพื่อเริ่มถ่าย ({frame.shotCount} ช็อตต่อเนื่อง)
-                  </span>
-                </>
-              )}
+              <button
+                type="button"
+                onClick={handleStartAutoShoot}
+                disabled={!isCameraReady}
+                aria-label="Start Continuous Shooting"
+                className="group relative flex h-20 w-20 sm:h-24 sm:w-24 lg:h-28 lg:w-28 items-center justify-center rounded-full border-4 border-amber-200 bg-gradient-to-tr from-red-700 via-red-600 to-amber-500 text-amber-100 shadow-2xl shadow-red-700/70 transition active:scale-90 hover:scale-105 disabled:cursor-not-allowed disabled:opacity-40 select-none touch-manipulation cursor-pointer ring-4 ring-amber-400/40"
+              >
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="currentColor"
+                  className="h-10 w-10 sm:h-12 sm:w-12 lg:h-14 lg:w-14 transition group-active:scale-90"
+                  aria-hidden="true"
+                >
+                  <path d="M9 3L7.17 5H4C2.9 5 2 5.9 2 7V19C2 20.1 2.9 21 4 21H20C21.1 21 22 20.1 22 19V7C22 5.9 21.1 5 20 5H16.83L15 3H9ZM12 18C9.24 18 7 15.76 7 13C7 10.24 9.24 8 12 8C14.76 8 17 10.24 17 13C17 15.76 14.76 18 12 18ZM12 10C10.34 10 9 11.34 9 13C9 14.66 10.34 16 12 16C13.66 16 15 14.66 15 13C15 11.34 13.66 10 12 10Z" />
+                </svg>
+              </button>
+              <span className="rounded-full bg-black/85 px-5 py-1.5 font-black text-xs sm:text-sm lg:text-base text-amber-200 backdrop-blur-md shadow-xl border border-amber-300/30 text-center">
+                แตะเพื่อเริ่มถ่ายรูป
+              </span>
             </div>
-          ) : (
-            <div className="absolute inset-x-0 bottom-4 flex flex-col items-center justify-center gap-2.5 z-20 px-2">
-              <div className="rounded-full border-2 border-amber-400 bg-black/90 px-6 py-2 text-sm sm:text-base lg:text-lg font-black text-amber-300 shadow-2xl backdrop-blur-md text-center">
-                ✓ ถ่ายครบทั้ง {frame.shotCount} ช็อตแล้ว พร้อมไปต่อ 🎉
-              </div>
-              <div className="flex flex-wrap items-center justify-center gap-2.5">
-                <button
-                  type="button"
-                  onClick={handleRetakeAll}
-                  className="rounded-full border-2 border-zinc-600 bg-zinc-900/90 px-4 sm:px-6 py-2 text-xs sm:text-sm font-black text-zinc-200 backdrop-blur-md shadow-md transition active:scale-95 hover:border-amber-400 hover:text-amber-200 cursor-pointer"
-                >
-                  🔄 ถ่ายใหม่ทั้งหมด (Retake)
-                </button>
-                <Link
-                  href={`/result?frame=${frame.id}&shots=${shots}&orientation=${orientation}`}
-                  className="rounded-full border-2 border-amber-300 bg-gradient-to-r from-red-700 via-red-600 to-amber-600 px-6 sm:px-8 py-2 text-xs sm:text-sm font-black text-amber-100 shadow-lg shadow-red-700/50 transition active:scale-95 hover:from-red-600 hover:to-amber-500 cursor-pointer"
-                >
-                  ไปแต่งรูป & ปริ้นต์ (Next) →
-                </Link>
-                <button
-                  type="button"
-                  onClick={() => setShowPreviewModal(true)}
-                  className="landscape:hidden rounded-full border border-amber-400/80 bg-amber-500/30 px-3.5 py-2 text-xs font-bold text-amber-200 backdrop-blur-md shadow-md active:scale-95 cursor-pointer"
-                >
-                  🎞️ ดูแถบรูป
-                </button>
-              </div>
+          ) : isShooting ? (
+            <div className="absolute inset-x-0 bottom-3 sm:bottom-5 flex flex-col items-center justify-center gap-2 z-20">
+              <button
+                type="button"
+                onClick={stopShooting}
+                className="rounded-full border border-red-500/70 bg-black/85 px-5 py-2 text-xs sm:text-sm font-bold text-red-300 backdrop-blur-md shadow-md transition active:scale-95 hover:bg-red-950 hover:text-white cursor-pointer"
+              >
+                ✕ หยุดการถ่าย (Cancel)
+              </button>
             </div>
-          )}
+          ) : null}
         </div>
 
         {/* ฝั่งขวา: พรีวิวสตริปรูปจริง (STRIP PREVIEW)
@@ -652,7 +610,7 @@ export function BoothClient() {
           </div>
         ) : isShooting ? (
           <div className="text-sm sm:text-base lg:text-lg font-black text-amber-300 animate-pulse">
-            กำลังถ่ายต่อเนื่อง... ช็อตที่ {currentShotNumber}/{frame.shotCount}
+            กำลังถ่ายรูปต่อเนื่อง...
           </div>
         ) : (
           <div className="text-sm sm:text-base lg:text-lg font-black text-amber-300">

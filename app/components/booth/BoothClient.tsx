@@ -48,6 +48,12 @@ export function BoothClient() {
   const [isFlashing, setIsFlashing] = useState(false);
   const [showPreviewModal, setShowPreviewModal] = useState(false);
 
+  // สถานะสำหรับการถ่ายรูปต่อเนื่องอัตโนมัติ (Continuous Auto Shooting)
+  const [isShooting, setIsShooting] = useState(false);
+  const [currentShotNumber, setCurrentShotNumber] = useState<number | null>(null);
+  const [intermissionText, setIntermissionText] = useState<string | null>(null);
+  const isShootingRef = useRef(false);
+
   const activeTone = useMemo<PhotoTone>(
     () => PHOTO_TONES.find((t) => t.id === selectedToneId) ?? PHOTO_TONES[0],
     [selectedToneId]
@@ -153,9 +159,50 @@ export function BoothClient() {
     }
   }, []);
 
-  const captureFromVideo = useCallback(() => {
+  const playCountdownBeep = useCallback((freq = 600) => {
+    try {
+      const AudioCtx =
+        window.AudioContext ||
+        (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
+      if (!AudioCtx) return;
+      const ctx = new AudioCtx();
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = "sine";
+      osc.frequency.setValueAtTime(freq, ctx.currentTime);
+      gain.gain.setValueAtTime(0.12, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.08);
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start();
+      osc.stop(ctx.currentTime + 0.08);
+    } catch {}
+  }, []);
+
+  const playShutterSound = useCallback(() => {
+    try {
+      const AudioCtx =
+        window.AudioContext ||
+        (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
+      if (!AudioCtx) return;
+      const ctx = new AudioCtx();
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = "triangle";
+      osc.frequency.setValueAtTime(800, ctx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(120, ctx.currentTime + 0.12);
+      gain.gain.setValueAtTime(0.3, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.12);
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start();
+      osc.stop(ctx.currentTime + 0.12);
+    } catch {}
+  }, []);
+
+  const captureFromVideo = useCallback((): string | null => {
     const video = videoRef.current;
-    if (!video || video.videoWidth === 0 || video.videoHeight === 0) return;
+    if (!video || video.videoWidth === 0 || video.videoHeight === 0) return null;
 
     // จำกัดความกว้าง/สูงสูงสุดที่ 1440px เพื่อให้ภาพคมชัดระดับการพิมพ์ 300 DPI
     // แต่ขนาดไฟล์กระทัดรัด (~180-250KB) ไม่ทำให้เกิด Memory/Storage Quota Overflow บนมือถือ
@@ -178,7 +225,7 @@ export function BoothClient() {
     canvas.height = targetHeight;
 
     const ctx = canvas.getContext("2d");
-    if (!ctx) return;
+    if (!ctx) return null;
 
     if (isMirrored) {
       ctx.translate(canvas.width, 0);
@@ -189,39 +236,112 @@ export function BoothClient() {
     const dataUrl = canvas.toDataURL("image/jpeg", 0.85);
     setIsFlashing(true);
     setTimeout(() => setIsFlashing(false), 150);
+    playShutterSound();
 
-    setPhotos((prev) => {
-      if (prev.length >= frame.shotCount) return prev;
-      return [...prev, { id: `shot-${Date.now()}`, dataUrl }];
-    });
-  }, [frame.shotCount, isMirrored]);
+    return dataUrl;
+  }, [isMirrored, playShutterSound]);
 
-  const handleTakePhoto = () => {
-    if (!isCameraReady || countdown !== null || photos.length >= frame.shotCount) {
+  const stopShooting = useCallback(() => {
+    isShootingRef.current = false;
+    setIsShooting(false);
+    setCountdown(null);
+    setIntermissionText(null);
+    setCurrentShotNumber(null);
+    if (timerRef.current) {
+      clearInterval(timerRef.current);
+      timerRef.current = null;
+    }
+    stopMotionCapture();
+  }, [stopMotionCapture]);
+
+  // ระบบถ่ายรูปต่อเนื่องอัตโนมัติ (Continuous Auto Shooting)
+  // กดเพียงครั้งเดียว ระบบจะนับถอยหลังและถ่ายทีละช็อตจนครบทั้งเซ็ต (1–4 ช็อต)
+  const handleStartAutoShoot = async () => {
+    if (!isCameraReady || isShootingRef.current || photos.length >= frame.shotCount) {
       return;
     }
 
-    let seconds = 3;
-    setCountdown(seconds);
+    isShootingRef.current = true;
+    setIsShooting(true);
 
-    // เก็บเฟรมภาพเคลื่อนไหวระหว่างนับถอยหลัง 3 วิ เพื่อทำไฟล์ GIF Animation
-    captureMotionSnapshot();
-    motionTimerRef.current = setInterval(captureMotionSnapshot, 300);
+    const totalNeeded = frame.shotCount;
+    let currentList = [...photos];
 
-    timerRef.current = setInterval(() => {
-      seconds -= 1;
-      if (seconds > 0) {
-        setCountdown(seconds);
-      } else {
-        if (timerRef.current) clearInterval(timerRef.current);
-        timerRef.current = null;
-        setCountdown(null);
-        stopMotionCapture();
-        captureMotionSnapshot();
-        captureFromVideo();
+    while (currentList.length < totalNeeded && isShootingRef.current) {
+      const nextIndex = currentList.length + 1;
+      setCurrentShotNumber(nextIndex);
+
+      // ถ้าไม่ใช่ช็อตแรก ให้มีช่วงหยุดพัก 2 วิ เพื่อให้ลูกค้าเปลี่ยนท่าโพส
+      if (currentList.length > 0) {
+        setIntermissionText(`เตรียมท่าช็อตที่ ${nextIndex}/${totalNeeded}`);
+        for (let wait = 0; wait < 20; wait++) {
+          if (!isShootingRef.current) break;
+          await new Promise((r) => setTimeout(r, 100));
+        }
+        if (!isShootingRef.current) break;
+        setIntermissionText(null);
       }
-    }, 1000);
+
+      // เริ่มเก็บภาพโมชั่นระหว่างนับถอยหลัง 3 วินาทีสำหรับ GIF/MP4
+      captureMotionSnapshot();
+      if (motionTimerRef.current) clearInterval(motionTimerRef.current);
+      motionTimerRef.current = setInterval(captureMotionSnapshot, 300);
+
+      // นับถอยหลัง 3, 2, 1
+      for (let sec = 3; sec >= 1; sec--) {
+        if (!isShootingRef.current) break;
+        setCountdown(sec);
+        playCountdownBeep(sec === 1 ? 880 : 580);
+        for (let wait = 0; wait < 10; wait++) {
+          if (!isShootingRef.current) break;
+          await new Promise((r) => setTimeout(r, 100));
+        }
+      }
+
+      if (!isShootingRef.current) {
+        stopMotionCapture();
+        break;
+      }
+
+      setCountdown(null);
+      stopMotionCapture();
+      captureMotionSnapshot();
+
+      // ถ่ายรูปจริงจากกล้อง
+      const dataUrl = captureFromVideo();
+      if (dataUrl) {
+        const newShot: PhotoShot = {
+          id: `shot-${Date.now()}-${currentList.length}`,
+          dataUrl,
+        };
+        currentList = [...currentList, newShot];
+        setPhotos(currentList);
+      }
+
+      // หน่วงเวลาสั้นๆ หลังแชะ ก่อนเริ่มรอบต่อไป
+      for (let wait = 0; wait < 6; wait++) {
+        if (!isShootingRef.current) break;
+        await new Promise((r) => setTimeout(r, 100));
+      }
+    }
+
+    stopShooting();
   };
+
+  const handleRetakeAll = () => {
+    stopShooting();
+    setPhotos([]);
+    void clearMotionFrames();
+    try {
+      sessionStorage.removeItem(STORAGE_KEY);
+    } catch {}
+  };
+
+  useEffect(() => {
+    return () => {
+      stopShooting();
+    };
+  }, [stopShooting]);
 
   const canProceed = photos.length >= frame.shotCount;
   const isFull = photos.length >= frame.shotCount;
@@ -315,7 +435,12 @@ export function BoothClient() {
               <span className="absolute right-0 bottom-0 h-6 w-6 sm:h-10 sm:w-10 rounded-br-xl border-r-2 border-b-2 sm:border-r-4 sm:border-b-4 border-white/90" />
             </div>
 
-            <CountdownOverlay secondsLeft={countdown} />
+            <CountdownOverlay
+              secondsLeft={countdown}
+              currentShotIndex={currentShotNumber}
+              totalShots={frame.shotCount}
+              intermissionText={intermissionText}
+            />
           </CameraView>
 
           {/* ป้ายบอกสถานะกล้องสด ● LIVE CAMERA */}
@@ -336,38 +461,71 @@ export function BoothClient() {
           {/* ปุ่มชัตเตอร์ขนาดใหญ่พิเศษสำหรับจอทัชสกรีน */}
           {!isFull ? (
             <div className="absolute inset-x-0 bottom-3 sm:bottom-5 flex flex-col items-center justify-center gap-2 z-20">
-              <button
-                type="button"
-                onClick={handleTakePhoto}
-                disabled={!isCameraReady || countdown !== null}
-                aria-label="Take Photo"
-                className="group relative flex h-20 w-20 sm:h-24 sm:w-24 lg:h-28 lg:w-28 items-center justify-center rounded-full border-4 border-amber-200 bg-gradient-to-tr from-red-700 via-red-600 to-amber-500 text-amber-100 shadow-2xl shadow-red-700/70 transition active:scale-90 hover:scale-105 disabled:cursor-not-allowed disabled:opacity-40 select-none touch-manipulation cursor-pointer ring-4 ring-amber-400/40"
-              >
-                <svg
-                  viewBox="0 0 24 24"
-                  fill="currentColor"
-                  className="h-10 w-10 sm:h-12 sm:w-12 lg:h-14 lg:w-14 transition group-active:scale-90"
-                  aria-hidden="true"
-                >
-                  <path d="M9 3L7.17 5H4C2.9 5 2 5.9 2 7V19C2 20.1 2.9 21 4 21H20C21.1 21 22 20.1 22 19V7C22 5.9 21.1 5 20 5H16.83L15 3H9ZM12 18C9.24 18 7 15.76 7 13C7 10.24 9.24 8 12 8C14.76 8 17 10.24 17 13C17 15.76 14.76 18 12 18ZM12 10C10.34 10 9 11.34 9 13C9 14.66 10.34 16 12 16C13.66 16 15 14.66 15 13C15 11.34 13.66 10 12 10Z" />
-                </svg>
-              </button>
-              <span className="rounded-full bg-black/85 px-4 py-1 font-black text-xs sm:text-sm lg:text-base text-amber-200 backdrop-blur-md shadow-xl border border-amber-300/30">
-                แตะเพื่อถ่ายรูป
-              </span>
+              {isShooting ? (
+                <div className="flex flex-col items-center gap-2">
+                  <div className="flex items-center gap-2 rounded-full border-2 border-amber-300 bg-red-950/90 px-6 py-2.5 font-mono text-xs sm:text-base font-black text-amber-200 shadow-2xl backdrop-blur-md animate-pulse">
+                    <span className="h-2.5 w-2.5 rounded-full bg-amber-400 animate-ping" />
+                    <span>กำลังถ่ายต่อเนื่อง (ช็อตที่ {currentShotNumber}/{frame.shotCount})...</span>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={stopShooting}
+                    className="rounded-full border border-red-500/70 bg-black/85 px-4 py-1.5 text-xs font-bold text-red-300 backdrop-blur-md shadow-md transition active:scale-95 hover:bg-red-950 hover:text-white cursor-pointer"
+                  >
+                    ✕ หยุดการถ่าย (Cancel)
+                  </button>
+                </div>
+              ) : (
+                <>
+                  <button
+                    type="button"
+                    onClick={handleStartAutoShoot}
+                    disabled={!isCameraReady}
+                    aria-label="Start Continuous Shooting"
+                    className="group relative flex h-20 w-20 sm:h-24 sm:w-24 lg:h-28 lg:w-28 items-center justify-center rounded-full border-4 border-amber-200 bg-gradient-to-tr from-red-700 via-red-600 to-amber-500 text-amber-100 shadow-2xl shadow-red-700/70 transition active:scale-90 hover:scale-105 disabled:cursor-not-allowed disabled:opacity-40 select-none touch-manipulation cursor-pointer ring-4 ring-amber-400/40"
+                  >
+                    <svg
+                      viewBox="0 0 24 24"
+                      fill="currentColor"
+                      className="h-10 w-10 sm:h-12 sm:w-12 lg:h-14 lg:w-14 transition group-active:scale-90"
+                      aria-hidden="true"
+                    >
+                      <path d="M9 3L7.17 5H4C2.9 5 2 5.9 2 7V19C2 20.1 2.9 21 4 21H20C21.1 21 22 20.1 22 19V7C22 5.9 21.1 5 20 5H16.83L15 3H9ZM12 18C9.24 18 7 15.76 7 13C7 10.24 9.24 8 12 8C14.76 8 17 10.24 17 13C17 15.76 14.76 18 12 18ZM12 10C10.34 10 9 11.34 9 13C9 14.66 10.34 16 12 16C13.66 16 15 14.66 15 13C15 11.34 13.66 10 12 10Z" />
+                    </svg>
+                  </button>
+                  <span className="rounded-full bg-black/85 px-5 py-1.5 font-black text-xs sm:text-sm lg:text-base text-amber-200 backdrop-blur-md shadow-xl border border-amber-300/30 text-center">
+                    แตะเพื่อเริ่มถ่าย ({frame.shotCount} ช็อตต่อเนื่อง)
+                  </span>
+                </>
+              )}
             </div>
           ) : (
-            <div className="absolute inset-x-0 bottom-4 flex flex-col items-center justify-center gap-2 z-20 px-2">
+            <div className="absolute inset-x-0 bottom-4 flex flex-col items-center justify-center gap-2.5 z-20 px-2">
               <div className="rounded-full border-2 border-amber-400 bg-black/90 px-6 py-2 text-sm sm:text-base lg:text-lg font-black text-amber-300 shadow-2xl backdrop-blur-md text-center">
-                ✓ ถ่ายครบ {frame.shotCount} ช็อตแล้ว พร้อมไปต่อ 🎉
+                ✓ ถ่ายครบทั้ง {frame.shotCount} ช็อตแล้ว พร้อมไปต่อ 🎉
               </div>
-              <button
-                type="button"
-                onClick={() => setShowPreviewModal(true)}
-                className="landscape:hidden rounded-full border border-amber-400/80 bg-amber-500/30 px-4 py-1.5 text-xs sm:text-sm font-bold text-amber-200 backdrop-blur-md shadow-md active:scale-95 cursor-pointer"
-              >
-                🎞️ แตะดูตัวอย่างรูปสตริป (Preview)
-              </button>
+              <div className="flex flex-wrap items-center justify-center gap-2.5">
+                <button
+                  type="button"
+                  onClick={handleRetakeAll}
+                  className="rounded-full border-2 border-zinc-600 bg-zinc-900/90 px-4 sm:px-6 py-2 text-xs sm:text-sm font-black text-zinc-200 backdrop-blur-md shadow-md transition active:scale-95 hover:border-amber-400 hover:text-amber-200 cursor-pointer"
+                >
+                  🔄 ถ่ายใหม่ทั้งหมด (Retake)
+                </button>
+                <Link
+                  href={`/result?frame=${frame.id}&shots=${shots}&orientation=${orientation}`}
+                  className="rounded-full border-2 border-amber-300 bg-gradient-to-r from-red-700 via-red-600 to-amber-600 px-6 sm:px-8 py-2 text-xs sm:text-sm font-black text-amber-100 shadow-lg shadow-red-700/50 transition active:scale-95 hover:from-red-600 hover:to-amber-500 cursor-pointer"
+                >
+                  ไปแต่งรูป & ปริ้นต์ (Next) →
+                </Link>
+                <button
+                  type="button"
+                  onClick={() => setShowPreviewModal(true)}
+                  className="landscape:hidden rounded-full border border-amber-400/80 bg-amber-500/30 px-3.5 py-2 text-xs font-bold text-amber-200 backdrop-blur-md shadow-md active:scale-95 cursor-pointer"
+                >
+                  🎞️ ดูแถบรูป
+                </button>
+              </div>
             </div>
           )}
         </div>
@@ -470,21 +628,35 @@ export function BoothClient() {
       <div className="flex w-full shrink-0 items-center justify-between gap-3 border-t border-zinc-800/80 pt-2 pb-1">
         <Link
           href={`/frames?shots=${shots}&orientation=${orientation}`}
+          onClick={stopShooting}
           className="inline-flex h-14 sm:h-16 lg:h-18 items-center justify-center rounded-2xl sm:rounded-3xl border-2 border-zinc-700 bg-zinc-900 px-6 sm:px-8 text-sm sm:text-base lg:text-lg font-black text-zinc-200 shadow-md transition active:scale-95 hover:bg-zinc-800 hover:text-white touch-manipulation cursor-pointer"
         >
           ← เปลี่ยนกรอบ (Back)
         </Link>
 
         {canProceed ? (
-          <Link
-            href={`/result?frame=${frame.id}&shots=${shots}&orientation=${orientation}`}
-            className="inline-flex h-14 sm:h-16 lg:h-18 items-center justify-center rounded-2xl sm:rounded-3xl bg-gradient-to-r from-red-700 via-red-600 to-amber-600 px-8 sm:px-12 text-base sm:text-lg lg:text-xl font-black text-amber-100 uppercase shadow-xl shadow-red-700/40 transition active:scale-95 hover:from-red-600 hover:to-amber-500 border-2 border-amber-300/40 touch-manipulation cursor-pointer"
-          >
-            ไปแต่งรูป & ปริ้นต์ (Next) →
-          </Link>
+          <div className="flex items-center gap-2 sm:gap-3">
+            <button
+              type="button"
+              onClick={handleRetakeAll}
+              className="inline-flex h-14 sm:h-16 lg:h-18 items-center justify-center rounded-2xl sm:rounded-3xl border-2 border-zinc-700 bg-zinc-900 px-5 sm:px-7 text-sm sm:text-base lg:text-lg font-black text-zinc-200 shadow-md transition active:scale-95 hover:border-amber-400 hover:text-amber-200 touch-manipulation cursor-pointer"
+            >
+              🔄 ถ่ายใหม่ (Retake)
+            </button>
+            <Link
+              href={`/result?frame=${frame.id}&shots=${shots}&orientation=${orientation}`}
+              className="inline-flex h-14 sm:h-16 lg:h-18 items-center justify-center rounded-2xl sm:rounded-3xl bg-gradient-to-r from-red-700 via-red-600 to-amber-600 px-8 sm:px-12 text-base sm:text-lg lg:text-xl font-black text-amber-100 uppercase shadow-xl shadow-red-700/40 transition active:scale-95 hover:from-red-600 hover:to-amber-500 border-2 border-amber-300/40 touch-manipulation cursor-pointer"
+            >
+              ไปแต่งรูป & ปริ้นต์ (Next) →
+            </Link>
+          </div>
+        ) : isShooting ? (
+          <div className="text-sm sm:text-base lg:text-lg font-black text-amber-300 animate-pulse">
+            กำลังถ่ายต่อเนื่อง... ช็อตที่ {currentShotNumber}/{frame.shotCount}
+          </div>
         ) : (
           <div className="text-sm sm:text-base lg:text-lg font-black text-amber-300">
-            ถ่ายอีก {frame.shotCount - photos.length} ช็อต เพื่อไปต่อ
+            แตะชัตเตอร์เพื่อเริ่มถ่าย {frame.shotCount} ช็อตต่อเนื่อง
           </div>
         )}
       </div>

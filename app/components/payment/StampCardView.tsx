@@ -40,10 +40,10 @@ export function StampCardView({
   }, [onProceed]);
 
   return (
-    <div className="flex w-full max-w-xl sm:max-w-2xl md:max-w-3xl flex-col items-center gap-5 sm:gap-6 rounded-3xl sm:rounded-[32px] border-2 border-zinc-200/90 bg-white p-6 sm:p-10 md:p-12 shadow-2xl my-auto">
+    <div className="flex w-full max-w-xl sm:max-w-2xl md:max-w-3xl flex-col items-center gap-5 sm:gap-6 rounded-3xl sm:rounded-[32px] border-2 border-red-200/90 bg-[#fffdfa] p-6 sm:p-10 md:p-12 shadow-2xl my-auto">
       {/* ส่วนหัวข้อบอกความคืบหน้า */}
       <div className="flex flex-col items-center gap-2 text-center">
-        <span className="rounded-full border-2 border-sky-300 bg-sky-50 px-6 py-1.5 font-mono text-sm sm:text-base font-black text-sky-700 uppercase shadow-xs">
+        <span className="rounded-full border-2 border-amber-400 bg-amber-50 px-6 py-1.5 font-mono text-sm sm:text-base font-black text-amber-900 uppercase shadow-xs">
           {formatPhoneNumber(memberData.phone)}
         </span>
 
@@ -52,35 +52,35 @@ export function StampCardView({
             <h2 className="text-3xl sm:text-4xl md:text-5xl font-black text-emerald-600">
               🎉 ครบ 10 แต้มแล้ว!
             </h2>
-            <p className="text-base sm:text-xl font-bold text-zinc-700">
+            <p className="text-base sm:text-xl font-bold text-stone-700">
               คุณได้รับสิทธิ์ถ่ายฟรี 1 ครั้ง (แลกใช้ได้ในรอบถัดไป)
             </p>
           </div>
         ) : (
           <div className="flex flex-col gap-1">
-            <h2 className="text-3xl sm:text-4xl md:text-5xl font-black text-zinc-900">
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-black text-stone-900">
               {newlyAdded ? "สะสมแต้มสำเร็จ +1 แต้ม! 🎉" : "บัตรสะสมแต้มของคุณ"}
             </h2>
-            <p className="text-sm sm:text-lg font-bold text-zinc-600">
-              ตอนนี้มี <span className="text-sky-600 font-black text-xl">{currentPoints}</span> / 10 แต้ม
-              (ขาดอีก <span className="text-sky-600 font-black text-xl">{remainingNeeded}</span> ครั้ง แลกถ่ายฟรี)
+            <p className="text-sm sm:text-lg font-bold text-stone-600">
+              ตอนนี้มี <span className="text-red-700 font-black text-xl">{currentPoints}</span> / 10 แต้ม
+              (ขาดอีก <span className="text-red-700 font-black text-xl">{remainingNeeded}</span> ครั้ง แลกถ่ายฟรี)
             </p>
           </div>
         )}
       </div>
 
       {/* แผ่นการ์ดสแตมป์ 10 ช่อง (Digital Stamp Card) */}
-      <div className="w-full rounded-2xl sm:rounded-3xl border-2 border-sky-200 bg-gradient-to-br from-sky-50/70 via-white to-sky-50/70 p-5 sm:p-7 shadow-sm">
-        <div className="mb-4 flex items-center justify-between border-b-2 border-sky-200/80 pb-3">
+      <div className="w-full rounded-2xl sm:rounded-3xl border-2 border-amber-300 bg-gradient-to-br from-amber-50 via-white to-amber-50 p-5 sm:p-7 shadow-sm">
+        <div className="mb-4 flex items-center justify-between border-b-2 border-amber-200 pb-3">
           <div className="flex items-center gap-2.5">
-            <span className="flex h-8 w-8 sm:h-9 sm:w-9 items-center justify-center rounded-xl bg-sky-500 text-white font-mono font-black text-sm shadow">
-              ◉
+            <span className="flex h-8 w-8 sm:h-9 sm:w-9 items-center justify-center rounded-xl bg-red-700 border border-amber-400/50 text-amber-300 font-mono font-black text-sm shadow">
+              ★
             </span>
-            <span className="font-mono text-xs sm:text-sm md:text-base font-black tracking-wider text-zinc-800 uppercase">
-              STUDIO BOOTH REWARDS
+            <span className="font-mono text-xs sm:text-sm md:text-base font-black tracking-wider text-stone-800 uppercase">
+              VINTAGE BOOTH REWARDS
             </span>
           </div>
-          <span className="rounded-full bg-sky-500/15 px-3 py-1 font-mono text-xs sm:text-sm font-black text-sky-700">
+          <span className="rounded-full bg-red-700/15 px-3 py-1 font-mono text-xs sm:text-sm font-black text-red-800">
             10 ช็อต ฟรี 1 ใบ
           </span>
         </div>
@@ -99,12 +99,12 @@ export function StampCardView({
                 className={`relative flex aspect-square flex-col items-center justify-center rounded-xl border-2 transition-all duration-300 ${
                   isStamped
                     ? isFreeSlot
-                      ? "border-amber-400 bg-gradient-to-tr from-amber-400 to-yellow-300 text-zinc-950 shadow-md ring-2 ring-amber-400/40"
-                      : "border-sky-500 bg-gradient-to-tr from-sky-500 via-blue-600 to-sky-400 text-white shadow-md"
+                      ? "border-amber-500 bg-gradient-to-tr from-amber-500 to-yellow-300 text-stone-950 shadow-md ring-2 ring-amber-400/40"
+                      : "border-red-700 bg-gradient-to-tr from-red-700 via-red-600 to-amber-600 text-white shadow-md"
                     : isFreeSlot
                     ? "border-dashed border-amber-400 bg-amber-50/60 text-amber-600"
-                    : "border-dashed border-zinc-200 bg-zinc-50/70 text-zinc-400"
-                } ${isLatest ? "scale-105 animate-bounce ring-2 ring-sky-400/50" : ""}`}
+                    : "border-dashed border-stone-300 bg-stone-50/70 text-stone-400"
+                } ${isLatest ? "scale-105 animate-bounce ring-2 ring-amber-400/50" : ""}`}
               >
                 {/* ไอคอนในช่องสแตมป์ */}
                 {isStamped ? (
@@ -121,7 +121,7 @@ export function StampCardView({
                     <span className="text-sm opacity-40">
                       {isFreeSlot ? "🎁" : "○"}
                     </span>
-                    <span className="font-mono text-[9px] sm:text-[10px] font-bold text-zinc-400">
+                    <span className="font-mono text-[9px] sm:text-[10px] font-bold text-stone-400">
                       {isFreeSlot ? "FREE" : slotNumber}
                     </span>
                   </div>
@@ -137,7 +137,7 @@ export function StampCardView({
         <button
           type="button"
           onClick={onProceed}
-          className="inline-flex h-16 sm:h-18 md:h-20 w-full items-center justify-center rounded-full bg-gradient-to-r from-sky-500 via-blue-600 to-sky-500 px-8 text-xl sm:text-2xl md:text-3xl font-black tracking-wider text-white uppercase shadow-xl shadow-sky-500/30 transition active:scale-95 hover:from-sky-400 hover:to-blue-500 border-2 border-white/20 touch-manipulation cursor-pointer"
+          className="inline-flex h-16 sm:h-18 md:h-20 w-full items-center justify-center rounded-full bg-gradient-to-r from-red-700 via-red-600 to-amber-600 px-8 text-xl sm:text-2xl md:text-3xl font-black tracking-wider text-white uppercase shadow-xl shadow-red-700/30 transition active:scale-95 hover:from-red-600 hover:to-amber-500 border-2 border-amber-300/50 touch-manipulation cursor-pointer"
         >
           ไปเลือกกรอบรูปต่อ ({countdown}s) →
         </button>

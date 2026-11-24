@@ -16,7 +16,7 @@ export function CountdownOverlay({ secondsLeft }: CountdownOverlayProps) {
         {/* ขีดเอฟเฟกต์ฝั่งซ้าย */}
         <svg
           viewBox="0 0 40 60"
-          className="h-14 w-10 text-sky-400 sm:h-20 sm:w-12"
+          className="h-14 w-10 text-amber-400 sm:h-20 sm:w-12"
           aria-hidden="true"
         >
           <line
@@ -55,7 +55,7 @@ export function CountdownOverlay({ secondsLeft }: CountdownOverlayProps) {
         {/* ขีดเอฟเฟกต์ฝั่งขวา */}
         <svg
           viewBox="0 0 40 60"
-          className="h-14 w-10 text-sky-400 sm:h-20 sm:w-12"
+          className="h-14 w-10 text-amber-400 sm:h-20 sm:w-12"
           aria-hidden="true"
         >
           <line

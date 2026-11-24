@@ -34,8 +34,8 @@ export function FullscreenButton({ theme = "dark" }: FullscreenButtonProps) {
 
   const themeClass =
     theme === "light"
-      ? "border-zinc-200 bg-white text-zinc-700 shadow-sm hover:border-sky-400 hover:text-sky-600"
-      : "border-zinc-700 bg-zinc-900/90 text-zinc-200 hover:border-sky-400";
+      ? "border-stone-300 bg-white text-stone-700 shadow-sm hover:border-red-600 hover:text-red-700"
+      : "border-zinc-700 bg-zinc-900/90 text-zinc-200 hover:border-amber-400";
 
   return (
     <button

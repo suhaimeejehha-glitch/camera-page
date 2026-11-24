@@ -233,16 +233,16 @@ export function BoothClient() {
         {/* Brand & Shot Status */}
         <div className="flex items-center gap-2 sm:gap-3">
           <div className="flex items-center gap-1.5 sm:gap-2 font-black tracking-widest text-white uppercase">
-            <span className="inline-flex h-8 w-8 sm:h-9 sm:w-9 items-center justify-center rounded-xl bg-sky-500 font-mono text-xs sm:text-sm font-bold text-white shadow-md shadow-sky-500/40">
-              ◉
+            <span className="inline-flex h-8 w-8 sm:h-9 sm:w-9 items-center justify-center rounded-xl bg-red-700 font-mono text-xs sm:text-sm font-bold text-amber-300 shadow-md shadow-red-700/50 border border-amber-400/40">
+              ★
             </span>
             <span className="font-extrabold tracking-wide text-white text-xs sm:text-base hidden min-[360px]:inline">
-              STUDIO BOOTH
+              SMILE FOREVER
             </span>
           </div>
 
-          <div className="flex items-center gap-1.5 rounded-full border border-sky-500/60 bg-sky-500/20 px-2.5 sm:px-3 py-1 font-bold text-[11px] sm:text-xs text-sky-200 shadow-xs">
-            <span className="h-2 w-2 rounded-full bg-sky-400 animate-pulse" />
+          <div className="flex items-center gap-1.5 rounded-full border border-amber-400/60 bg-amber-500/20 px-2.5 sm:px-3 py-1 font-bold text-[11px] sm:text-xs text-amber-200 shadow-xs">
+            <span className="h-2 w-2 rounded-full bg-amber-400 animate-pulse" />
             <span>
               ช็อตที่ {photos.length < frame.shotCount ? photos.length + 1 : frame.shotCount}/{frame.shotCount}
             </span>
@@ -255,7 +255,7 @@ export function BoothClient() {
           <button
             type="button"
             onClick={() => setShowPreviewModal(true)}
-            className="inline-flex landscape:hidden h-10 sm:h-12 items-center gap-1.5 rounded-full border border-sky-500/60 bg-sky-500/20 px-3 sm:px-4 text-xs sm:text-sm font-bold text-sky-200 shadow-md active:scale-90 touch-manipulation cursor-pointer"
+            className="inline-flex landscape:hidden h-10 sm:h-12 items-center gap-1.5 rounded-full border border-amber-400/60 bg-amber-500/20 px-3 sm:px-4 text-xs sm:text-sm font-bold text-amber-200 shadow-md active:scale-90 touch-manipulation cursor-pointer"
           >
             <span>🎞️</span>
             <span>พรีวิว ({photos.length}/{frame.shotCount})</span>
@@ -279,7 +279,7 @@ export function BoothClient() {
             title="สลับกระจกสะท้อน"
             className={`inline-flex h-10 sm:h-12 items-center gap-1.5 sm:gap-2 rounded-full border px-3.5 sm:px-5 text-xs sm:text-sm lg:text-base font-bold shadow-md backdrop-blur-md transition active:scale-90 touch-manipulation cursor-pointer ${
               isMirrored
-                ? "border-sky-400 bg-sky-500/30 text-sky-100 ring-2 ring-sky-500/50"
+                ? "border-amber-400 bg-red-950/80 text-amber-200 ring-2 ring-amber-400/50"
                 : "border-white/20 bg-zinc-900/90 text-zinc-300"
             }`}
           >
@@ -319,8 +319,8 @@ export function BoothClient() {
           </CameraView>
 
           {/* ป้ายบอกสถานะกล้องสด ● LIVE CAMERA */}
-          <div className="pointer-events-none absolute top-2.5 left-2.5 flex items-center gap-1.5 rounded-full border border-sky-500/50 bg-black/75 px-2.5 py-1 text-[11px] sm:text-xs font-bold text-sky-300 backdrop-blur-md shadow-md z-20">
-            <span className="h-2 w-2 rounded-full bg-sky-500 animate-pulse" />
+          <div className="pointer-events-none absolute top-2.5 left-2.5 flex items-center gap-1.5 rounded-full border border-red-600/60 bg-red-950/80 px-2.5 py-1 text-[11px] sm:text-xs font-bold text-amber-200 backdrop-blur-md shadow-md z-20">
+            <span className="h-2 w-2 rounded-full bg-red-500 animate-pulse" />
             <span>LIVE</span>
           </div>
 
@@ -341,7 +341,7 @@ export function BoothClient() {
                 onClick={handleTakePhoto}
                 disabled={!isCameraReady || countdown !== null}
                 aria-label="Take Photo"
-                className="group relative flex h-20 w-20 sm:h-24 sm:w-24 lg:h-28 lg:w-28 items-center justify-center rounded-full border-4 border-white bg-gradient-to-tr from-blue-600 via-sky-500 to-cyan-400 text-white shadow-2xl shadow-sky-500/70 transition active:scale-90 hover:scale-105 disabled:cursor-not-allowed disabled:opacity-40 select-none touch-manipulation cursor-pointer ring-4 ring-sky-500/30"
+                className="group relative flex h-20 w-20 sm:h-24 sm:w-24 lg:h-28 lg:w-28 items-center justify-center rounded-full border-4 border-amber-200 bg-gradient-to-tr from-red-700 via-red-600 to-amber-500 text-amber-100 shadow-2xl shadow-red-700/70 transition active:scale-90 hover:scale-105 disabled:cursor-not-allowed disabled:opacity-40 select-none touch-manipulation cursor-pointer ring-4 ring-amber-400/40"
               >
                 <svg
                   viewBox="0 0 24 24"
@@ -352,19 +352,19 @@ export function BoothClient() {
                   <path d="M9 3L7.17 5H4C2.9 5 2 5.9 2 7V19C2 20.1 2.9 21 4 21H20C21.1 21 22 20.1 22 19V7C22 5.9 21.1 5 20 5H16.83L15 3H9ZM12 18C9.24 18 7 15.76 7 13C7 10.24 9.24 8 12 8C14.76 8 17 10.24 17 13C17 15.76 14.76 18 12 18ZM12 10C10.34 10 9 11.34 9 13C9 14.66 10.34 16 12 16C13.66 16 15 14.66 15 13C15 11.34 13.66 10 12 10Z" />
                 </svg>
               </button>
-              <span className="rounded-full bg-black/85 px-4 py-1 font-black text-xs sm:text-sm lg:text-base text-white backdrop-blur-md shadow-xl border border-white/20">
+              <span className="rounded-full bg-black/85 px-4 py-1 font-black text-xs sm:text-sm lg:text-base text-amber-200 backdrop-blur-md shadow-xl border border-amber-300/30">
                 แตะเพื่อถ่ายรูป
               </span>
             </div>
           ) : (
             <div className="absolute inset-x-0 bottom-4 flex flex-col items-center justify-center gap-2 z-20 px-2">
-              <div className="rounded-full border-2 border-emerald-400 bg-black/90 px-6 py-2 text-sm sm:text-base lg:text-lg font-black text-emerald-300 shadow-2xl backdrop-blur-md text-center">
+              <div className="rounded-full border-2 border-amber-400 bg-black/90 px-6 py-2 text-sm sm:text-base lg:text-lg font-black text-amber-300 shadow-2xl backdrop-blur-md text-center">
                 ✓ ถ่ายครบ {frame.shotCount} ช็อตแล้ว พร้อมไปต่อ 🎉
               </div>
               <button
                 type="button"
                 onClick={() => setShowPreviewModal(true)}
-                className="landscape:hidden rounded-full border border-sky-400/80 bg-sky-500/30 px-4 py-1.5 text-xs sm:text-sm font-bold text-sky-200 backdrop-blur-md shadow-md active:scale-95 cursor-pointer"
+                className="landscape:hidden rounded-full border border-amber-400/80 bg-amber-500/30 px-4 py-1.5 text-xs sm:text-sm font-bold text-amber-200 backdrop-blur-md shadow-md active:scale-95 cursor-pointer"
               >
                 🎞️ แตะดูตัวอย่างรูปสตริป (Preview)
               </button>
@@ -378,7 +378,7 @@ export function BoothClient() {
         */}
         <div className="hidden landscape:flex shrink-0 flex-col items-center justify-between gap-2 rounded-2xl sm:rounded-3xl border-2 border-zinc-800 bg-zinc-950/90 p-3 sm:p-3.5 shadow-2xl backdrop-blur-md landscape:w-auto landscape:self-stretch">
           <div className="flex w-full items-center justify-between px-1">
-            <span className="text-xs sm:text-sm font-black tracking-wider text-sky-400 uppercase">
+            <span className="text-xs sm:text-sm font-black tracking-wider text-amber-400 uppercase">
               🎞️ STRIP PREVIEW
             </span>
             <span className="text-xs sm:text-sm font-black text-zinc-200">
@@ -451,7 +451,7 @@ export function BoothClient() {
                 onClick={() => setSelectedToneId(tone.id)}
                 className={`flex shrink-0 items-center gap-2 rounded-full border-2 px-3.5 py-1.5 sm:px-4.5 sm:py-2 text-xs sm:text-sm lg:text-base font-black transition active:scale-95 touch-manipulation cursor-pointer ${
                   isSelected
-                    ? "border-sky-500 bg-sky-500/35 text-white shadow-lg ring-3 ring-sky-500/40"
+                    ? "border-red-600 bg-red-950/70 text-amber-100 shadow-lg ring-3 ring-amber-400/40"
                     : "border-zinc-800 bg-zinc-900/90 text-zinc-300 hover:border-zinc-700 hover:text-white"
                 }`}
               >
@@ -478,12 +478,12 @@ export function BoothClient() {
         {canProceed ? (
           <Link
             href={`/result?frame=${frame.id}&shots=${shots}&orientation=${orientation}`}
-            className="inline-flex h-14 sm:h-16 lg:h-18 items-center justify-center rounded-2xl sm:rounded-3xl bg-gradient-to-r from-sky-500 via-blue-600 to-sky-500 px-8 sm:px-12 text-base sm:text-lg lg:text-xl font-black text-white uppercase shadow-xl shadow-sky-500/40 transition active:scale-95 hover:from-sky-400 hover:to-blue-500 border-2 border-white/20 touch-manipulation cursor-pointer"
+            className="inline-flex h-14 sm:h-16 lg:h-18 items-center justify-center rounded-2xl sm:rounded-3xl bg-gradient-to-r from-red-700 via-red-600 to-amber-600 px-8 sm:px-12 text-base sm:text-lg lg:text-xl font-black text-amber-100 uppercase shadow-xl shadow-red-700/40 transition active:scale-95 hover:from-red-600 hover:to-amber-500 border-2 border-amber-300/40 touch-manipulation cursor-pointer"
           >
             ไปแต่งรูป & ปริ้นต์ (Next) →
           </Link>
         ) : (
-          <div className="text-sm sm:text-base lg:text-lg font-black text-sky-300">
+          <div className="text-sm sm:text-base lg:text-lg font-black text-amber-300">
             ถ่ายอีก {frame.shotCount - photos.length} ช็อต เพื่อไปต่อ
           </div>
         )}
@@ -495,8 +495,8 @@ export function BoothClient() {
           <div className="relative flex max-h-[92dvh] w-full max-w-sm flex-col items-center justify-between gap-2.5 rounded-3xl border border-zinc-700 bg-zinc-950 p-3.5 shadow-2xl">
             <div className="flex w-full items-center justify-between border-b border-zinc-800 pb-2">
               <div className="flex items-center gap-2">
-                <span className="text-sm font-black text-sky-400">🎞️ ตัวอย่างแถบรูป (Strip Preview)</span>
-                <span className="rounded-full bg-sky-500/20 px-2 py-0.5 text-xs font-bold text-sky-300">
+                <span className="text-sm font-black text-amber-400">🎞️ ตัวอย่างแถบรูป (Strip Preview)</span>
+                <span className="rounded-full bg-amber-500/20 px-2 py-0.5 text-xs font-bold text-amber-300">
                   {photos.length}/{frame.shotCount}
                 </span>
               </div>
@@ -539,7 +539,7 @@ export function BoothClient() {
             <button
               type="button"
               onClick={() => setShowPreviewModal(false)}
-              className="w-full rounded-full bg-gradient-to-r from-sky-600 to-blue-600 py-2.5 text-xs sm:text-sm font-black text-white shadow-lg transition active:scale-95 cursor-pointer"
+              className="w-full rounded-full bg-gradient-to-r from-red-700 via-red-600 to-amber-600 py-2.5 text-xs sm:text-sm font-black text-amber-100 shadow-lg transition active:scale-95 cursor-pointer"
             >
               ปิดหน้าต่างพรีวิว
             </button>

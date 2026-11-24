@@ -73,7 +73,7 @@ export function StripPreview({
               onSlotClick ? "cursor-pointer" : ""
             } ${
               isActive
-                ? "z-10 ring-4 ring-sky-500 ring-offset-2 ring-offset-black/60 shadow-lg shadow-sky-500/50"
+                ? "z-10 ring-4 ring-amber-400 ring-offset-2 ring-offset-black/60 shadow-lg shadow-amber-400/50"
                 : ""
             }`}
             style={{

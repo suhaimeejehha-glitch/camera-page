@@ -79,18 +79,18 @@ export function TouchNumpad({
 
   const submitButtonClass =
     submitColor === "pink"
-      ? "bg-gradient-to-r from-sky-500 via-blue-600 to-sky-500 shadow-sky-500/30 hover:from-sky-400 hover:to-blue-500"
+      ? "bg-gradient-to-r from-red-700 via-red-600 to-amber-600 shadow-red-700/30 hover:from-red-600 hover:to-amber-500 border border-amber-300/40"
       : "bg-gradient-to-r from-emerald-500 to-teal-500 shadow-emerald-500/30 hover:from-emerald-400 hover:to-teal-400";
 
   return (
-    <div className="flex w-full max-w-md sm:max-w-lg md:max-w-xl flex-col items-center gap-3 sm:gap-4 rounded-[28px] sm:rounded-[32px] border-2 border-zinc-200/90 bg-white p-4 sm:p-7 md:p-8 shadow-2xl select-none my-auto">
+    <div className="flex w-full max-w-md sm:max-w-lg md:max-w-xl flex-col items-center gap-3 sm:gap-4 rounded-[28px] sm:rounded-[32px] border-2 border-stone-200/90 bg-[#fffdfa] p-4 sm:p-7 md:p-8 shadow-2xl select-none my-auto">
       {/* ส่วนหัวข้อ */}
       <div className="flex flex-col items-center gap-1 text-center">
-        <h2 className="text-2xl sm:text-3xl md:text-4xl font-black text-zinc-900 tracking-tight">
+        <h2 className="text-2xl sm:text-3xl md:text-4xl font-black text-stone-900 tracking-tight">
           {title}
         </h2>
         {subtitle ? (
-          <p className="text-xs sm:text-sm md:text-base font-semibold text-zinc-600">
+          <p className="text-xs sm:text-sm md:text-base font-semibold text-stone-600">
             {subtitle}
           </p>
         ) : null}
@@ -98,18 +98,18 @@ export function TouchNumpad({
 
       {/* ช่องแสดงเบอร์โทรขนาดใหญ่ชัดเจน พร้อมตัวนับหลัก */}
       <div className="flex flex-col w-full gap-1">
-        <div className="flex w-full h-15 sm:h-17 md:h-18 items-center justify-center rounded-2xl sm:rounded-3xl border-2 border-sky-200 bg-sky-50/70 px-5 text-center shadow-inner">
+        <div className="flex w-full h-15 sm:h-17 md:h-18 items-center justify-center rounded-2xl sm:rounded-3xl border-2 border-amber-300 bg-amber-50/70 px-5 text-center shadow-inner">
           {cleanDigits.length > 0 ? (
-            <span className="font-mono text-3xl sm:text-4xl md:text-5xl font-black tracking-wider text-zinc-900">
+            <span className="font-mono text-3xl sm:text-4xl md:text-5xl font-black tracking-wider text-stone-900">
               {formatPhoneNumber(cleanDigits)}
             </span>
           ) : (
-            <span className="text-lg sm:text-xl md:text-2xl font-bold text-zinc-400">
+            <span className="text-lg sm:text-xl md:text-2xl font-bold text-stone-400">
               แตะเบอร์โทรศัพท์ 10 หลัก
             </span>
           )}
         </div>
-        <div className="flex justify-end pr-2 text-xs font-mono font-bold text-zinc-400">
+        <div className="flex justify-end pr-2 text-xs font-mono font-bold text-stone-400">
           {cleanDigits.length}/10 หลัก
         </div>
       </div>
@@ -129,7 +129,7 @@ export function TouchNumpad({
             key={digit}
             type="button"
             onClick={() => handleDigit(digit)}
-            className="flex h-13 sm:h-15 md:h-16 items-center justify-center rounded-2xl sm:rounded-3xl border-2 border-zinc-200 bg-zinc-50 text-2xl sm:text-3xl md:text-4xl font-black text-zinc-800 shadow-xs transition active:scale-90 active:bg-sky-100 hover:border-sky-300 hover:bg-white touch-manipulation cursor-pointer"
+            className="flex h-13 sm:h-15 md:h-16 items-center justify-center rounded-2xl sm:rounded-3xl border-2 border-stone-200 bg-stone-50 text-2xl sm:text-3xl md:text-4xl font-black text-stone-800 shadow-xs transition active:scale-90 active:bg-amber-100 hover:border-red-500 hover:bg-white touch-manipulation cursor-pointer"
           >
             {digit}
           </button>
@@ -140,7 +140,7 @@ export function TouchNumpad({
           type="button"
           onClick={handleClear}
           disabled={cleanDigits.length === 0}
-          className="flex h-13 sm:h-15 md:h-16 items-center justify-center rounded-2xl sm:rounded-3xl border-2 border-zinc-200 bg-zinc-100 text-sm sm:text-base md:text-lg font-black text-zinc-600 shadow-xs transition active:scale-90 disabled:opacity-30 touch-manipulation cursor-pointer"
+          className="flex h-13 sm:h-15 md:h-16 items-center justify-center rounded-2xl sm:rounded-3xl border-2 border-stone-200 bg-stone-100 text-sm sm:text-base md:text-lg font-black text-stone-600 shadow-xs transition active:scale-90 disabled:opacity-30 touch-manipulation cursor-pointer"
         >
           ล้าง
         </button>
@@ -149,7 +149,7 @@ export function TouchNumpad({
         <button
           type="button"
           onClick={() => handleDigit("0")}
-          className="flex h-13 sm:h-15 md:h-16 items-center justify-center rounded-2xl sm:rounded-3xl border-2 border-zinc-200 bg-zinc-50 text-2xl sm:text-3xl md:text-4xl font-black text-zinc-800 shadow-xs transition active:scale-90 active:bg-sky-100 hover:border-sky-300 hover:bg-white touch-manipulation cursor-pointer"
+          className="flex h-13 sm:h-15 md:h-16 items-center justify-center rounded-2xl sm:rounded-3xl border-2 border-stone-200 bg-stone-50 text-2xl sm:text-3xl md:text-4xl font-black text-stone-800 shadow-xs transition active:scale-90 active:bg-amber-100 hover:border-red-500 hover:bg-white touch-manipulation cursor-pointer"
         >
           0
         </button>

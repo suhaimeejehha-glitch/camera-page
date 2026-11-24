@@ -316,15 +316,7 @@ export function BoothClient() {
       }
     }
 
-    const completed = currentList.length >= totalNeeded && isShootingRef.current;
     stopShooting();
-
-    // เมื่อถ่ายครบทุกช็อตแล้ว นำเข้าสู่หน้าตกแต่ง & ปริ้นต์อัตโนมัติทันที
-    if (completed) {
-      setTimeout(() => {
-        router.push(`/result?frame=${frame.id}&shots=${shots}&orientation=${orientation}`);
-      }, 800);
-    }
   };
 
   useEffect(() => {

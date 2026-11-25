@@ -15,7 +15,7 @@ interface TouchNumpadProps {
   submitColor?: "pink" | "emerald";
   isLoading?: boolean;
   errorMessage?: string | null;
-  onIncomplete?: () => void;
+  onIncomplete?: (reason?: "incomplete" | "invalid_start") => void;
 }
 
 export function formatPhoneNumber(raw: string): string {
@@ -42,18 +42,27 @@ export function TouchNumpad({
   const [localError, setLocalError] = useState<string | null>(null);
   const [isShaking, setIsShaking] = useState(false);
   const cleanDigits = value.replace(/\D/g, "");
-  const isComplete = cleanDigits.length === 10;
+  const startsWithZero = cleanDigits.length === 0 || cleanDigits.startsWith("0");
+  const isComplete = cleanDigits.length === 10 && cleanDigits.startsWith("0");
 
   const handleDigit = (digit: string) => {
     setLocalError(null);
     if (cleanDigits.length >= 10) return;
-    onChange(cleanDigits + digit);
+    const nextDigits = cleanDigits + digit;
+    onChange(nextDigits);
+    if (!nextDigits.startsWith("0")) {
+      setLocalError("เบอร์ไม่ถูกต้อง (ต้องขึ้นต้นด้วยเลข 0)");
+    }
   };
 
   const handleBackspace = () => {
     setLocalError(null);
     if (cleanDigits.length === 0) return;
-    onChange(cleanDigits.slice(0, -1));
+    const nextDigits = cleanDigits.slice(0, -1);
+    onChange(nextDigits);
+    if (nextDigits.length > 0 && !nextDigits.startsWith("0")) {
+      setLocalError("เบอร์ไม่ถูกต้อง (ต้องขึ้นต้นด้วยเลข 0)");
+    }
   };
 
   const handleClear = () => {
@@ -61,7 +70,7 @@ export function TouchNumpad({
     onChange("");
   };
 
-  const triggerIncomplete = () => {
+  const triggerWarning = (reason: "incomplete" | "invalid_start") => {
     setIsShaking(true);
     try {
       if (typeof window !== "undefined" && "vibrate" in navigator) {
@@ -70,18 +79,25 @@ export function TouchNumpad({
     } catch {}
     setTimeout(() => setIsShaking(false), 500);
 
-    const msg = "กรอกเบอร์ไม่ครบ กรุณากรอกใหม่";
+    const msg =
+      reason === "invalid_start"
+        ? "เบอร์ไม่ถูกต้อง (ต้องขึ้นต้นด้วยเลข 0)"
+        : "กรอกเบอร์ไม่ครบ กรุณากรอกใหม่";
     setLocalError(msg);
 
     if (onIncomplete) {
-      onIncomplete();
+      onIncomplete(reason);
     }
   };
 
   const handleClickSubmit = () => {
     if (isLoading) return;
-    if (!isComplete) {
-      triggerIncomplete();
+    if (cleanDigits.length > 0 && !cleanDigits.startsWith("0")) {
+      triggerWarning("invalid_start");
+      return;
+    }
+    if (cleanDigits.length < 10) {
+      triggerWarning("incomplete");
       return;
     }
     onSubmit();
@@ -112,7 +128,7 @@ export function TouchNumpad({
       <div className={`flex flex-col w-full gap-1 transition-transform ${isShaking ? "animate-shake" : ""}`}>
         <div
           className={`flex w-full h-15 sm:h-17 md:h-18 items-center justify-center rounded-2xl sm:rounded-3xl border-2 px-5 text-center shadow-inner transition-colors duration-200 ${
-            activeError
+            (activeError || !startsWithZero)
               ? "border-rose-500 bg-rose-50/90 ring-4 ring-rose-200"
               : "border-amber-300 bg-amber-50/70"
           }`}
@@ -120,7 +136,7 @@ export function TouchNumpad({
           {cleanDigits.length > 0 ? (
             <span
               className={`font-mono text-3xl sm:text-4xl md:text-5xl font-black tracking-wider ${
-                activeError ? "text-rose-700" : "text-stone-900"
+                (activeError || !startsWithZero) ? "text-rose-700" : "text-stone-900"
               }`}
             >
               {formatPhoneNumber(cleanDigits)}
@@ -132,24 +148,27 @@ export function TouchNumpad({
           )}
         </div>
         <div className="flex justify-between items-center px-2 text-xs font-mono font-bold">
-          {activeError ? (
+          {!startsWithZero ? (
             <span className="text-rose-600 font-black flex items-center gap-1">
               <span>⚠️</span>
-              <span>กรอกเบอร์ไม่ครบ</span>
+              <span>เบอร์ไม่ถูกต้อง (ต้องขึ้นต้นด้วย 0)</span>
+            </span>
+          ) : activeError ? (
+            <span className="text-rose-600 font-black flex items-center gap-1">
+              <span>⚠️</span>
+              <span>{activeError}</span>
             </span>
           ) : (
             <span />
           )}
           <span
             className={
-              cleanDigits.length === 10
+              cleanDigits.length === 10 && startsWithZero
                 ? "text-emerald-600 font-black"
-                : activeError
-                ? "text-rose-600 font-black"
                 : "text-stone-400"
             }
           >
-            {cleanDigits.length === 10 ? "ครบ 10 หลัก ✓" : ""}
+            {cleanDigits.length === 10 && startsWithZero ? "ครบ 10 หลัก ✓" : ""}
           </span>
         </div>
       </div>

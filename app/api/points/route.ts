@@ -6,14 +6,15 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
     const phone = searchParams.get("phone");
 
-    if (!phone || phone.length < 9) {
+    const cleanPhoneGet = (phone || "").replace(/\D/g, "");
+    if (!cleanPhoneGet.startsWith("0") || cleanPhoneGet.length !== 10) {
       return NextResponse.json(
         { success: false, error: "กรุณาระบุหมายเลขโทรศัพท์ให้ถูกต้อง" },
         { status: 400 }
       );
     }
 
-    const member = await getMember(phone);
+    const member = await getMember(cleanPhoneGet);
     return NextResponse.json({
       success: true,
       member: member
@@ -40,7 +41,8 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const { action, phone, points } = body;
 
-    if (!phone || typeof phone !== "string" || phone.length < 9) {
+    const cleanPhonePost = (phone || "").replace(/\D/g, "");
+    if (!cleanPhonePost.startsWith("0") || cleanPhonePost.length !== 10) {
       return NextResponse.json(
         { success: false, error: "กรุณาระบุหมายเลขโทรศัพท์ให้ถูกต้อง" },
         { status: 400 }
@@ -48,7 +50,7 @@ export async function POST(request: NextRequest) {
     }
 
     if (action === "earn") {
-      const result = await addStamp(phone);
+      const result = await addStamp(cleanPhonePost);
       return NextResponse.json({
         success: true,
         data: {
@@ -64,7 +66,7 @@ export async function POST(request: NextRequest) {
     }
 
     if (action === "redeem") {
-      const result = await redeemStamp(phone);
+      const result = await redeemStamp(cleanPhonePost);
       return NextResponse.json({
         success: result.success,
         message: result.message,
@@ -80,7 +82,7 @@ export async function POST(request: NextRequest) {
 
     if (action === "set_test") {
       const pts = typeof points === "number" ? points : 10;
-      const member = await setTestPoints(phone, pts);
+      const member = await setTestPoints(cleanPhonePost, pts);
       return NextResponse.json({
         success: true,
         data: {

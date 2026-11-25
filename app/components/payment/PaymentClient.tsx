@@ -97,6 +97,13 @@ export function PaymentClient() {
   // กดยืนยันเบอร์เพื่อสะสมแต้ม
   const handleEarnPoints = async () => {
     const clean = phoneInput.replace(/\D/g, "");
+    if (clean.length > 0 && !clean.startsWith("0")) {
+      setPointsAlert({
+        title: "เบอร์ไม่ถูกต้อง",
+        message: "เบอร์โทรศัพท์ต้องขึ้นต้นด้วยเลข 0 เท่านั้น กรุณากรอกใหม่",
+      });
+      return;
+    }
     if (clean.length < 10) {
       setPointsAlert({
         title: "กรอกเบอร์ไม่ครบ",
@@ -131,6 +138,14 @@ export function PaymentClient() {
   // ตรวจสอบและใช้สิทธิ์ถ่ายฟรี (Hold สิทธิ์ไว้ก่อน ยังไม่ตัดแต้มจริงจนกว่าจะสั่งพิมพ์สำเร็จ)
   const handleRedeemCheck = async () => {
     const clean = redeemPhoneInput.replace(/\D/g, "");
+    if (clean.length > 0 && !clean.startsWith("0")) {
+      setRedeemAlert({
+        title: "เบอร์ไม่ถูกต้อง",
+        message: "เบอร์โทรศัพท์ต้องขึ้นต้นด้วยเลข 0 เท่านั้น กรุณากรอกใหม่",
+        points: null,
+      });
+      return;
+    }
     if (clean.length < 10) {
       setRedeemAlert({
         title: "กรอกเบอร์ไม่ครบ",
@@ -224,7 +239,16 @@ export function PaymentClient() {
           cancelLabel="← กลับไปหน้าชำระเงินปกติ"
           submitColor="emerald"
           isLoading={isSubmittingPoints}
-          onIncomplete={() => {
+          onIncomplete={(reason) => {
+            const clean = redeemPhoneInput.replace(/\D/g, "");
+            if ((clean.length > 0 && !clean.startsWith("0")) || reason === "invalid_start") {
+              setRedeemAlert({
+                title: "เบอร์ไม่ถูกต้อง",
+                message: "เบอร์โทรศัพท์ต้องขึ้นต้นด้วยเลข 0 เท่านั้น กรุณากรอกใหม่",
+                points: null,
+              });
+              return;
+            }
             setRedeemAlert({
               title: "กรอกเบอร์ไม่ครบ",
               message: "กรุณากรอกเบอร์โทรศัพท์ใหม่ให้ครบ 10 หลัก",
@@ -306,7 +330,15 @@ export function PaymentClient() {
           cancelLabel="ข้ามไปหน้าเลือกกรอบรูปเลย (ไม่สะสมแต้ม) →"
           submitColor="pink"
           isLoading={isSubmittingPoints}
-          onIncomplete={() => {
+          onIncomplete={(reason) => {
+            const clean = phoneInput.replace(/\D/g, "");
+            if ((clean.length > 0 && !clean.startsWith("0")) || reason === "invalid_start") {
+              setPointsAlert({
+                title: "เบอร์ไม่ถูกต้อง",
+                message: "เบอร์โทรศัพท์ต้องขึ้นต้นด้วยเลข 0 เท่านั้น กรุณากรอกใหม่",
+              });
+              return;
+            }
             setPointsAlert({
               title: "กรอกเบอร์ไม่ครบ",
               message: "กรุณากรอกเบอร์โทรศัพท์ใหม่ให้ครบ 10 หลัก",

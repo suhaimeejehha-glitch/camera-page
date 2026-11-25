@@ -44,6 +44,11 @@ export function PaymentClient() {
   const [phoneInput, setPhoneInput] = useState("");
   const [redeemPhoneInput, setRedeemPhoneInput] = useState("");
   const [memberData, setMemberData] = useState<MemberPointsData | null>(null);
+  const [pointsAlert, setPointsAlert] = useState<{
+    title: string;
+    message: string;
+    digitsCount: number;
+  } | null>(null);
   const [redeemAlert, setRedeemAlert] = useState<{
     title: string;
     message: string;
@@ -92,10 +97,23 @@ export function PaymentClient() {
 
   // กดยืนยันเบอร์เพื่อสะสมแต้ม
   const handleEarnPoints = async () => {
-    if (phoneInput.length !== 10 || isSubmittingPoints) return;
+    const clean = phoneInput.replace(/\D/g, "");
+    if (clean.length < 10) {
+      setPointsAlert({
+        title: "กรอกเบอร์ยังไม่ครบ 10 ตัว",
+        message:
+          clean.length === 0
+            ? "คุณยังไม่ได้กดเบอร์โทรศัพท์ กรุณากรอกเบอร์โทรศัพท์ให้ครบ 10 ตัวเพื่อสะสมแต้มครับ"
+            : `คุณกรอกเบอร์โทรศัพท์ไปเพียง ${clean.length}/10 ตัว กรุณากรอกให้ครบ 10 ตัวก่อนกดยืนยันครับ`,
+        digitsCount: clean.length,
+      });
+      return;
+    }
+    if (isSubmittingPoints) return;
     setIsSubmittingPoints(true);
+    setPointsAlert(null);
     try {
-      const result = await addMemberPoint(phoneInput);
+      const result = await addMemberPoint(clean);
       setMemberData(result.data);
       setStep("stamp_card");
     } finally {
@@ -274,7 +292,7 @@ export function PaymentClient() {
   // ==========================================
   if (step === "points_prompt") {
     return (
-      <div className="flex w-full flex-col items-center gap-3.5 my-auto">
+      <div className="relative flex w-full flex-col items-center gap-3.5 my-auto">
         <div className="inline-flex items-center gap-2.5 rounded-full border-2 border-emerald-400 bg-emerald-50 px-6 py-2 text-sm sm:text-base font-black text-emerald-700 shadow-sm">
           <span className="text-lg">✓</span>
           <span>ชำระเงินสำเร็จ ฿{SESSION_PRICE}.00 เรียบร้อยแล้ว</span>
@@ -282,7 +300,10 @@ export function PaymentClient() {
 
         <TouchNumpad
           value={phoneInput}
-          onChange={setPhoneInput}
+          onChange={(val) => {
+            setPhoneInput(val);
+            if (pointsAlert) setPointsAlert(null);
+          }}
           onSubmit={handleEarnPoints}
           onCancel={handleSkipPoints}
           title="🎁 สะสมแต้มรับสิทธิ์ถ่ายฟรี"
@@ -291,7 +312,56 @@ export function PaymentClient() {
           cancelLabel="ข้ามไปหน้าเลือกกรอบรูปเลย (ไม่สะสมแต้ม) →"
           submitColor="pink"
           isLoading={isSubmittingPoints}
+          onIncomplete={() => {
+            const clean = phoneInput.replace(/\D/g, "");
+            setPointsAlert({
+              title: "กรอกเบอร์ยังไม่ครบ 10 ตัว",
+              message:
+                clean.length === 0
+                  ? "คุณยังไม่ได้กดเบอร์โทรศัพท์ กรุณากรอกเบอร์โทรศัพท์ให้ครบ 10 ตัวเพื่อสะสมแต้มครับ"
+                  : `คุณกรอกเบอร์โทรศัพท์ไปเพียง ${clean.length}/10 ตัว กรุณากรอกให้ครบ 10 ตัวก่อนกดยืนยันครับ`,
+              digitsCount: clean.length,
+            });
+          }}
         />
+
+        {/* Modal Popup แจ้งเตือนเมื่อกรอกเบอร์ไม่ครบ 10 ตัวในขั้นตอนสะสมแต้ม */}
+        {pointsAlert ? (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm select-none animate-in fade-in duration-200">
+            <div className="flex w-full max-w-md sm:max-w-lg flex-col items-center gap-5 rounded-[32px] border-2 border-amber-300 bg-white p-7 sm:p-9 text-center shadow-2xl animate-shake">
+              <div className="flex h-20 w-20 items-center justify-center rounded-3xl border-4 border-amber-200 bg-amber-50 text-4xl shadow-sm">
+                ⚠️
+              </div>
+              <div className="flex flex-col gap-2">
+                <h3 className="text-2xl sm:text-3xl font-black text-stone-900 tracking-tight">
+                  {pointsAlert.title}
+                </h3>
+                <p className="text-base sm:text-lg font-bold text-stone-600 leading-relaxed">
+                  {pointsAlert.message}
+                </p>
+                <div className="mt-2 inline-flex items-center justify-center gap-2 self-center rounded-full bg-amber-50 px-5 py-2 font-mono text-base font-black text-amber-900 border border-amber-200">
+                  เบอร์ปัจจุบัน: {phoneInput ? formatPhoneNumber(phoneInput) : "ยังไม่ได้กรอก"} ({pointsAlert.digitsCount}/10 ตัว)
+                </div>
+              </div>
+              <div className="flex flex-col w-full gap-2.5 pt-2">
+                <button
+                  type="button"
+                  onClick={() => setPointsAlert(null)}
+                  className="inline-flex h-15 sm:h-16 w-full items-center justify-center rounded-2xl bg-gradient-to-r from-red-700 via-red-600 to-amber-600 px-8 text-xl font-black text-white shadow-lg shadow-red-700/30 transition active:scale-95 hover:from-red-600 hover:to-amber-500 cursor-pointer touch-manipulation border border-amber-300/40"
+                >
+                  ตกลง (กรอกเบอร์ต่อให้ครบ 10 ตัว)
+                </button>
+                <button
+                  type="button"
+                  onClick={handleSkipPoints}
+                  className="text-sm sm:text-base font-bold text-stone-500 hover:text-stone-800 transition py-2 text-center touch-manipulation cursor-pointer"
+                >
+                  ไม่สะสมแต้ม ข้ามไปเลือกกรอบรูปเลย →
+                </button>
+              </div>
+            </div>
+          </div>
+        ) : null}
       </div>
     );
   }

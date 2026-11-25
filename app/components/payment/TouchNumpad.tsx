@@ -40,6 +40,7 @@ export function TouchNumpad({
   onIncomplete,
 }: TouchNumpadProps) {
   const [localError, setLocalError] = useState<string | null>(null);
+  const [isShaking, setIsShaking] = useState(false);
   const cleanDigits = value.replace(/\D/g, "");
   const isComplete = cleanDigits.length === 10;
 
@@ -60,16 +61,30 @@ export function TouchNumpad({
     onChange("");
   };
 
+  const triggerIncomplete = () => {
+    setIsShaking(true);
+    try {
+      if (typeof window !== "undefined" && "vibrate" in navigator) {
+        navigator.vibrate([80, 50, 80]);
+      }
+    } catch {}
+    setTimeout(() => setIsShaking(false), 500);
+
+    const msg =
+      cleanDigits.length === 0
+        ? "กรุณากรอกเบอร์โทรศัพท์ให้ครบ 10 ตัว (ยังไม่ได้กรอกตัวเลข)"
+        : `กรุณากรอกเบอร์โทรศัพท์ให้ครบ 10 ตัว (ขณะนี้กรอกแล้ว ${cleanDigits.length}/10 ตัว)`;
+    setLocalError(msg);
+
+    if (onIncomplete) {
+      onIncomplete();
+    }
+  };
+
   const handleClickSubmit = () => {
     if (isLoading) return;
     if (!isComplete) {
-      if (onIncomplete) {
-        onIncomplete();
-      } else {
-        setLocalError(
-          `กรุณากรอกเบอร์โทรศัพท์ให้ครบ 10 หลัก (ปัจจุบันกรอกแล้ว ${cleanDigits.length}/10 หลัก)`
-        );
-      }
+      triggerIncomplete();
       return;
     }
     onSubmit();
@@ -97,10 +112,20 @@ export function TouchNumpad({
       </div>
 
       {/* ช่องแสดงเบอร์โทรขนาดใหญ่ชัดเจน พร้อมตัวนับหลัก */}
-      <div className="flex flex-col w-full gap-1">
-        <div className="flex w-full h-15 sm:h-17 md:h-18 items-center justify-center rounded-2xl sm:rounded-3xl border-2 border-amber-300 bg-amber-50/70 px-5 text-center shadow-inner">
+      <div className={`flex flex-col w-full gap-1 transition-transform ${isShaking ? "animate-shake" : ""}`}>
+        <div
+          className={`flex w-full h-15 sm:h-17 md:h-18 items-center justify-center rounded-2xl sm:rounded-3xl border-2 px-5 text-center shadow-inner transition-colors duration-200 ${
+            activeError
+              ? "border-rose-500 bg-rose-50/90 ring-4 ring-rose-200"
+              : "border-amber-300 bg-amber-50/70"
+          }`}
+        >
           {cleanDigits.length > 0 ? (
-            <span className="font-mono text-3xl sm:text-4xl md:text-5xl font-black tracking-wider text-stone-900">
+            <span
+              className={`font-mono text-3xl sm:text-4xl md:text-5xl font-black tracking-wider ${
+                activeError ? "text-rose-700" : "text-stone-900"
+              }`}
+            >
               {formatPhoneNumber(cleanDigits)}
             </span>
           ) : (
@@ -109,15 +134,33 @@ export function TouchNumpad({
             </span>
           )}
         </div>
-        <div className="flex justify-end pr-2 text-xs font-mono font-bold text-stone-400">
-          {cleanDigits.length}/10 หลัก
+        <div className="flex justify-between items-center px-2 text-xs font-mono font-bold">
+          {activeError ? (
+            <span className="text-rose-600 font-black flex items-center gap-1">
+              <span>⚠️</span>
+              <span>กรอกเบอร์ไม่ครบ 10 ตัว</span>
+            </span>
+          ) : (
+            <span />
+          )}
+          <span
+            className={
+              cleanDigits.length === 10
+                ? "text-emerald-600 font-black"
+                : activeError
+                ? "text-rose-600 font-black"
+                : "text-stone-400"
+            }
+          >
+            {cleanDigits.length}/10 หลัก
+          </span>
         </div>
       </div>
 
       {/* กล่องแจ้งเตือนข้อผิดพลาดภายในตัวแป้นพิมพ์ */}
       {activeError ? (
-        <div className="flex w-full items-center justify-center gap-2 rounded-2xl border-2 border-rose-300 bg-rose-50 px-4 py-2.5 text-center text-xs sm:text-sm md:text-base font-black text-rose-600 shadow-sm">
-          <span>⚠️</span>
+        <div className="flex w-full items-center justify-center gap-2 rounded-2xl border-2 border-rose-400 bg-rose-50 px-4 py-2.5 text-center text-xs sm:text-sm md:text-base font-black text-rose-700 shadow-md">
+          <span className="text-lg">⚠️</span>
           <span>{activeError}</span>
         </div>
       ) : null}

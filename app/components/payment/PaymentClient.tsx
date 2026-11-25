@@ -47,7 +47,6 @@ export function PaymentClient() {
   const [pointsAlert, setPointsAlert] = useState<{
     title: string;
     message: string;
-    digitsCount: number;
   } | null>(null);
   const [redeemAlert, setRedeemAlert] = useState<{
     title: string;
@@ -100,12 +99,8 @@ export function PaymentClient() {
     const clean = phoneInput.replace(/\D/g, "");
     if (clean.length < 10) {
       setPointsAlert({
-        title: "กรอกเบอร์ยังไม่ครบ 10 ตัว",
-        message:
-          clean.length === 0
-            ? "คุณยังไม่ได้กดเบอร์โทรศัพท์ กรุณากรอกเบอร์โทรศัพท์ให้ครบ 10 ตัวเพื่อสะสมแต้มครับ"
-            : `คุณกรอกเบอร์โทรศัพท์ไปเพียง ${clean.length}/10 ตัว กรุณากรอกให้ครบ 10 ตัวก่อนกดยืนยันครับ`,
-        digitsCount: clean.length,
+        title: "กรอกเบอร์ไม่ครบ",
+        message: "กรุณากรอกเบอร์โทรศัพท์ใหม่ให้ครบ 10 หลัก",
       });
       return;
     }
@@ -138,8 +133,8 @@ export function PaymentClient() {
     const clean = redeemPhoneInput.replace(/\D/g, "");
     if (clean.length < 10) {
       setRedeemAlert({
-        title: "กรอกเบอร์ยังไม่ครบ 10 หลัก",
-        message: `คุณกรอกเบอร์โทรศัพท์ไปเพียง ${clean.length}/10 หลัก กรุณากรอกให้ครบ 10 หลักก่อนกดแลกสิทธิ์ครับ`,
+        title: "กรอกเบอร์ไม่ครบ",
+        message: "กรุณากรอกเบอร์โทรศัพท์ใหม่ให้ครบ 10 หลัก",
         points: null,
       });
       return;
@@ -230,10 +225,9 @@ export function PaymentClient() {
           submitColor="emerald"
           isLoading={isSubmittingPoints}
           onIncomplete={() => {
-            const clean = redeemPhoneInput.replace(/\D/g, "");
             setRedeemAlert({
-              title: "กรอกเบอร์ยังไม่ครบ 10 หลัก",
-              message: `คุณกรอกเบอร์โทรศัพท์ไปเพียง ${clean.length}/10 หลัก กรุณากรอกให้ครบ 10 หลักก่อนกดแลกสิทธิ์ครับ`,
+              title: "กรอกเบอร์ไม่ครบ",
+              message: "กรุณากรอกเบอร์โทรศัพท์ใหม่ให้ครบ 10 หลัก",
               points: null,
             });
           }}
@@ -313,19 +307,14 @@ export function PaymentClient() {
           submitColor="pink"
           isLoading={isSubmittingPoints}
           onIncomplete={() => {
-            const clean = phoneInput.replace(/\D/g, "");
             setPointsAlert({
-              title: "กรอกเบอร์ยังไม่ครบ 10 ตัว",
-              message:
-                clean.length === 0
-                  ? "คุณยังไม่ได้กดเบอร์โทรศัพท์ กรุณากรอกเบอร์โทรศัพท์ให้ครบ 10 ตัวเพื่อสะสมแต้มครับ"
-                  : `คุณกรอกเบอร์โทรศัพท์ไปเพียง ${clean.length}/10 ตัว กรุณากรอกให้ครบ 10 ตัวก่อนกดยืนยันครับ`,
-              digitsCount: clean.length,
+              title: "กรอกเบอร์ไม่ครบ",
+              message: "กรุณากรอกเบอร์โทรศัพท์ใหม่ให้ครบ 10 หลัก",
             });
           }}
         />
 
-        {/* Modal Popup แจ้งเตือนเมื่อกรอกเบอร์ไม่ครบ 10 ตัวในขั้นตอนสะสมแต้ม */}
+        {/* Modal Popup แจ้งเตือนเมื่อกรอกเบอร์ไม่ครบในขั้นตอนสะสมแต้ม */}
         {pointsAlert ? (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm select-none animate-in fade-in duration-200">
             <div className="flex w-full max-w-md sm:max-w-lg flex-col items-center gap-5 rounded-[32px] border-2 border-amber-300 bg-white p-7 sm:p-9 text-center shadow-2xl animate-shake">
@@ -339,17 +328,17 @@ export function PaymentClient() {
                 <p className="text-base sm:text-lg font-bold text-stone-600 leading-relaxed">
                   {pointsAlert.message}
                 </p>
-                <div className="mt-2 inline-flex items-center justify-center gap-2 self-center rounded-full bg-amber-50 px-5 py-2 font-mono text-base font-black text-amber-900 border border-amber-200">
-                  เบอร์ปัจจุบัน: {phoneInput ? formatPhoneNumber(phoneInput) : "ยังไม่ได้กรอก"} ({pointsAlert.digitsCount}/10 ตัว)
-                </div>
               </div>
               <div className="flex flex-col w-full gap-2.5 pt-2">
                 <button
                   type="button"
-                  onClick={() => setPointsAlert(null)}
+                  onClick={() => {
+                    setPhoneInput("");
+                    setPointsAlert(null);
+                  }}
                   className="inline-flex h-15 sm:h-16 w-full items-center justify-center rounded-2xl bg-gradient-to-r from-red-700 via-red-600 to-amber-600 px-8 text-xl font-black text-white shadow-lg shadow-red-700/30 transition active:scale-95 hover:from-red-600 hover:to-amber-500 cursor-pointer touch-manipulation border border-amber-300/40"
                 >
-                  ตกลง (กรอกเบอร์ต่อให้ครบ 10 ตัว)
+                  กรอกใหม่
                 </button>
                 <button
                   type="button"

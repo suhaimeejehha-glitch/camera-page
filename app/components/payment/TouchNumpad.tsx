@@ -70,10 +70,7 @@ export function TouchNumpad({
     } catch {}
     setTimeout(() => setIsShaking(false), 500);
 
-    const msg =
-      cleanDigits.length === 0
-        ? "กรุณากรอกเบอร์โทรศัพท์ให้ครบ 10 ตัว (ยังไม่ได้กรอกตัวเลข)"
-        : `กรุณากรอกเบอร์โทรศัพท์ให้ครบ 10 ตัว (ขณะนี้กรอกแล้ว ${cleanDigits.length}/10 ตัว)`;
+    const msg = "กรอกเบอร์ไม่ครบ กรุณากรอกใหม่";
     setLocalError(msg);
 
     if (onIncomplete) {
@@ -138,7 +135,7 @@ export function TouchNumpad({
           {activeError ? (
             <span className="text-rose-600 font-black flex items-center gap-1">
               <span>⚠️</span>
-              <span>กรอกเบอร์ไม่ครบ 10 ตัว</span>
+              <span>กรอกเบอร์ไม่ครบ</span>
             </span>
           ) : (
             <span />
@@ -152,7 +149,7 @@ export function TouchNumpad({
                 : "text-stone-400"
             }
           >
-            {cleanDigits.length}/10 หลัก
+            {cleanDigits.length === 10 ? "ครบ 10 หลัก ✓" : ""}
           </span>
         </div>
       </div>

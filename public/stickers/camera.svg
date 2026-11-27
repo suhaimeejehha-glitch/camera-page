@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+  <!-- Body -->
+  <rect x="8" y="20" width="48" height="34" rx="8" fill="#F472B6" stroke="#4C1D95" stroke-width="3"/>
+  <!-- Top Flash/Shutter Bump -->
+  <path d="M22 20L25 14H39L42 20H22Z" fill="#F472B6" stroke="#4C1D95" stroke-width="3" stroke-linejoin="round"/>
+  <!-- Lens Outer -->
+  <circle cx="32" cy="37" r="11" fill="#4C1D95"/>
+  <!-- Lens Inner -->
+  <circle cx="32" cy="37" r="8" fill="#38BDF8" stroke="#FFFFFF" stroke-width="2"/>
+  <circle cx="34" cy="35" r="2.5" fill="#FFFFFF"/>
+  <!-- Flash Dot -->
+  <circle cx="47" cy="27" r="3" fill="#FDE047" stroke="#4C1D95" stroke-width="1.5"/>
+</svg>

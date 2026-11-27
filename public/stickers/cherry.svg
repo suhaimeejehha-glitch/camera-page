@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+  <!-- Stems -->
+  <path d="M22 34C22 18 36 12 44 8" stroke="#3D5A2B" stroke-width="3.5" stroke-linecap="round"/>
+  <path d="M42 36C40 22 38 14 44 8" stroke="#3D5A2B" stroke-width="3.5" stroke-linecap="round"/>
+  <!-- Leaf -->
+  <path d="M44 8C52 6 56 12 50 16C44 20 42 12 44 8Z" fill="#65A30D" stroke="#3D5A2B" stroke-width="2.5" stroke-linejoin="round"/>
+  <!-- Cherry 1 -->
+  <circle cx="22" cy="38" r="13" fill="#E11D48" stroke="#5C1D24" stroke-width="3"/>
+  <circle cx="18" cy="34" r="3.5" fill="#FFE4E6"/>
+  <!-- Cherry 2 -->
+  <circle cx="42" cy="40" r="13" fill="#BE123C" stroke="#5C1D24" stroke-width="3"/>
+  <circle cx="38" cy="36" r="3.5" fill="#FFE4E6"/>
+</svg>

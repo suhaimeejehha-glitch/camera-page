@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+  <!-- Face -->
+  <circle cx="32" cy="32" r="26" fill="#FACC15" stroke="#451A03" stroke-width="3.5"/>
+  <!-- Eyes -->
+  <ellipse cx="23" cy="27" rx="3.5" ry="5.5" fill="#451A03"/>
+  <ellipse cx="41" cy="27" rx="3.5" ry="5.5" fill="#451A03"/>
+  <!-- Big Smile -->
+  <path d="M19 36C22 47 42 47 45 36" stroke="#451A03" stroke-width="3.5" stroke-linecap="round"/>
+  <!-- Rosy cheeks -->
+  <circle cx="16" cy="36" r="3" fill="#FB7185" opacity="0.8"/>
+  <circle cx="48" cy="36" r="3" fill="#FB7185" opacity="0.8"/>
+</svg>

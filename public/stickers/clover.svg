@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+  <!-- Leaves (Four-leaf clover) -->
+  <path d="M32 30C30 18 18 16 20 28C22 32 28 32 32 30Z" fill="#4ADE80" stroke="#14532D" stroke-width="2.5" stroke-linejoin="round"/>
+  <path d="M32 30C34 18 46 16 44 28C42 32 36 32 32 30Z" fill="#22C55E" stroke="#14532D" stroke-width="2.5" stroke-linejoin="round"/>
+  <path d="M32 32C18 30 16 42 28 44C32 42 32 36 32 32Z" fill="#16A34A" stroke="#14532D" stroke-width="2.5" stroke-linejoin="round"/>
+  <path d="M32 32C46 30 48 42 36 44C32 42 32 36 32 32Z" fill="#4ADE80" stroke="#14532D" stroke-width="2.5" stroke-linejoin="round"/>
+  <!-- Stem -->
+  <path d="M32 32C32 46 36 56 42 58" stroke="#14532D" stroke-width="3" stroke-linecap="round"/>
+</svg>

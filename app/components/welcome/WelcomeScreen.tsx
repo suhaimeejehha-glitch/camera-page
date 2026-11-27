@@ -54,7 +54,7 @@ export function WelcomeScreen() {
             STUDIO <span className="bg-gradient-to-r from-red-500 via-amber-400 to-amber-200 bg-clip-text text-transparent drop-shadow-[0_0_45px_rgba(245,158,11,0.7)]">BOOTH</span>
           </h1>
           <p className="mx-auto max-w-none text-base sm:text-xl md:text-2xl lg:text-[28px] font-semibold text-zinc-200 leading-relaxed drop-shadow whitespace-normal sm:whitespace-nowrap">
-            เลือกแนวกรอบ แต่งลายน่ารักๆ แล้วรับรูปปริ้นต์พร้อมไฟล์ภาพและ GIF ได้ทันที
+            เลือกแนวกรอบ แต่งลายน่ารักๆ แล้วรับรูปปริ้นต์พร้อมไฟล์ภาพและวิดีโอได้ทันที
           </p>
         </div>
 

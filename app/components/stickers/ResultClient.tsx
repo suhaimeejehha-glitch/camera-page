@@ -16,7 +16,6 @@ import {
 import { STICKERS, STICKER_THEMES, getPlacedStickersForTheme } from "@/lib/stickers";
 import { renderPhotoboothStrip, renderPrintSheet } from "@/lib/canvasRenderer";
 import { clearMotionFrames, clearSessionPhotos, loadMotionFrames, loadSessionPhotos } from "@/lib/mediaStore";
-import { createAnimatedGifBlob } from "@/lib/gifBuilder";
 import { createMotionVideoBlob, type MotionVideoResult } from "@/lib/videoBuilder";
 import { PHOTO_TONES, type PhotoTone } from "@/lib/filters";
 import { redeemMemberPoints } from "@/lib/pointsStore";
@@ -61,7 +60,6 @@ export function ResultClient() {
   const [driveQr, setDriveQr] = useState<DriveQrState | null>(null);
   const [isDriveReady, setIsDriveReady] = useState(false);
   const [isFileSyncing, setIsFileSyncing] = useState(false);
-  const [gifBlobCache, setGifBlobCache] = useState<Blob | null>(null);
   const [videoBlobCache, setVideoBlobCache] = useState<MotionVideoResult | null>(null);
   const [videoStatus, setVideoStatus] = useState<"rendering" | "uploading" | "ready" | "failed">("rendering");
 
@@ -73,7 +71,6 @@ export function ResultClient() {
 
   const printTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const folderIdRef = useRef<string | null>(null);
-  const gifUploadedRef = useRef<boolean>(false);
   const videoUploadedRef = useRef<boolean>(false);
 
   const activeTone = useMemo<PhotoTone>(
@@ -204,13 +201,6 @@ export function ResultClient() {
       try {
         const motionFrames = await loadMotionFrames();
 
-        // สร้าง GIF
-        void createAnimatedGifBlob(motionFrames, photos).then((blob) => {
-          if (!cancelled && blob) {
-            setGifBlobCache(blob);
-          }
-        });
-
         // สร้างวิดีโอ 8 วินาที (.mp4) แนวนอนเต็มตา ไม่มีขอบดำ พร้อมฟิลเตอร์สี
         void createMotionVideoBlob(motionFrames, photos, {
           durationSeconds: 8,
@@ -272,32 +262,7 @@ export function ResultClient() {
     };
   }, [videoBlobCache, isDriveReady]);
 
-  // 2.2 อัปโหลด GIF เข้า Drive ทันทีที่พร้อม (แยก Request)
-  useEffect(() => {
-    const currentGif = gifBlobCache;
-    const currentFolderId = folderIdRef.current;
-    if (!currentGif || !isDriveReady || !currentFolderId || gifUploadedRef.current) return;
-
-    async function uploadGif(gif: Blob, folderId: string) {
-      try {
-        const gFd = new FormData();
-        gFd.append("folderId", folderId);
-        gFd.append("gif", gif, "photo-motion.gif");
-        const upRes = await fetch("/api/upload-drive", {
-          method: "POST",
-          body: gFd,
-        });
-        if (upRes.ok) {
-          gifUploadedRef.current = true;
-          console.log("[Drive Upload] Motion GIF uploaded successfully!");
-        }
-      } catch (err) {
-        console.error("Direct gif upload error:", err);
-      }
-    }
-
-    void uploadGif(currentGif, currentFolderId);
-  }, [gifBlobCache, isDriveReady]);
+  
 
   // 3. อัปโหลดรูปภาพปริ้นต์ (Photo Strip พร้อมฟิลเตอร์โทนสีและสติกเกอร์) เข้าโฟลเดอร์ Google Drive
   useEffect(() => {
@@ -325,12 +290,7 @@ export function ResultClient() {
         }
         formData.append("photo", stripBlob, "photo-strip.png");
 
-        // ส่ง GIF Fallback หากยังไม่ได้อัปโหลด
-        if (gifBlobCache && !gifUploadedRef.current) {
-          formData.append("gif", gifBlobCache, "photo-motion.gif");
-        }
-
-        // ส่งวิดีโอ 8 วินาที Fallback หากยังไม่ได้อัปโหลด
+// ส่งวิดีโอ 8 วินาที Fallback หากยังไม่ได้อัปโหลด
         if (videoBlobCache && !videoUploadedRef.current) {
           formData.append("video", videoBlobCache.blob, videoBlobCache.filename);
         }
@@ -347,8 +307,7 @@ export function ResultClient() {
           throw new Error(errData?.error ?? "อัปโหลดไฟล์เข้า Drive ไม่สำเร็จ");
         }
 
-        if (gifBlobCache) gifUploadedRef.current = true;
-        if (videoBlobCache) {
+if (videoBlobCache) {
           videoUploadedRef.current = true;
           if (!cancelled) setVideoStatus("ready");
         }
@@ -370,7 +329,7 @@ export function ResultClient() {
       cancelled = true;
       clearTimeout(timer);
     };
-  }, [frame, photos, placedStickers, activeTone, gifBlobCache, videoBlobCache, isDriveReady]);
+  }, [frame, photos, placedStickers, activeTone, videoBlobCache, isDriveReady]);
 
   const handleSelectTheme = (themeId: string) => {
     setSelectedThemeId(themeId);
@@ -428,7 +387,6 @@ export function ResultClient() {
       sessionStorage.removeItem("photobooth_drive_qr");
       sessionStorage.removeItem("photobooth_pending_redeem");
     } catch {}
-    gifUploadedRef.current = false;
     void clearMotionFrames();
     void clearSessionPhotos();
     router.replace("/thank-you");
@@ -559,7 +517,7 @@ export function ResultClient() {
               </div>
 
               <p className="text-xs sm:text-sm font-bold text-zinc-300">
-                สแกนด้วยมือถือเพื่อดาวน์โหลดภาพปริ้นต์, วิดีโอ 8 วิ (MP4) และ GIF จาก Google Drive
+                สแกนด้วยมือถือเพื่อดาวน์โหลดภาพปริ้นต์ และวิดีโอ 8 วิ (MP4) จาก Google Drive
               </p>
 
               {/* สถานะการประมวลผลวิดีโอ 8 วินาที */}

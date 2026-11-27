@@ -11,7 +11,6 @@ export async function POST(request: Request) {
     let action: string | null = null;
     let folderId: string | null = null;
     let photoFile: File | null = null;
-    let gifFile: File | null = null;
     let videoFile: File | null = null;
 
     if (contentType.includes("application/json")) {
@@ -32,8 +31,6 @@ export async function POST(request: Request) {
 
       const p = formData.get("photo");
       if (isFileLike(p)) photoFile = p as File;
-      const g = formData.get("gif");
-      if (isFileLike(g)) gifFile = g as File;
       const v = formData.get("video");
       if (isFileLike(v)) videoFile = v as File;
     }
@@ -58,7 +55,7 @@ export async function POST(request: Request) {
       });
     }
 
-    // 2. อัปโหลดไฟล์ภาพและ GIF เข้าโฟลเดอร์
+    // 2. อัปโหลดไฟล์ภาพและวิดีโอเข้าโฟลเดอร์
     let folderUrl: string | undefined;
 
     // หากยังไม่มี folderId ให้สร้างใหม่
@@ -84,18 +81,6 @@ export async function POST(request: Request) {
         "photo-strip.png",
         "image/png",
         photoBytes
-      );
-    }
-
-    // อัปโหลด GIF
-    if (gifFile) {
-      const gifBytes = new Uint8Array(await gifFile.arrayBuffer());
-      await uploadFileToFolder(
-        accessToken,
-        folderId,
-        "photo-motion.gif",
-        "image/gif",
-        gifBytes
       );
     }
 

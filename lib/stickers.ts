@@ -1,7 +1,7 @@
 import type { PlacedSticker, StickerItem } from "@/types/photobooth";
 
 /**
- * รายการสติกเกอร์ทั้งหมดสำหรับตกแต่งบนกรอบรูป (18 แบบ)
+ * รายการสติกเกอร์ทั้งหมดสำหรับตกแต่งบนกรอบรูป (28 แบบ)
  */
 export const STICKERS: StickerItem[] = [
   { id: "heart", name: "Heart", src: "/stickers/heart.svg" },
@@ -22,6 +22,16 @@ export const STICKERS: StickerItem[] = [
   { id: "lip", name: "Lip", src: "/stickers/lip.svg" },
   { id: "camera", name: "Camera", src: "/stickers/camera.svg" },
   { id: "music", name: "Music", src: "/stickers/music.svg" },
+  { id: "dino", name: "Dino", src: "/stickers/dino.svg" },
+  { id: "bear", name: "Bear", src: "/stickers/bear.svg" },
+  { id: "rabbit", name: "Rabbit", src: "/stickers/rabbit.svg" },
+  { id: "coffee", name: "Coffee", src: "/stickers/coffee.svg" },
+  { id: "cake", name: "Cake", src: "/stickers/cake.svg" },
+  { id: "balloon", name: "Balloon", src: "/stickers/balloon.svg" },
+  { id: "rainbow", name: "Rainbow", src: "/stickers/rainbow.svg" },
+  { id: "ghost", name: "Ghost", src: "/stickers/ghost.svg" },
+  { id: "mushroom", name: "Mushroom", src: "/stickers/mushroom.svg" },
+  { id: "gameboy", name: "Gameboy", src: "/stickers/gameboy.svg" },
 ];
 
 export interface StickerPresetItem {
@@ -48,7 +58,7 @@ export interface StickerTheme {
 }
 
 /**
- * รวม 10 ธีมสติกเกอร์สำเร็จรูปยอดนิยม + 1 ธีมคลีน (1-Tap Preset Decorative Themes)
+ * 20 ธีมสติกเกอร์สำเร็จรูปยอดนิยม + 1 ธีมคลีน (1-Tap Preset Decorative Themes)
  * ออกแบบตำแหน่งลงตัวตามมุม ขอบ และช่องว่าง ไม่บังหน้าลูกค้าบนรูป
  */
 export const STICKER_THEMES: StickerTheme[] = [
@@ -121,10 +131,10 @@ export const STICKER_THEMES: StickerTheme[] = [
   {
     id: "kawaii-kitty",
     name: "Kawaii Kitty",
-    thaiName: "เหมียวเหมียวน่ารัก",
+    thaiName: "เหมียวเหมียวคาวาอี้",
     icon: "🐱",
     badge: "คิ้วท์สุด",
-    description: "น้องแมวเหมียวสุดคาวาอี้และหัวใจ",
+    description: "น้องแมวเหมียวสุดน่ารักขวัญใจทาสแมว",
     previewIcons: ["/stickers/cat.svg", "/stickers/heart.svg"],
     stickers: {
       vertical: [
@@ -142,6 +152,59 @@ export const STICKER_THEMES: StickerTheme[] = [
         { stickerId: "heart", src: "/stickers/heart.svg", x: 66, y: 9, scale: 0.75, rotation: 10 },
         { stickerId: "flower", src: "/stickers/flower.svg", x: 96, y: 14, scale: 0.8, rotation: 12 },
         { stickerId: "cat", src: "/stickers/cat.svg", x: 95, y: 86, scale: 0.95, rotation: 8 },
+      ],
+    },
+  },
+  {
+    id: "teddy-bear",
+    name: "Teddy Bear",
+    thaiName: "น้องหมีเท็ดดี้อบอุ่น",
+    icon: "🧸",
+    badge: "อบอุ่น",
+    description: "น้องหมีสีน้ำตาล หัวใจ และกาแฟอุ่นๆ",
+    previewIcons: ["/stickers/bear.svg", "/stickers/coffee.svg"],
+    stickers: {
+      vertical: [
+        { stickerId: "bear", src: "/stickers/bear.svg", x: 13, y: 3.5, scale: 0.9, rotation: -6 },
+        { stickerId: "coffee", src: "/stickers/coffee.svg", x: 88, y: 4, scale: 0.8, rotation: 12 },
+        { stickerId: "heart", src: "/stickers/heart.svg", x: 7, y: 34, scale: 0.75, rotation: 10 },
+        { stickerId: "bear", src: "/stickers/bear.svg", x: 93, y: 64, scale: 0.85, rotation: -8 },
+        { stickerId: "coffee", src: "/stickers/coffee.svg", x: 12, y: 94.5, scale: 0.8, rotation: -10 },
+        { stickerId: "heart", src: "/stickers/heart.svg", x: 88, y: 94, scale: 0.85, rotation: 12 },
+      ],
+      horizontal: [
+        { stickerId: "bear", src: "/stickers/bear.svg", x: 5, y: 14, scale: 0.9, rotation: -6 },
+        { stickerId: "coffee", src: "/stickers/coffee.svg", x: 5, y: 86, scale: 0.8, rotation: 12 },
+        { stickerId: "heart", src: "/stickers/heart.svg", x: 34, y: 9, scale: 0.75, rotation: 10 },
+        { stickerId: "bear", src: "/stickers/bear.svg", x: 66, y: 9, scale: 0.85, rotation: -8 },
+        { stickerId: "coffee", src: "/stickers/coffee.svg", x: 96, y: 14, scale: 0.8, rotation: -10 },
+        { stickerId: "heart", src: "/stickers/heart.svg", x: 95, y: 86, scale: 0.85, rotation: 12 },
+      ],
+    },
+  },
+  {
+    id: "bunny-lover",
+    name: "Bunny Lover",
+    thaiName: "กระต่ายน้อยพาสเทล",
+    icon: "🐰",
+    description: "กระต่ายหูยาวสีขาว ดอกไม้ และโบว์น่ารัก",
+    previewIcons: ["/stickers/rabbit.svg", "/stickers/ribbon.svg"],
+    stickers: {
+      vertical: [
+        { stickerId: "rabbit", src: "/stickers/rabbit.svg", x: 13, y: 3.5, scale: 0.9, rotation: -8 },
+        { stickerId: "ribbon", src: "/stickers/ribbon.svg", x: 88, y: 4, scale: 0.8, rotation: 15 },
+        { stickerId: "flower", src: "/stickers/flower.svg", x: 7, y: 34, scale: 0.75, rotation: 12 },
+        { stickerId: "heart", src: "/stickers/heart.svg", x: 93, y: 64, scale: 0.75, rotation: -10 },
+        { stickerId: "flower", src: "/stickers/flower.svg", x: 12, y: 94.5, scale: 0.8, rotation: -12 },
+        { stickerId: "rabbit", src: "/stickers/rabbit.svg", x: 87, y: 94, scale: 0.95, rotation: 8 },
+      ],
+      horizontal: [
+        { stickerId: "rabbit", src: "/stickers/rabbit.svg", x: 5, y: 14, scale: 0.9, rotation: -8 },
+        { stickerId: "ribbon", src: "/stickers/ribbon.svg", x: 5, y: 86, scale: 0.8, rotation: 15 },
+        { stickerId: "flower", src: "/stickers/flower.svg", x: 34, y: 9, scale: 0.75, rotation: 12 },
+        { stickerId: "heart", src: "/stickers/heart.svg", x: 66, y: 9, scale: 0.75, rotation: -10 },
+        { stickerId: "flower", src: "/stickers/flower.svg", x: 96, y: 14, scale: 0.8, rotation: -12 },
+        { stickerId: "rabbit", src: "/stickers/rabbit.svg", x: 95, y: 86, scale: 0.95, rotation: 8 },
       ],
     },
   },
@@ -252,6 +315,60 @@ export const STICKER_THEMES: StickerTheme[] = [
     },
   },
   {
+    id: "birthday-party",
+    name: "Birthday Party",
+    thaiName: "แฮปปี้เบิร์ธเดย์ปาร์ตี้",
+    icon: "🎂",
+    badge: "ปาร์ตี้",
+    description: "เค้กวันเกิด ลูกโป่ง และมงกุฎฉลอง",
+    previewIcons: ["/stickers/cake.svg", "/stickers/balloon.svg"],
+    stickers: {
+      vertical: [
+        { stickerId: "balloon", src: "/stickers/balloon.svg", x: 12, y: 3.5, scale: 0.85, rotation: -10 },
+        { stickerId: "crown", src: "/stickers/crown.svg", x: 88, y: 4, scale: 0.8, rotation: 15 },
+        { stickerId: "cake", src: "/stickers/cake.svg", x: 7, y: 34, scale: 0.8, rotation: 8 },
+        { stickerId: "sparkle", src: "/stickers/sparkle.svg", x: 93, y: 64, scale: 0.75, rotation: -12 },
+        { stickerId: "balloon", src: "/stickers/balloon.svg", x: 12, y: 94.5, scale: 0.85, rotation: -8 },
+        { stickerId: "cake", src: "/stickers/cake.svg", x: 88, y: 94, scale: 0.9, rotation: 10 },
+      ],
+      horizontal: [
+        { stickerId: "balloon", src: "/stickers/balloon.svg", x: 4, y: 14, scale: 0.85, rotation: -10 },
+        { stickerId: "crown", src: "/stickers/crown.svg", x: 5, y: 86, scale: 0.8, rotation: 15 },
+        { stickerId: "cake", src: "/stickers/cake.svg", x: 34, y: 9, scale: 0.8, rotation: 8 },
+        { stickerId: "sparkle", src: "/stickers/sparkle.svg", x: 66, y: 9, scale: 0.75, rotation: -12 },
+        { stickerId: "balloon", src: "/stickers/balloon.svg", x: 96, y: 14, scale: 0.85, rotation: 12 },
+        { stickerId: "cake", src: "/stickers/cake.svg", x: 95, y: 86, scale: 0.9, rotation: -8 },
+      ],
+    },
+  },
+  {
+    id: "dreamy-rainbow",
+    name: "Dreamy Rainbow",
+    thaiName: "สายรุ้งในฝันดรีมมี่",
+    icon: "🌈",
+    badge: "สดใส",
+    description: "สายรุ้งพาสเทล ดาวประกาย และผีเสื้อ",
+    previewIcons: ["/stickers/rainbow.svg", "/stickers/butterfly.svg"],
+    stickers: {
+      vertical: [
+        { stickerId: "rainbow", src: "/stickers/rainbow.svg", x: 13, y: 3.5, scale: 0.85, rotation: -8 },
+        { stickerId: "sparkle", src: "/stickers/sparkle.svg", x: 88, y: 4, scale: 0.8, rotation: 15 },
+        { stickerId: "butterfly", src: "/stickers/butterfly.svg", x: 7, y: 34, scale: 0.8, rotation: 12 },
+        { stickerId: "rainbow", src: "/stickers/rainbow.svg", x: 93, y: 64, scale: 0.85, rotation: -8 },
+        { stickerId: "sparkle", src: "/stickers/sparkle.svg", x: 12, y: 94.5, scale: 0.8, rotation: -15 },
+        { stickerId: "butterfly", src: "/stickers/butterfly.svg", x: 88, y: 94, scale: 0.9, rotation: 10 },
+      ],
+      horizontal: [
+        { stickerId: "rainbow", src: "/stickers/rainbow.svg", x: 5, y: 14, scale: 0.85, rotation: -8 },
+        { stickerId: "sparkle", src: "/stickers/sparkle.svg", x: 5, y: 86, scale: 0.8, rotation: 15 },
+        { stickerId: "butterfly", src: "/stickers/butterfly.svg", x: 34, y: 9, scale: 0.8, rotation: 12 },
+        { stickerId: "rainbow", src: "/stickers/rainbow.svg", x: 66, y: 9, scale: 0.85, rotation: -8 },
+        { stickerId: "sparkle", src: "/stickers/sparkle.svg", x: 96, y: 14, scale: 0.8, rotation: -15 },
+        { stickerId: "butterfly", src: "/stickers/butterfly.svg", x: 95, y: 86, scale: 0.9, rotation: 10 },
+      ],
+    },
+  },
+  {
     id: "lucky-clover",
     name: "Lucky Clover",
     thaiName: "โคลเวอร์นำโชค 4 แฉก",
@@ -275,6 +392,138 @@ export const STICKER_THEMES: StickerTheme[] = [
         { stickerId: "clover", src: "/stickers/clover.svg", x: 66, y: 9, scale: 0.8, rotation: -8 },
         { stickerId: "sparkle", src: "/stickers/sparkle.svg", x: 96, y: 14, scale: 0.8, rotation: 12 },
         { stickerId: "clover", src: "/stickers/clover.svg", x: 95, y: 86, scale: 0.9, rotation: 10 },
+      ],
+    },
+  },
+  {
+    id: "cafe-hopper",
+    name: "Cafe Hopper",
+    thaiName: "คาเฟ่ฮอปเปอร์ชิคๆ",
+    icon: "☕️",
+    badge: "มินิมอล",
+    description: "กาแฟเทกอะเวย์ เชอร์รี่ และเค้กนุ่มฟู",
+    previewIcons: ["/stickers/coffee.svg", "/stickers/cherry.svg"],
+    stickers: {
+      vertical: [
+        { stickerId: "coffee", src: "/stickers/coffee.svg", x: 12, y: 3.5, scale: 0.85, rotation: -8 },
+        { stickerId: "cherry", src: "/stickers/cherry.svg", x: 88, y: 4, scale: 0.8, rotation: 12 },
+        { stickerId: "cake", src: "/stickers/cake.svg", x: 7, y: 34, scale: 0.75, rotation: 10 },
+        { stickerId: "coffee", src: "/stickers/coffee.svg", x: 93, y: 64, scale: 0.8, rotation: -10 },
+        { stickerId: "cherry", src: "/stickers/cherry.svg", x: 12, y: 94.5, scale: 0.85, rotation: -12 },
+        { stickerId: "cake", src: "/stickers/cake.svg", x: 88, y: 94, scale: 0.9, rotation: 8 },
+      ],
+      horizontal: [
+        { stickerId: "coffee", src: "/stickers/coffee.svg", x: 4, y: 14, scale: 0.85, rotation: -8 },
+        { stickerId: "cherry", src: "/stickers/cherry.svg", x: 5, y: 86, scale: 0.8, rotation: 12 },
+        { stickerId: "cake", src: "/stickers/cake.svg", x: 34, y: 9, scale: 0.75, rotation: 10 },
+        { stickerId: "coffee", src: "/stickers/coffee.svg", x: 66, y: 9, scale: 0.8, rotation: -10 },
+        { stickerId: "cherry", src: "/stickers/cherry.svg", x: 96, y: 14, scale: 0.85, rotation: -12 },
+        { stickerId: "cake", src: "/stickers/cake.svg", x: 95, y: 86, scale: 0.9, rotation: 8 },
+      ],
+    },
+  },
+  {
+    id: "baby-dino",
+    name: "Baby Dino",
+    thaiName: "ไดโนเสาร์จิ๋วสุดคิ้วท์",
+    icon: "🦖",
+    description: "ไดโนเสาร์ตัวเขียวน่ารักและใบไม้โคลเวอร์",
+    previewIcons: ["/stickers/dino.svg", "/stickers/clover.svg"],
+    stickers: {
+      vertical: [
+        { stickerId: "dino", src: "/stickers/dino.svg", x: 13, y: 3.5, scale: 0.9, rotation: -8 },
+        { stickerId: "clover", src: "/stickers/clover.svg", x: 88, y: 4, scale: 0.8, rotation: 15 },
+        { stickerId: "star", src: "/stickers/star.svg", x: 7, y: 34, scale: 0.75, rotation: 12 },
+        { stickerId: "dino", src: "/stickers/dino.svg", x: 93, y: 64, scale: 0.85, rotation: 10 },
+        { stickerId: "clover", src: "/stickers/clover.svg", x: 12, y: 94.5, scale: 0.8, rotation: -12 },
+        { stickerId: "dino", src: "/stickers/dino.svg", x: 87, y: 94, scale: 0.95, rotation: -8 },
+      ],
+      horizontal: [
+        { stickerId: "dino", src: "/stickers/dino.svg", x: 5, y: 14, scale: 0.9, rotation: -8 },
+        { stickerId: "clover", src: "/stickers/clover.svg", x: 5, y: 86, scale: 0.8, rotation: 15 },
+        { stickerId: "star", src: "/stickers/star.svg", x: 34, y: 9, scale: 0.75, rotation: 12 },
+        { stickerId: "dino", src: "/stickers/dino.svg", x: 66, y: 9, scale: 0.85, rotation: 10 },
+        { stickerId: "clover", src: "/stickers/clover.svg", x: 96, y: 14, scale: 0.8, rotation: -12 },
+        { stickerId: "dino", src: "/stickers/dino.svg", x: 95, y: 86, scale: 0.95, rotation: -8 },
+      ],
+    },
+  },
+  {
+    id: "cottage-core",
+    name: "Cottagecore",
+    thaiName: "เห็ดน้อยคอทเทจคอร์",
+    icon: "🍄",
+    description: "เห็ดแดงจุดขาว ดอกไม้ และความสงบในป่า",
+    previewIcons: ["/stickers/mushroom.svg", "/stickers/flower.svg"],
+    stickers: {
+      vertical: [
+        { stickerId: "mushroom", src: "/stickers/mushroom.svg", x: 12, y: 3.5, scale: 0.85, rotation: -10 },
+        { stickerId: "flower", src: "/stickers/flower.svg", x: 88, y: 4, scale: 0.8, rotation: 12 },
+        { stickerId: "clover", src: "/stickers/clover.svg", x: 7, y: 34, scale: 0.75, rotation: 8 },
+        { stickerId: "mushroom", src: "/stickers/mushroom.svg", x: 93, y: 64, scale: 0.8, rotation: 12 },
+        { stickerId: "flower", src: "/stickers/flower.svg", x: 12, y: 94.5, scale: 0.85, rotation: -12 },
+        { stickerId: "mushroom", src: "/stickers/mushroom.svg", x: 88, y: 94, scale: 0.9, rotation: -8 },
+      ],
+      horizontal: [
+        { stickerId: "mushroom", src: "/stickers/mushroom.svg", x: 4, y: 14, scale: 0.85, rotation: -10 },
+        { stickerId: "flower", src: "/stickers/flower.svg", x: 5, y: 86, scale: 0.8, rotation: 12 },
+        { stickerId: "clover", src: "/stickers/clover.svg", x: 34, y: 9, scale: 0.75, rotation: 8 },
+        { stickerId: "mushroom", src: "/stickers/mushroom.svg", x: 66, y: 9, scale: 0.8, rotation: 12 },
+        { stickerId: "flower", src: "/stickers/flower.svg", x: 96, y: 14, scale: 0.85, rotation: -12 },
+        { stickerId: "mushroom", src: "/stickers/mushroom.svg", x: 95, y: 86, scale: 0.9, rotation: -8 },
+      ],
+    },
+  },
+  {
+    id: "spooky-kawaii",
+    name: "Spooky Kawaii",
+    thaiName: "ผีน้อยกุ๊กกู๋ขี้เล่น",
+    icon: "👻",
+    description: "ผีน้อยน่ารัก ดาวประกาย และหัวใจ",
+    previewIcons: ["/stickers/ghost.svg", "/stickers/sparkle.svg"],
+    stickers: {
+      vertical: [
+        { stickerId: "ghost", src: "/stickers/ghost.svg", x: 13, y: 3.5, scale: 0.85, rotation: -8 },
+        { stickerId: "sparkle", src: "/stickers/sparkle.svg", x: 88, y: 4, scale: 0.8, rotation: 15 },
+        { stickerId: "heart", src: "/stickers/heart.svg", x: 7, y: 34, scale: 0.75, rotation: 10 },
+        { stickerId: "ghost", src: "/stickers/ghost.svg", x: 93, y: 64, scale: 0.85, rotation: 10 },
+        { stickerId: "sparkle", src: "/stickers/sparkle.svg", x: 12, y: 94.5, scale: 0.8, rotation: -12 },
+        { stickerId: "ghost", src: "/stickers/ghost.svg", x: 87, y: 94, scale: 0.9, rotation: -8 },
+      ],
+      horizontal: [
+        { stickerId: "ghost", src: "/stickers/ghost.svg", x: 5, y: 14, scale: 0.85, rotation: -8 },
+        { stickerId: "sparkle", src: "/stickers/sparkle.svg", x: 5, y: 86, scale: 0.8, rotation: 15 },
+        { stickerId: "heart", src: "/stickers/heart.svg", x: 34, y: 9, scale: 0.75, rotation: 10 },
+        { stickerId: "ghost", src: "/stickers/ghost.svg", x: 66, y: 9, scale: 0.85, rotation: 10 },
+        { stickerId: "sparkle", src: "/stickers/sparkle.svg", x: 96, y: 14, scale: 0.8, rotation: -12 },
+        { stickerId: "ghost", src: "/stickers/ghost.svg", x: 95, y: 86, scale: 0.9, rotation: -8 },
+      ],
+    },
+  },
+  {
+    id: "retro-gamer",
+    name: "Retro Gamer",
+    thaiName: "เกมเมอร์เรโทรย้อนยุค",
+    icon: "🎮",
+    badge: "พิกเซล",
+    description: "จอยเกมพิกเซล สายฟ้า และแว่นกันแดด",
+    previewIcons: ["/stickers/gameboy.svg", "/stickers/bolt.svg"],
+    stickers: {
+      vertical: [
+        { stickerId: "gameboy", src: "/stickers/gameboy.svg", x: 13, y: 3.5, scale: 0.85, rotation: -10 },
+        { stickerId: "bolt", src: "/stickers/bolt.svg", x: 88, y: 4, scale: 0.8, rotation: 15 },
+        { stickerId: "shades", src: "/stickers/shades.svg", x: 7, y: 34, scale: 0.8, rotation: 8 },
+        { stickerId: "gameboy", src: "/stickers/gameboy.svg", x: 93, y: 64, scale: 0.8, rotation: -10 },
+        { stickerId: "bolt", src: "/stickers/bolt.svg", x: 12, y: 94.5, scale: 0.85, rotation: -12 },
+        { stickerId: "gameboy", src: "/stickers/gameboy.svg", x: 88, y: 94, scale: 0.9, rotation: 10 },
+      ],
+      horizontal: [
+        { stickerId: "gameboy", src: "/stickers/gameboy.svg", x: 5, y: 14, scale: 0.85, rotation: -10 },
+        { stickerId: "bolt", src: "/stickers/bolt.svg", x: 5, y: 86, scale: 0.8, rotation: 15 },
+        { stickerId: "shades", src: "/stickers/shades.svg", x: 34, y: 9, scale: 0.8, rotation: 8 },
+        { stickerId: "gameboy", src: "/stickers/gameboy.svg", x: 66, y: 9, scale: 0.8, rotation: -10 },
+        { stickerId: "bolt", src: "/stickers/bolt.svg", x: 96, y: 14, scale: 0.85, rotation: -12 },
+        { stickerId: "gameboy", src: "/stickers/gameboy.svg", x: 95, y: 86, scale: 0.9, rotation: 10 },
       ],
     },
   },
@@ -328,6 +577,32 @@ export const STICKER_THEMES: StickerTheme[] = [
         { stickerId: "lip", src: "/stickers/lip.svg", x: 66, y: 9, scale: 0.8, rotation: 8 },
         { stickerId: "ribbon", src: "/stickers/ribbon.svg", x: 96, y: 14, scale: 0.8, rotation: 12 },
         { stickerId: "lip", src: "/stickers/lip.svg", x: 95, y: 86, scale: 0.9, rotation: -10 },
+      ],
+    },
+  },
+  {
+    id: "vintage-bloom",
+    name: "Vintage Bloom",
+    thaiName: "ดอกไม้ & วินเทจบลูม",
+    icon: "🌸",
+    description: "ดอกไม้และโบว์สไตล์วินเทจน่ารัก",
+    previewIcons: ["/stickers/flower.svg", "/stickers/ribbon.svg"],
+    stickers: {
+      vertical: [
+        { stickerId: "flower", src: "/stickers/flower.svg", x: 12, y: 3.5, scale: 0.85, rotation: -10 },
+        { stickerId: "ribbon", src: "/stickers/ribbon.svg", x: 88, y: 4, scale: 0.8, rotation: 15 },
+        { stickerId: "flower", src: "/stickers/flower.svg", x: 7, y: 35, scale: 0.75, rotation: 12 },
+        { stickerId: "flower", src: "/stickers/flower.svg", x: 93, y: 65, scale: 0.75, rotation: -8 },
+        { stickerId: "ribbon", src: "/stickers/ribbon.svg", x: 12, y: 94.5, scale: 0.85, rotation: -12 },
+        { stickerId: "flower", src: "/stickers/flower.svg", x: 88, y: 94, scale: 0.9, rotation: 10 },
+      ],
+      horizontal: [
+        { stickerId: "flower", src: "/stickers/flower.svg", x: 4, y: 14, scale: 0.85, rotation: -10 },
+        { stickerId: "ribbon", src: "/stickers/ribbon.svg", x: 5, y: 86, scale: 0.8, rotation: 15 },
+        { stickerId: "flower", src: "/stickers/flower.svg", x: 34, y: 9, scale: 0.75, rotation: 8 },
+        { stickerId: "flower", src: "/stickers/flower.svg", x: 66, y: 9, scale: 0.75, rotation: -8 },
+        { stickerId: "ribbon", src: "/stickers/ribbon.svg", x: 96, y: 14, scale: 0.8, rotation: 15 },
+        { stickerId: "flower", src: "/stickers/flower.svg", x: 95, y: 86, scale: 0.9, rotation: -10 },
       ],
     },
   },

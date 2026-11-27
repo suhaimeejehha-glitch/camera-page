@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+  <!-- Ears -->
+  <circle cx="16" cy="18" r="8" fill="#B45309" stroke="#451A03" stroke-width="3"/>
+  <circle cx="16" cy="18" r="4" fill="#FDE68A"/>
+  <circle cx="48" cy="18" r="8" fill="#B45309" stroke="#451A03" stroke-width="3"/>
+  <circle cx="48" cy="18" r="4" fill="#FDE68A"/>
+  <!-- Head -->
+  <circle cx="32" cy="34" r="20" fill="#D97706" stroke="#451A03" stroke-width="3"/>
+  <!-- Snout -->
+  <ellipse cx="32" cy="38" rx="8" ry="6" fill="#FDE68A" stroke="#451A03" stroke-width="2"/>
+  <!-- Nose & Mouth -->
+  <ellipse cx="32" cy="35" rx="3" ry="2" fill="#451A03"/>
+  <path d="M32 37V41" stroke="#451A03" stroke-width="2" stroke-linecap="round"/>
+  <!-- Eyes -->
+  <circle cx="23" cy="30" r="3" fill="#451A03"/>
+  <circle cx="41" cy="30" r="3" fill="#451A03"/>
+  <circle cx="22" cy="29" r="1" fill="#FFFFFF"/>
+  <circle cx="40" cy="29" r="1" fill="#FFFFFF"/>
+  <!-- Cheeks -->
+  <circle cx="18" cy="36" r="3" fill="#FDA4AF" opacity="0.8"/>
+  <circle cx="46" cy="36" r="3" fill="#FDA4AF" opacity="0.8"/>
+</svg>

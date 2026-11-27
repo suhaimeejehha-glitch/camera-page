@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+  <!-- Body -->
+  <rect x="14" y="8" width="36" height="48" rx="7" fill="#818CF8" stroke="#312E81" stroke-width="3"/>
+  <!-- Screen -->
+  <rect x="20" y="14" width="24" height="18" rx="3" fill="#A7F3D0" stroke="#312E81" stroke-width="2"/>
+  <!-- Screen Pixel Heart -->
+  <path d="M32 26C32 26 27 22 27 19.5C27 18 28.5 17 30 17C31 17 32 18 32 18C32 18 33 17 34 17C35.5 17 37 18 37 19.5C37 22 32 26 32 26Z" fill="#047857"/>
+  <!-- D-Pad (Cross) -->
+  <path d="M25 38H29V34H31V38H35V40H31V44H29V40H25V38Z" fill="#312E81"/>
+  <!-- A/B Buttons -->
+  <circle cx="43" cy="38" r="2.5" fill="#F43F5E"/>
+  <circle cx="39" cy="42" r="2.5" fill="#F43F5E"/>
+</svg>

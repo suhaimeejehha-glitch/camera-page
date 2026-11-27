@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+  <!-- Strings -->
+  <path d="M26 38C26 48 30 54 32 60" stroke="#71717A" stroke-width="2" stroke-linecap="round"/>
+  <path d="M38 38C38 48 34 54 32 60" stroke="#71717A" stroke-width="2" stroke-linecap="round"/>
+  <!-- Balloon 1 (Pink) -->
+  <ellipse cx="24" cy="24" rx="14" ry="16" fill="#F472B6" stroke="#831843" stroke-width="3"/>
+  <circle cx="18" cy="18" r="3" fill="#FDF2F8"/>
+  <polygon points="21,40 27,40 24,37" fill="#831843"/>
+  <!-- Balloon 2 (Blue) -->
+  <ellipse cx="40" cy="22" rx="14" ry="16" fill="#38BDF8" stroke="#0369A1" stroke-width="3"/>
+  <circle cx="34" cy="16" r="3" fill="#F0F9FF"/>
+  <polygon points="37,38 43,38 40,35" fill="#0369A1"/>
+</svg>

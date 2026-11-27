@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+  <!-- Rainbow Arcs -->
+  <path d="M10 40C10 24 20 12 32 12C44 12 54 24 54 40" stroke="#F43F5E" stroke-width="5" stroke-linecap="round"/>
+  <path d="M15 40C15 28 22 17 32 17C42 17 49 28 49 40" stroke="#FBBF24" stroke-width="5" stroke-linecap="round"/>
+  <path d="M20 40C20 32 25 22 32 22C39 22 44 32 44 40" stroke="#38BDF8" stroke-width="5" stroke-linecap="round"/>
+  <!-- Clouds -->
+  <circle cx="12" cy="42" r="8" fill="#F8FAFC" stroke="#64748B" stroke-width="2"/>
+  <circle cx="18" cy="44" r="6" fill="#F8FAFC"/>
+  <circle cx="52" cy="42" r="8" fill="#F8FAFC" stroke="#64748B" stroke-width="2"/>
+  <circle cx="46" cy="44" r="6" fill="#F8FAFC"/>
+</svg>

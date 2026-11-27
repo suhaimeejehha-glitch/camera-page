@@ -13,7 +13,7 @@ import {
   parseOrientation,
   parseShotCount,
 } from "@/lib/frames";
-import { STICKERS } from "@/lib/stickers";
+import { STICKERS, STICKER_THEMES, getPlacedStickersForTheme } from "@/lib/stickers";
 import { renderPhotoboothStrip, renderPrintSheet } from "@/lib/canvasRenderer";
 import { clearMotionFrames, clearSessionPhotos, loadMotionFrames, loadSessionPhotos } from "@/lib/mediaStore";
 import { createAnimatedGifBlob } from "@/lib/gifBuilder";
@@ -55,6 +55,7 @@ export function ResultClient() {
   const [selectedToneId, setSelectedToneId] = useState<string>("normal");
 
   const [placedStickers, setPlacedStickers] = useState<PlacedSticker[]>([]);
+  const [selectedThemeId, setSelectedThemeId] = useState<string>("none");
   const [selectedStickerId, setSelectedStickerId] = useState<string | null>(null);
 
   const [driveQr, setDriveQr] = useState<DriveQrState | null>(null);
@@ -371,45 +372,10 @@ export function ResultClient() {
     };
   }, [frame, photos, placedStickers, activeTone, gifBlobCache, videoBlobCache, isDriveReady]);
 
-  const selectedSticker =
-    placedStickers.find((s) => s.instanceId === selectedStickerId) ?? null;
-
-  const handleAddSticker = (sticker: StickerItem) => {
-    const count = placedStickers.length;
-    const instanceId = `${sticker.id}-${count}-${Date.now()}`;
-    setPlacedStickers((prev) => [
-      ...prev,
-      {
-        instanceId,
-        stickerId: sticker.id,
-        src: sticker.src,
-        x: 30 + ((count * 17) % 45),
-        y: 25 + ((count * 15) % 50),
-        scale: 1,
-        rotation: 0,
-      },
-    ]);
-    setSelectedStickerId(instanceId);
-  };
-
-  const handleUpdateSticker = (
-    instanceId: string,
-    patch: Partial<Pick<PlacedSticker, "x" | "y" | "scale" | "rotation">>
-  ) => {
-    setPlacedStickers((prev) =>
-      prev.map((item) =>
-        item.instanceId === instanceId ? { ...item, ...patch } : item
-      )
-    );
-  };
-
-  const handleRemoveSticker = (instanceId: string) => {
-    setPlacedStickers((prev) =>
-      prev.filter((item) => item.instanceId !== instanceId)
-    );
-    if (selectedStickerId === instanceId) {
-      setSelectedStickerId(null);
-    }
+  const handleSelectTheme = (themeId: string) => {
+    setSelectedThemeId(themeId);
+    const newStickers = getPlacedStickersForTheme(themeId, orientation);
+    setPlacedStickers(newStickers);
   };
 
   const handlePrint = async () => {
@@ -510,11 +476,8 @@ export function ResultClient() {
                   >
                     <StickerCanvas
                       stickers={placedStickers}
-                      selectedStickerId={selectedStickerId}
                       isHorizontal={false}
-                      onSelectSticker={setSelectedStickerId}
-                      onUpdateSticker={handleUpdateSticker}
-                      onRemoveSticker={handleRemoveSticker}
+                      readOnly
                     />
                   </StripPreview>
                 </div>
@@ -545,11 +508,8 @@ export function ResultClient() {
                   >
                     <StickerCanvas
                       stickers={placedStickers}
-                      selectedStickerId={selectedStickerId}
                       isHorizontal={true}
-                      onSelectSticker={setSelectedStickerId}
-                      onUpdateSticker={handleUpdateSticker}
-                      onRemoveSticker={handleRemoveSticker}
+                      readOnly
                     />
                   </StripPreview>
                 </div>
@@ -571,7 +531,7 @@ export function ResultClient() {
               </div>
             )}
             <p className="text-center text-xs sm:text-sm font-bold text-zinc-400">
-              แตะและลากสติกเกอร์เพื่อตกแต่งภาพ (พิมพ์ 2 แถบคู่กัน)
+              พรีวิวภาพพร้อมธีมสติกเกอร์ (พิมพ์ 2 แถบคู่กัน)
             </p>
           </div>
 
@@ -623,116 +583,28 @@ export function ResultClient() {
               </div>
             </div>
 
-            {/* โซนสติกเกอร์ */}
-            <div className="flex flex-col gap-1.5">
+            {/* โซนเลือกธีมสติกเกอร์สำเร็จรูป (1-Tap Auto Theme) */}
+            <div className="flex flex-col gap-2">
               <div className="flex items-center justify-between px-1">
                 <span className="font-mono text-xs sm:text-sm font-black tracking-wider text-amber-400 uppercase">
-                  STICKERS • แตะเพื่อแปะสติกเกอร์
+                  STICKER THEMES • เลือกธีมสติกเกอร์สำเร็จรูป (กดทีเดียวจัดวางทั้งรูป)
                 </span>
                 {placedStickers.length > 0 ? (
                   <button
                     type="button"
-                    onClick={() => {
-                      setPlacedStickers([]);
-                      setSelectedStickerId(null);
-                    }}
+                    onClick={() => handleSelectTheme("none")}
                     className="font-mono text-xs sm:text-sm font-bold text-rose-400 transition hover:underline cursor-pointer"
                   >
-                    ลบทั้งหมด
+                    ล้างสติกเกอร์ออก
                   </button>
                 ) : null}
               </div>
               <StickerPicker
-                stickers={STICKERS}
-                theme="dark"
-                onAddSticker={handleAddSticker}
+                themes={STICKER_THEMES}
+                activeThemeId={selectedThemeId}
+                onSelectTheme={handleSelectTheme}
               />
             </div>
-
-            {selectedSticker ? (
-              <div className="flex flex-col gap-2 rounded-2xl border-2 border-zinc-700 bg-zinc-950/80 p-3">
-                <div className="flex items-center justify-between">
-                  <span className="font-mono text-xs sm:text-sm font-black tracking-wider text-amber-400 uppercase">
-                    Selected: {selectedSticker.stickerId}
-                  </span>
-                  <button
-                    type="button"
-                    onClick={() => handleRemoveSticker(selectedSticker.instanceId)}
-                    className="h-9 rounded-full border border-rose-500/50 bg-rose-500/25 px-4 text-xs sm:text-sm font-black text-rose-300 transition active:scale-95 hover:bg-rose-500/35 touch-manipulation cursor-pointer"
-                  >
-                    ✕ ลบ
-                  </button>
-                </div>
-
-                <div className="flex flex-wrap items-center gap-3">
-                  <div className="flex items-center gap-2">
-                    <span className="font-mono text-xs sm:text-sm font-bold text-zinc-400">Size</span>
-                    <button
-                      type="button"
-                      onClick={() =>
-                        handleUpdateSticker(selectedSticker.instanceId, {
-                          scale: clamp(Number((selectedSticker.scale - 0.15).toFixed(2)), 0.5, 2.2),
-                        })
-                      }
-                      className="flex h-10 w-10 sm:h-11 sm:w-11 items-center justify-center rounded-xl border border-zinc-700 bg-zinc-800 text-xl font-black text-white shadow-sm transition active:scale-95 hover:bg-zinc-700 touch-manipulation cursor-pointer"
-                    >
-                      −
-                    </button>
-                    <span className="w-10 text-center font-mono text-xs sm:text-sm font-black text-zinc-200">
-                      {Math.round(selectedSticker.scale * 100)}%
-                    </span>
-                    <button
-                      type="button"
-                      onClick={() =>
-                        handleUpdateSticker(selectedSticker.instanceId, {
-                          scale: clamp(Number((selectedSticker.scale + 0.15).toFixed(2)), 0.5, 2.2),
-                        })
-                      }
-                      className="flex h-10 w-10 sm:h-11 sm:w-11 items-center justify-center rounded-xl border border-zinc-700 bg-zinc-800 text-xl font-black text-white shadow-sm transition active:scale-95 hover:bg-zinc-700 touch-manipulation cursor-pointer"
-                    >
-                      +
-                    </button>
-                  </div>
-
-                  <div className="flex items-center gap-1.5">
-                    <span className="font-mono text-xs sm:text-sm font-bold text-zinc-400">Rotate</span>
-                    <button
-                      type="button"
-                      onClick={() =>
-                        handleUpdateSticker(selectedSticker.instanceId, {
-                          rotation: selectedSticker.rotation - 15,
-                        })
-                      }
-                      className="h-10 sm:h-11 rounded-xl border border-zinc-700 bg-zinc-800 px-3 font-mono text-xs sm:text-sm font-black text-zinc-200 shadow-xs transition active:scale-95 hover:bg-zinc-700 touch-manipulation cursor-pointer"
-                    >
-                      ↺ -15°
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() =>
-                        handleUpdateSticker(selectedSticker.instanceId, {
-                          rotation: 0,
-                        })
-                      }
-                      className="h-10 sm:h-11 rounded-xl border border-zinc-700 bg-zinc-800 px-3 font-mono text-xs sm:text-sm font-black text-zinc-400 shadow-xs transition active:scale-95 hover:bg-zinc-700 touch-manipulation cursor-pointer"
-                    >
-                      0°
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() =>
-                        handleUpdateSticker(selectedSticker.instanceId, {
-                          rotation: selectedSticker.rotation + 15,
-                        })
-                      }
-                      className="h-10 sm:h-11 rounded-xl border border-zinc-700 bg-zinc-800 px-3 font-mono text-xs sm:text-sm font-black text-zinc-200 shadow-xs transition active:scale-95 hover:bg-zinc-700 touch-manipulation cursor-pointer"
-                    >
-                      ↻ +15°
-                    </button>
-                  </div>
-                </div>
-              </div>
-            ) : null}
 
             {exportError ? (
               <p className="text-xs sm:text-sm font-bold text-rose-400">{exportError}</p>

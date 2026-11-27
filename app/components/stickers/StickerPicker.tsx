@@ -1,55 +1,90 @@
 "use client";
 
-import type { StickerItem } from "@/types/photobooth";
+import type { StickerTheme } from "@/lib/stickers";
 
 interface StickerPickerProps {
-  stickers: StickerItem[];
-  theme?: "dark" | "light";
-  onAddSticker: (sticker: StickerItem) => void;
+  themes: StickerTheme[];
+  activeThemeId: string;
+  onSelectTheme: (themeId: string) => void;
 }
 
 /**
- * พาเนลกดเพิ่มสติกเกอร์ รองรับทั้งธีมมืด (Dark) สไตล์สตูดิโอ และธีมสว่าง
+ * แผงเลือกธีมสติกเกอร์สำเร็จรูป (1-Tap Preset Decorative Themes)
+ * ออกแบบปุ่มขนาดใหญ่สำหรับจอทัชสกรีนตู้ Kiosk แตะเพียงครั้งเดียว ตกแต่งให้อัตโนมัติทั้งแผ่น
  */
 export function StickerPicker({
-  stickers,
-  theme = "dark",
-  onAddSticker,
+  themes,
+  activeThemeId,
+  onSelectTheme,
 }: StickerPickerProps) {
-  if (stickers.length === 0) {
-    return (
-      <p className="text-sm text-zinc-500">
-        ยังไม่มีสติกเกอร์ — เพิ่มไฟล์ใน public/stickers/ และ lib/stickers.ts
-      </p>
-    );
-  }
-
-  const isDark = theme === "dark";
-
   return (
-    <div className="grid grid-cols-4 gap-2.5 sm:gap-3.5">
-      {stickers.map((sticker) => (
-        <button
-          key={sticker.id}
-          type="button"
-          onClick={() => onAddSticker(sticker)}
-          className={`flex min-h-22 sm:min-h-26 flex-col items-center justify-center gap-1.5 rounded-2xl border-2 p-2 sm:p-3 transition-all hover:scale-105 active:scale-95 touch-manipulation cursor-pointer shadow-md ${
-            isDark
-              ? "border-zinc-800 bg-zinc-900/90 text-zinc-200 hover:border-amber-400 hover:bg-zinc-800"
-              : "border-zinc-300 bg-zinc-50/90 text-zinc-800 hover:border-red-400 hover:bg-amber-50"
-          }`}
-        >
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src={sticker.src}
-            alt={sticker.name}
-            className="h-10 w-10 sm:h-12 sm:w-12 object-contain drop-shadow-sm"
-          />
-          <span className="font-mono text-xs sm:text-sm font-black tracking-wider uppercase text-center">
-            {sticker.name}
-          </span>
-        </button>
-      ))}
+    <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5 sm:gap-3 select-none">
+      {themes.map((theme) => {
+        const isActive = activeThemeId === theme.id;
+        return (
+          <button
+            key={theme.id}
+            type="button"
+            onClick={() => onSelectTheme(theme.id)}
+            className={`relative flex min-h-20 sm:min-h-24 flex-col justify-between rounded-2xl border-2 p-3 text-left transition-all duration-200 active:scale-95 touch-manipulation cursor-pointer ${
+              isActive
+                ? "border-amber-400 bg-gradient-to-br from-red-950/90 via-red-900/60 to-zinc-900 text-white shadow-[0_0_22px_rgba(245,158,11,0.4)] ring-2 ring-amber-300/40"
+                : "border-zinc-800 bg-zinc-900/80 text-zinc-300 hover:border-zinc-700 hover:bg-zinc-800/90"
+            }`}
+          >
+            {/* ป้ายกำกับด้านบน: ไอคอน + Badge */}
+            <div className="flex items-center justify-between w-full">
+              <span className="text-2xl sm:text-3xl drop-shadow-sm">{theme.icon}</span>
+
+              {theme.badge ? (
+                <span className="rounded-full bg-red-600/90 px-2 py-0.5 font-mono text-[10px] sm:text-xs font-black text-amber-200 uppercase tracking-wider">
+                  {theme.badge}
+                </span>
+              ) : isActive ? (
+                <span className="rounded-full bg-amber-400/20 px-2 py-0.5 font-mono text-[10px] sm:text-xs font-black text-amber-300 border border-amber-400/40">
+                  ✓ เลือกอยู่
+                </span>
+              ) : null}
+            </div>
+
+            {/* ข้อมูลชื่อธีม */}
+            <div className="flex flex-col gap-0.5 mt-1.5">
+              <span
+                className={`text-sm sm:text-base font-black tracking-tight leading-snug ${
+                  isActive ? "text-amber-300" : "text-white"
+                }`}
+              >
+                {theme.thaiName}
+              </span>
+              <span className="font-mono text-[11px] sm:text-xs text-zinc-400 truncate">
+                {theme.name}
+              </span>
+            </div>
+
+            {/* ไอคอนตัวอย่างสติกเกอร์ในธีม */}
+            {theme.previewIcons.length > 0 ? (
+              <div className="flex items-center gap-1.5 pt-1.5 opacity-80">
+                {theme.previewIcons.map((src, i) => (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    key={i}
+                    src={src}
+                    alt=""
+                    className="h-4 w-4 sm:h-5 sm:w-5 object-contain"
+                  />
+                ))}
+                <span className="text-[10px] font-mono text-zinc-500 font-bold">
+                  + จัดวางรอบกรอบ
+                </span>
+              </div>
+            ) : (
+              <div className="pt-1.5 text-[10px] font-mono text-zinc-500 font-bold">
+                กรอบรูปเรียบหรู คมชัด
+              </div>
+            )}
+          </button>
+        );
+      })}
     </div>
   );
 }
